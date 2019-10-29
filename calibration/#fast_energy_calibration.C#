@@ -1,0 +1,239 @@
+A/* JTS 05/16/2018
+
+CODE FOR IMPLEMENTING EACH TPC'S ENERGY CALIBRATION
+This code generates calibration curves to assign corresponding ToT values to a given charge
+
+Code can be run by using: root -l 'calibrate_energy.C("TPC_name", run_num)'
+
+Script will be written to automatically generate for all TPCs
+
+*/
+
+void fast_energy_calibration(string module_id, int run_num) {
+
+  //TFile *f = new TFile(Form("/Users/vahsengrouplaptop/data/post_phase2/%s/%d_%s.root", module_id.c_str(), run_num, module_id.c_str()),"update");
+  TFile *f = new TFile(Form("/Users/vahsengrouplaptop/data/phase2/%s/%d_%s.root", module_id.c_str(), run_num, module_id.c_str()),"update");
+  TTree *T = (TTree*)f->Get("data");
+
+    /* Available branches        
+     event_number  
+     raw_event_number          
+     npoints       
+     time_range    
+     time_bin      
+     column[npoints]           
+     row[npoints]  
+     tot[npoints]  
+     sum_tot       
+     trigger_time  
+     timestamp_start <--- currently doesn't work!       
+     timestamp_stop  <--- currently doesn't work!       
+     x[npoints]    
+     y[npoints]    
+     z[npoints]    
+     length        
+     energy        
+     p_energy      
+     hitside       
+     nedges        
+     frac_nhits_edge           
+     chi2_ndf      
+     pars   
+     errs   
+     impact_pars   
+     theta  
+     phi    
+     theta_fold_90 
+     phi_fold_90   
+     cstatus        
+  */
+
+  //##################### DEFINE BRANCH VECTORS AND CREATE BRANCHES ##########################
+  
+  vector <vector<double>> hit_energy;
+  vector <vector<double>> hit_charge;
+  vector <double> track_energy;
+  vector <double> track_charge;
+  
+  //################# QUANTITIES FOR COMPUTING CALIBRATIONS ###################
+  vector<double> electron_charge;
+  vector<double> average_tot;
+  vector<double> error_tot;
+  vector<double> charge_per_tot; //electron charge per ToT value
+  vector<double> pixel_energy; //pixel energy per ToT value
+  int plsrdac[] = {40, 50, 60, 80, 130, 180, 230, 280, 340, 440, 540, 640, 740}; //calibration injection charges
+  int tot_value[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13};
+  int qe; // #electrons/plsrDAC. Varies chip to chip
+  double W_function = 35.075; // Work function taken from Ilsoo's code
+  float gain; // CREATE SEPARATE FOR EACH TPC
+  
+  if (module_id == "nene"){ //electron charge to plsrdac conversion is different for nene than the other TPCs
+    qe = 54;
+  }
+  else {
+    qe = 52;
+  }
+  
+  for (int i=0; i<13; i++){
+    electron_charge.push_back(qe*plsrdac[i]); //populates vector of electron charges
+  }
+  
+  //############## POPULATE TOT and TOT_ERROR VECTORS GIVEN A MODULE ID ##################
+  if (module_id == "iiwi"){
+    //gain = 2803/2.811;
+    gain = 2000.*708./1430.;
+    double iiwi_tot[] = {.0121, .117, .839, 2.02, 2.90, 3.41, 4.43, 5.48, 6.24, 7.60, 8.85, 9.99, 11.11};
+    double iiwi_tot_errors[] = {.000675, .00104, .00122, .000946, .00140, .00229, .00267, .00252, .00213, .00272, .00270, .00267, .00281};
+    for (int i=0; i<13; i++){
+      average_tot.push_back(iiwi_tot[i]);
+      error_tot.push_back(iiwi_tot_errors[i]);
+    }
+    
+  }
+  if (module_id == "honu"){
+    //gain = 2000/2.811;
+    gain = 2000.*512./1430.;
+    double honu_tot[] = {.001, .0551, .9091, 1.957, 2.807, 3.554, 4.374, 5.273, 6.204, 7.392, 8.729, 10.01, 11.15};
+    double honu_tot_errors[] = {.00058, .00079, .00096, .00099, .002, .0024, .0026, .0023, .0023, .0029, .0034, .003, .0031};
+    for	(int i=0; i<13; i++){
+      average_tot.push_back(honu_tot[i]);
+      error_tot.push_back(honu_tot_errors[i]);
+    }
+  }
+  if (module_id == "kohola"){
+    //gain = 1770/2.811;
+    gain = 2000*425./1430.;
+    double kohola_tot[] = {.000149, .0863, .883, 1.85, 2.55, 3.33, 4.4, 5.23, 6.13, 7.34, 8.61, 9.88, 11.};
+    double kohola_tot_errors[] = {.0000744, .000902, .000846, .00156, .00253, .00222, .00261, .00203, .00216, .0025, .00283, .00257, .00227};
+    for	(int i=0; i<13; i++){
+      average_tot.push_back(kohola_tot[i]);
+      error_tot.push_back(kohola_tot_errors[i]);
+    }    
+  }
+  if (module_id == "nene"){
+    //gain = 1416/2.811;
+    gain = 2000*365./1430.;
+    double nene_tot[] = {.0000744, .325, .959, 1.12, 2.88, 3.99, 4.71, 5.17, 6.07, 7.42, 8.88, 10.1, 11.1};
+    double nene_tot_errors[] = {.0000526, .0013, .000542, .00118, .00176, .000704, .00208, .0018, .0014, .0026, .00222, .00193, .0023};
+    for	(int i=0; i<13; i++){
+      average_tot.push_back(nene_tot[i]);
+      error_tot.push_back(nene_tot_errors[i]);
+    }    
+  }  
+  if (module_id == "tako"){
+    //gain = 1610/2.811;
+    gain = 2000*632./1430.;
+    double tako_tot[] = {2.045, .4634, 1.023, 1.797, 3.053, 4.012, 4.978, 5.435, 6.073, 7.429, 8.816, 9.971, 11.01};
+    double tako_tot_errors[] = {.00418, .00123, .000257, .00139, .00218, .000632, .000692, .00209, .00117, .00235, .00197, .00131, .00125};
+    for	(int i=0; i<13; i++){
+      average_tot.push_back(tako_tot[i]);
+      error_tot.push_back(tako_tot_errors[i]);
+    }    
+  }
+  if (module_id == "humu"){
+    //gain = 1971/2.811;
+    gain = 2000*675./1430.;
+    double humu_tot[] = {.0002976, .429, .9873, 1.192, 2.709, 3.985, 4.717, 5.180, 6.077, 7.349, 8.735, 9.98, 11.13};
+    double humu_tot_errors[] = {.000105, .00116, .000237, .00151, .00241, .000924, .00206, .00188, .00157, .00265, .0029, .00257, .0026};
+    for	(int i=0; i<13; i++){
+      average_tot.push_back(humu_tot[i]);
+      error_tot.push_back(humu_tot_errors[i]);
+    }    
+  }
+  if (module_id == "palila"){
+    //gain = 2650/2.811;
+    gain = 2000*780./1430.;
+    double palila_tot[] = {.00428, .122, 1.13, 2.08, 3.03, 4., 4.92, 5.75, 6.58, 7.92, 9.19, 10.3, 11.4};
+    double palila_tot_errors[] = {.000613, .000911, .000976, .00121, .00139, .00212, .00218, .00237, .00269, .0029, .00306, .00331, .00374};
+    for	(int i=0; i<13; i++){
+      average_tot.push_back(palila_tot[i]);
+      error_tot.push_back(palila_tot_errors[i]);
+    }    
+  }
+  if (module_id == "elepaio"){
+    //gain = 1183/2.811;
+    gain = 2000*495./1430.;
+    double elepaio_tot[] = {.008663, .468, .9928, 1.351, 2.148, 3.316, 4.393, 5.151, 5.971, 7.32, 8.559, 9.896, 11.09};
+    double elepaio_tot_errors[] = {.000559, .00139, .000197, .002, 00145, .00253, .0025, .00221, .00238, .00254, .00297, .0027, .00245};
+    for	(int i=0; i<13; i++){
+      average_tot.push_back(elepaio_tot[i]);
+      error_tot.push_back(elepaio_tot_errors[i]);
+    }    
+  }
+  //####################### COMPUTE CHARGE (e-) AND PIXEL ENERGY FOR EACH TOT CODE ##################################
+
+  TGraph *gr = new TGraphErrors(13, &average_tot[0], &electron_charge[0], &error_tot[0], 0);
+  for (int i=0; i<14; i++){
+    charge_per_tot.push_back(gr->Eval(tot_value[i])); //gr->Eval() uses bicubic spline fit to data to give values
+    pixel_energy.push_back((charge_per_tot[i]/gain)*W_function*1e-3);
+  }
+  
+  gr->SetTitle("Electron Charge vs. Chip-Averaged ToT");
+  gr->SetMarkerStyle(20);
+  gr->GetXaxis()->SetTitle("Average ToT");
+  gr->GetYaxis()->SetTitle("Charge (e-)");
+  gr->Draw("AP");
+  
+  //FOR DEBUGGING
+  cout << "ToT  " << "Charge (e-)  " << "Pixel Energy (keV)" << endl;
+  for (int i=0; i<14; i++){
+    cout << tot_value[i] << "    " << charge_per_tot[i] << "         " << pixel_energy[i] << endl;
+  }
+  
+  //####################### COMPUTE ENERGY AT THE TRACK LEVEL AND ADD TOGETHER TO GIVE THE ENERGY OF THE TRACK  ####################################
+  TTreeReader reader("data", f);
+  TTreeReaderValue<int> rvEvent(reader, "event_number");
+  TTreeReaderArray<int> raTot(reader, "tot");
+  float energy_val;
+  float charge_val;
+  float energy_count = 0;
+  float charge_count = 0;
+  while (reader.Next()){
+    for (int itot = 0, ntot = raTot.GetSize(); itot < ntot; itot++){
+      energy_val = pixel_energy[raTot[itot]];
+      charge_val = charge_per_tot[raTot[itot]];
+      energy_count += energy_val;
+      charge_count += charge_val;
+    }
+    track_energy.push_back(energy_count);
+    track_charge.push_back(charge_count);
+    energy_count = 0;
+    charge_count = 0;
+  }
+
+   
+  //##################### Create and Fill Branches, write and close file #######################
+  unsigned int n_events = track_energy.size();
+  float_t energy_data;
+  float_t charge_data;
+  std::vector<float_t> hit_energy_data;
+  std::vector<float_t> hit_charge_data;
+  TBranch *t_energy = T->Branch("paper_calibrated_track_energy", &energy_data, "paper_calibrated_track_energy/F");
+  //TBranch *t_charge = T->Branch("track_charge", &charge_data, "track_charge/F");
+  for (unsigned int i=0; i<n_events; i++) {
+    energy_data = track_energy[i];
+    //charge_data = track_charge[i];
+    t_energy->Fill();
+    //t_charge->Fill();
+  }
+  
+  vector <double> ts_vec;
+  T->Draw("timestamp_start[0]", "timestamp_start[0]>1000", "goff");
+  unsigned int n_t = T->GetSelectedRows();
+  double *ts = T->GetV1();
+  for (int i=0; i<n_t; i++){
+    ts_vec.push_back(ts[i]);
+  }
+  
+  double_t double_timestamp;
+  
+  //TBranch *t_ts = T->Branch("double_timestamp", &double_timestamp, "double_timestamp/D");
+  for (unsigned int i=0; i<n_t; i++) {
+    double_timestamp = ts_vec[i];
+    //t_ts->Fill();
+  }
+  
+  //T->Write();
+  delete f;
+
+}

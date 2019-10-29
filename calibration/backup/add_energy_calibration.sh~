@@ -1,0 +1,33 @@
+if [ $# -lt 1 ]
+then
+    echo "./update_ntuple_all.sh <run number>"
+    echo "  OR"
+    echo "./update_ntuple_all.sh <first run number> <last run number>"
+    echo ""
+    exit 1
+fi
+
+first_run=$1
+last_run=$first_run
+
+if [ $# == 2 ]
+then
+    last_run=$2
+fi
+
+iRun=$first_run
+
+while [ $iRun -le $last_run ]
+do
+
+    root -l -q -b 'energy_calibration_tom.C('\"iiwi\"', '$iRun')'
+    root -l -q -b 'energy_calibration_tom.C('\"honu\"', '$iRun')'                                                                                      
+    root -l -q -b 'energy_calibration_tom.C('\"kohola\"', '$iRun')'                                                                                    
+    root -l -q -b 'energy_calibration_tom.C('\"nene\"', '$iRun')'
+    root -l -q -b 'energy_calibration_tom.C('\"tako\"', '$iRun')'                                                                                      
+    root -l -q -b 'energy_calibration_tom.C('\"humu\"', '$iRun')'
+    root -l -q -b 'energy_calibration_tom.C('\"elepaio\"', '$iRun')'                                                                                   
+    root -l -q -b 'energy_calibration_tom.C('\"palila\"', '$iRun')'                                                                                    
+
+    let iRun=$iRun+1
+done
