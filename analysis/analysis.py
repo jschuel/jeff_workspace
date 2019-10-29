@@ -7,6 +7,62 @@ import ROOT
 import math
 from os import sys
 
+def make_multigraph(df):
+    gr = make_plot(df, 789, 0)
+    gr.SetMarkerStyle(20)
+    gr.SetMarkerColor(4)
+    
+    gr1 = make_plot(df, 789, 1)
+    gr1.SetMarkerStyle(20)
+    gr1.SetMarkerColor(2)
+
+    gr2 = make_plot(df, 789, -1)
+    gr2.SetMarkerStyle(20)
+    gr2.SetMarkerColor(2)
+    
+    gr3 = make_plot(df, 1576, 0)
+    gr3.SetMarkerStyle(22)
+    gr3.SetMarkerColor(64)
+    
+    gr4 = make_plot(df, 1576, 1)
+    gr4.SetMarkerStyle(22)
+    gr4.SetMarkerColor(96)
+
+    gr5 = make_plot(df, 1576, -1)
+    gr5.SetMarkerStyle(22)
+    gr5.SetMarkerColor(96)
+    
+    gr6 = make_plot(df, 789, 2)
+    gr6.SetMarkerStyle(20)
+    gr6.SetMarkerColor(1)
+
+    gr7 = make_plot(df, 789, -2)
+    gr7.SetMarkerStyle(20)
+    gr7.SetMarkerColor(1)
+
+    gr8 = make_plot(df, 1576, 2)
+    gr8.SetMarkerStyle(22)
+    gr8.SetMarkerColor(1)
+
+    gr9 = make_plot(df, 1576, -2)
+    gr9.SetMarkerStyle(22)
+    gr9.SetMarkerColor(1)
+
+    mg = ROOT.TMultiGraph()
+    mg.Add(gr)
+    mg.Add(gr1)
+    mg.Add(gr2)
+    mg.Add(gr3)
+    mg.Add(gr4)
+    mg.Add(gr5)
+    #mg.Add(gr6)
+    #mg.Add(gr7)
+    #mg.Add(gr8)
+    #mg.Add(gr9)
+    mg.Fit("pol1", "FQ")
+
+    return mg
+
 def make_plot(df, Nb, knob):
     index = get_indices(df, Nb, knob)
     y_plot = array('d' , df['y'][index])

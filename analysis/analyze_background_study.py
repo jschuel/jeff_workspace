@@ -5,73 +5,31 @@ from os import sys
 
 day = sys.argv[1]
 ring = sys.argv[2]
-module_id = sys.argv[3]
 
 ROOT.gStyle.SetOptFit(1)
+ROOT.gStyle.SetLabelSize(.08, "XY")
 
-df = make_heuristic_dataframe(day,ring,module_id)
+c1 = ROOT.TCanvas("c1", "c1", 1024, 768)
+c1.Divide(2,4)
 
-gr = make_plot(df, 789, 0)
-gr.SetMarkerStyle(20)
-gr.SetMarkerColor(4)
+module_id = ["iiwi", "honu", "kohola", "nene", "tako", "humu", "palila", "elepaio"]
 
-gr1 = make_plot(df, 789, 1)
-gr1.SetMarkerStyle(20)
-gr1.SetMarkerColor(2)
+mg = []
 
-#gr2 = make_plot(df, 789, 2)
-#gr2.SetMarkerStyle(20)
-#gr2.SetMarkerColor(1)
-
-gr3 = make_plot(df, 789, -1)
-gr3.SetMarkerStyle(20)
-gr3.SetMarkerColor(2)
-
-#gr4 = make_plot(df, 789, -2)
-#gr4.SetMarkerStyle(20)
-#gr4.SetMarkerColor(1)
-
-gr5 = make_plot(df, 1576, 0)
-gr5.SetMarkerStyle(22)
-gr5.SetMarkerColor(64)
-
-gr6 = make_plot(df, 1576, 1)
-gr6.SetMarkerStyle(22)
-gr6.SetMarkerColor(96)
-
-#gr7 = make_plot(df, 1576, 2)
-#gr7.SetMarkerStyle(22)
-#gr7.SetMarkerColor(1)
-
-gr8 = make_plot(df, 1576, -1)
-gr8.SetMarkerStyle(22)
-gr8.SetMarkerColor(96)
-
-#gr9 = make_plot(df, 1576, -2)
-#gr9.SetMarkerStyle(22)
-#gr9.SetMarkerColor(1)
-
-mg = ROOT.TMultiGraph()
-mg.Add(gr)
-mg.Add(gr1)
-#mg.Add(gr2)
-mg.Add(gr3)
-#mg.Add(gr4)
-mg.Add(gr5)
-mg.Add(gr6)
-#mg.Add(gr7)
-mg.Add(gr8)
-#mg.Add(gr9)
-mg.Draw("AP")
-mg.Fit("pol1", "FQ")
-
-l = ROOT.TLegend(0.1,0.7,0.28,0.6)
-l.AddEntry(gr, "Knob 0, Nb = 789", "Ep")
-l.AddEntry(gr1, "Knob +/- 1, Nb = 789", "Ep")
-#l.AddEntry(gr2, "Knob +/- 2, Nb = 789", "Ep")
-l.AddEntry(gr5, "Knob 0, Nb = 1576", "Ep")
-l.AddEntry(gr6, "Knob +/- 1, Nb = 1576", "Ep")
-#l.AddEntry(gr7, "Knob +/- 2, Nb = 1576", "Ep")
-l.Draw()
+for i in range(0,len(module_id)):
+    mg.append(ROOT.TMultiGraph()) #Creates a MultiGraph object in the list
+    c1.cd(i+1)
+    df = make_heuristic_dataframe(day,ring,module_id[i])
+    mg[i] = make_multigraph(df)
+    if ring == "HER":
+        mg[i].GetXaxis().SetLimits(0,140e3)
+        mg[i].SetMinimum(0)
+        mg[i].SetMaximum(9000)
+    else:
+        mg[i].GetXaxis().SetLimits(0,50e3)
+        mg[i].SetMinimum(0)
+        mg[i].SetMaximum(7000)
+    mg[i].Draw("AP")
+    mg[i].Fit("pol1", "FQ")
 
 
