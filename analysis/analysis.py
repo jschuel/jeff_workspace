@@ -7,6 +7,47 @@ import ROOT
 import math
 from os import sys
 
+#bg_type = {Coulomb, Touschek, Brems}, ring = {LER,HER}, species = {He, C, O}
+def get_pressure_reweight_sim_rates(bg_type, ring, species):
+    
+    f = ROOT.TFile("/Users/vahsengrouplaptop/workspace/jeff_workspace/old/background_analyses/simulation_files/pressure_reweight/phase2.1.3_Touschek_tpc2d.root")
+
+    recoil_e = ROOT.TH2D(f.Get("%s_%s_%s"%(bg_type,ring,species)))
+    module_id = ['humu','tako','elepaio','palila','kohola','nene','iiwi','honu']
+    sim_rates = {}
+    for j in range(0,len(module_id)):
+        sim_rates[module_id[j]] = []
+    
+    for i in range(0,12):
+        for j in range (0,8):
+            sim_rates[module_id[j]].append(recoil_e.ProjectionY("tmp", j+1, j+1).GetBinContent(i+2))
+            
+    return sim_rates
+
+def get_sim_rates(bg_type, ring):
+    
+    f = ROOT.TFile("/Users/vahsengrouplaptop/data/phase2/phase2.1.3_simulation_files/%s_%s_all.root"%(bg_type,ring))
+    
+    if bg_type != "RBB":
+        if ring == "HER":
+            t = 0.4
+        else:
+            t = 0.2  
+    else:
+        t = 4.
+        
+    recoil_e = ROOT.TH2F(f.Get("h_mctpc_recoil_w"))
+    h_tpc_recoil = ROOT.TH1F("tpc_rate", "Recoil Rates", 8, -0.5, 7.5)
+    module_id = ['humu','tako','elepaio','palila','kohola','nene','iiwi','honu']
+    sim_rates = {}
+    
+    for i in range (0,8):
+        ht = ROOT.TH1D(recoil_e.ProjectionY("tmp",i+1,i+1))
+        sim_rates[module_id[i]] = ht.Integral(11,ht.GetXaxis().GetNbins()-1)/t
+        #h_tpc_recoil.SetBinContent(i+1, sim_rates[i])
+        
+    return sim_rates
+
 def make_multigraph(df):
     gr = make_plot(df, 789, 0)
     gr.SetMarkerStyle(20)
@@ -59,7 +100,7 @@ def make_multigraph(df):
     #mg.Add(gr7)
     #mg.Add(gr8)
     #mg.Add(gr9)
-    mg.Fit("pol1", "FQ")
+    #mg.Fit("pol1", "FQ")
 
     return mg
 
@@ -84,7 +125,7 @@ def get_indices(dataframe, Nb, knob):
 def make_heuristic_dataframe(day, ring, module_id):
     df = read_root('/Users/vahsengrouplaptop/data/phase2/combined_SKB_TPC_ntuples/June_%s_%s.root'%(day, ring))
 
-    bin_width = 120 #standard value
+    bin_width = 90 #standard value
     nbins = math.floor(len(df)/bin_width)
     Z= 2.3
 

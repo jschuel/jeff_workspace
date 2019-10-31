@@ -8,8 +8,8 @@ dates = ["11","12"] #11 is HER, 12 is LER study
 for i in dates:
     if i == "11":
         df = make_combined_dataframe(i, "HER")
-        df.to_root('/Users/vahsengrouplaptop/data/phase2/combined_SKB_TPC_ntuples/June_11_HER.root', key='data')
+        df.to_root('/Users/vahsengrouplaptop/data/phase2/combined_SKB_TPC_ntuples/June_11_HER_all_pressures.root', key='data')
     if i == "12":
         df = make_combined_dataframe(i, "LER")
-        df.to_root('/Users/vahsengrouplaptop/data/phase2/combined_SKB_TPC_ntuples/June_12_LER.root', key='data')
+        df.to_root('/Users/vahsengrouplaptop/data/phase2/combined_SKB_TPC_ntuples/June_12_LER_all_pressures.root', key='data')
 

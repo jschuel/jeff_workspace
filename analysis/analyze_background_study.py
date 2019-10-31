@@ -1,4 +1,4 @@
-### analysis package contains the make_plot(df, Nb, knob) function which generates heuristic plots. IT also includes make_heuristic_dataframe(day,ring,module_id) which is used to generate the dataframe that's passed into the analysis plots
+### analysis package contains the make_plot(df, Nb, knob) function which generates heuristic plots. IT also includes make_heuristic_dataframe(day,ring,module_id) which is used to generate the dataframe that's passed into the analysis plots. It also also includes get_sim_rates which provides simulated rates for various studies
 
 from analysis import *
 from os import sys
@@ -15,6 +15,29 @@ c1.Divide(2,4)
 module_id = ["iiwi", "honu", "kohola", "nene", "tako", "humu", "palila", "elepaio"]
 
 mg = []
+fit = {}
+data_rates = {} #extrapolated rates using B and T from data with simulation beam parameters
+data_rates_BG = {}
+data_rates_Touschek = {}
+
+if ring == "HER":
+    sim_params = {'I': 287, 'P': 1.3332e-7, 'sigy': 36, 'Nb': 789} #simulated parameters for extrapolations
+else:
+    sim_params = {'I': 341, 'P': 1.3332e-7, 'sigy': 38, 'Nb': 789}
+
+sim_rates_Coulomb = get_sim_rates("Coulomb", ring)
+sim_rates_Touschek = get_sim_rates("Touschek", ring)
+sim_rates_Brems = get_sim_rates("RBB", ring)
+sim_rates_BG = {}
+sim_rates = {}
+
+dataMC = {}
+dataMC_BG = {}
+dataMC_Touschek = {}
+
+for key in sim_rates_Coulomb.keys():
+    sim_rates_BG[key] = sim_rates_Brems[key] + sim_rates_Coulomb[key]
+    sim_rates[key] = sim_rates_Brems[key] + sim_rates_Coulomb[key] + sim_rates_Touschek[key]
 
 for i in range(0,len(module_id)):
     mg.append(ROOT.TMultiGraph()) #Creates a MultiGraph object in the list
@@ -30,6 +53,19 @@ for i in range(0,len(module_id)):
         mg[i].SetMinimum(0)
         mg[i].SetMaximum(7000)
     mg[i].Draw("AP")
-    mg[i].Fit("pol1", "FQ")
+    f = ROOT.TF1("f","pol1");
+    f.SetParLimits(1,0, 10);
+    fit[module_id[i]] = mg[i].Fit("f", "SFQ") #adds TPC keys for fit results. Par(0) is B and Par(1) is T
+    data_rates[module_id[i]] = fit[module_id[i]].Parameter(0)*sim_params['I']*sim_params['P']*7**2 +  fit[module_id[i]].Parameter(1)*sim_params['I']**2/(sim_params['sigy']*sim_params['Nb'])
+    data_rates_BG[module_id[i]] = fit[module_id[i]].Parameter(0)*sim_params['I']*sim_params['P']*7**2
+    data_rates_Touschek[module_id[i]] = fit[module_id[i]].Parameter(1)*sim_params['I']**2/(sim_params['sigy']*sim_params['Nb'])
+    dataMC[module_id[i]] = data_rates[module_id[i]]/sim_rates[module_id[i]]
+    dataMC_BG[module_id[i]] = data_rates_BG[module_id[i]]/sim_rates_BG[module_id[i]]
+    dataMC_Touschek[module_id[i]] = data_rates_Touschek[module_id[i]]/sim_rates_Touschek[module_id[i]]
+    c1.Update()
+
+
+
+
 
 

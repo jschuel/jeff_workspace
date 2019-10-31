@@ -65,7 +65,7 @@ def make_TPC_dataframe(date, ring, module_id):
 
 ##Make dataframe of SKB variables relevant for study
 def make_SKB_dataframe(date):
-    df_SKB = read_root("/Users/vahsengrouplaptop/data/phase2/SKB_data/SKB_processed_2018-06-%s_full_range.root"%(date))
+    df_SKB = read_root("/Users/vahsengrouplaptop/data/phase2/SKB_data/SKB_processed_2018-06-%s_all_pressures.root"%(date))
     df_SKB = df_SKB.sort_values(by = ['ts']) #order by ascending timestamp
     df_SKB.index = [i for i in range(0,len(df_SKB))]
     return df_SKB
