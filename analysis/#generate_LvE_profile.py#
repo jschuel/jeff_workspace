@@ -4,10 +4,10 @@ import pandas as pd
 import ROOT
 from os import sys
 
-ROOT.gStyle.SetLabelSize(.1, "XY")
-ROOT.gStyle.SetTitleSize(.1, "XY")
-#ROOT.gStyle.SetTitleOffset(0.6, "Y")
-#ROOT.gStyle.SetTitleOffset(0.75, "X")
+xROOT.gStyle.SetLabelSize(.07, "XY")
+ROOT.gStyle.SetTitleSize(.07, "XY")
+ROOT.gStyle.SetTitleOffset(0.6, "Y")
+ROOT.gStyle.SetTitleOffset(0.75, "X")
 
 def get_parameters(module_id):
     ch = ROOT.TChain("tracks")
@@ -36,7 +36,7 @@ profile = []
 for i in range(0,len(module_id)):
     c1.cd(i+1)
     profile.append(ROOT.TProfile("profile", "%s"%(positions[i]), 41, 0, 8000, 0 , 40000))
-    ROOT.gStyle.SetTitleFontSize(0.1)
+    ROOT.gStyle.SetTitleFontSize(0.08)
     E, L = get_parameters(module_id[i])
     for j in range(0,len(E)):
         profile[i].Fill(E[j],L[j])
@@ -44,8 +44,8 @@ for i in range(0,len(module_id)):
     profile[i].SetMarkerStyle(20)
     profile[i].SetMarkerSize(0.5)
     profile[i].SetLineWidth(2)
-    #profile[i].SetXTitle("E (keV)")
-    #profile[i].SetYTitle("Length (um)")
+    profile[i].SetXTitle("E (keV)")
+    profile[i].SetYTitle("Length (um)")
     profile[i].SetMaximum(40000)
     profile[i].SetMinimum(0)
     profile[i].Draw()

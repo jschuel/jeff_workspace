@@ -1,0 +1,45 @@
+from root_pandas import read_root
+import numpy as np
+import pandas as pd
+import ROOT
+import array
+from os import sys
+
+ROOT.gStyle.SetLabelSize(.06, "XY")
+ROOT.gStyle.SetTitleSize(.06, "XY")
+ROOT.gStyle.SetTitleOffset(0.75, "Y")
+ROOT.gStyle.SetTitleOffset(0.85, "X")
+
+def get_parameters(module_id):
+    ch = ROOT.TChain("tracks")
+    ch.Add("/Users/vahsengrouplaptop/data/phase2/background_studies/6-11_HER/tpc_tools_processed/separated_ntuples/whole_study_separated_%s.root"%(module_id))
+    neutron = ROOT.TCut("recoil_energy < (0.25*length-75) && recoil_energy > (0.0411764*length-64.688)  && recoil_energy > 100 && hitside_top == 0 && hitside_bottom == 0 && hitside_source == 0 && hitside_antisource == 0 && num_clusters == 1")
+    ch.Draw("length:recoil_energy", neutron, "goff")
+    #ch.Draw("length:recoil_energy", "hitside_top == 0 && hitside_bottom == 0 && hitside_source == 0 && hitside_antisource == 0", "goff")
+    e = ch.GetV2()
+    l = ch.GetV1()
+    n = ch.GetSelectedRows()
+    energy = array.array('d', [e[i] for i in range(0,n)])
+    length = array.array('d', [l[i] for i in range(0,n)])
+    return energy, length
+
+module_id_bwd = ["iiwi", "honu", "kohola", "nene"]
+module_id_fwd = ["tako", "humu", "palila", "elepaio"]
+gr_bwd = []
+gr_fwd = []
+mg = ROOT.TMultiGraph()
+for i in range(0,len(module_id_bwd)):
+    energy_bwd, length_bwd = get_parameters(module_id_bwd[i])
+    gr_bwd.append(ROOT.TGraph(len(energy_bwd), energy_bwd, length_bwd))
+    gr_bwd[i].SetMarkerStyle(20)
+    gr_bwd[i].SetMarkerSize(0.1)
+    gr_bwd[i].SetMarkerColor(4)
+    energy_fwd, length_fwd = get_parameters(module_id_fwd[i])
+    gr_fwd.append(ROOT.TGraph(len(energy_fwd), energy_fwd, length_fwd))
+    gr_fwd[i].SetMarkerStyle(20)
+    gr_fwd[i].SetMarkerSize(0.1)
+    gr_fwd[i].SetMarkerColor(6)
+    mg.Add(gr_bwd[i])
+    mg.Add(gr_fwd[i])
+mg.Draw("AP")
+

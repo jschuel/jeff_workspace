@@ -101,7 +101,13 @@ def make_multigraph(df):
     #mg.Add(gr8)
     #mg.Add(gr9)
     #mg.Fit("pol1", "FQ")
-
+    '''
+    l = ROOT.TLegend(0.1,0.7,0.28,0.6)
+    l.AddEntry(gr, "789 bunches, knob 0", "p")
+    l.AddEntry(gr1, "789 bunches knob +/- 1", "p")
+    l.AddEntry(gr3, "1576 bunches, knob 0", "p")
+    l.AddEntry(gr4, "1576 bunches knob +/- 1", "p")
+    '''
     return mg
 
 def make_plot(df, Nb, knob):

@@ -3,6 +3,8 @@
 from analysis import *
 from os import sys
 
+ROOT.gStyle.SetLabelSize(.08, "XY")
+
 day = sys.argv[1]
 ring = sys.argv[2]
 
