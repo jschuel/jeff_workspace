@@ -9,15 +9,15 @@ import pandas as pd
 import ROOT
 import array
 from os import sys
-from make_combined_ntuple import make_ntuple #custom module for creating these ntuples
-from make_combined_ntuple import get_study_indices
+from make_combined_ntuple_module import make_ntuple #custom module for creating these ntuples
+from make_combined_ntuple_module import get_study_indices
 
 month = sys.argv[1] #month of study
 day = sys.argv[2] #day of study
 ring = sys.argv[3] #Choose LER, HER, or LUMI, as appropriate
 
 SKB_input = "/Users/vahsengrouplaptop/data/phase3/PVM/Dec_7_%s_updated.root"%(ring) #input file with SKB parameters
-module_id = ["tako", "palila", "elepaio"] #Edit these for which TPCs you'd like included in the ntuple
+module_id = ["tako", "palila", "elepaio", "iiwi", "nene", "humu"] #Edit these for which TPCs you'd like included in the ntuple
 tpc_input = {} #MUST BE A DICTIONARY WITH MODULE_IDs AS KEYS
 for module in module_id:
     tpc_input[module] = "/Users/vahsengrouplaptop/data/phase3/phase3_background_root/tpc_tools/%s_%s_%s_phase3.root"%(month, day, module)
