@@ -1,0 +1,38 @@
+import ROOT
+import array
+import numpy as np
+import pandas as pd
+from make_base_ntuple import make_ntuple
+import sys
+'''
+module_id = sys.argv[1]
+run_num = sys.argv[2]
+ring = sys.argv[3] #choose LER or HER
+
+if ring=="HER":
+    f_input = '/Users/vahsengrouplaptop/data/phase2/background_studies/h5_files/6-11_HER/%s/%s_%s_stop_mode_ext_trigger_scan_interpreted.h5'%(module_id,run_num, module_id)
+    f_output = 'output_ntuples/6-11_HER/%s_%s.root'%(module_id, run_num)
+else:
+    f_input = '/Users/vahsengrouplaptop/data/phase2/background_studies/h5_files/6-12_LER/%s/%s_%s_stop_mode_ext_trigger_scan_interpreted.h5'%(module_id,run_num, module_id)
+    f_output = 'output_ntuples/6-12_LER/%s_%s.root'%(module_id, run_num)
+
+print("Converting %s to root file to be input to TPC_tools" % f_input)
+'''
+
+side = sys.argv[1]
+if side == "FWD":
+    TPCs = ["nene","humu", "iiwi"]
+    #run_num=[2940,2941,2942,2943,2944,2945,2946,2947,2963,2964,2965,2966,2967,2968,2969,2970,3012,3013,3014,3015,3016,3017,3018]
+    run_num = [i for i in range(24740,24749)] + [i for i in range(24827,24890)]
+if side == "BWD":
+    TPCs = ["elepaio", "palila", "tako"]
+    #run_num=[1554,1555,1556,1557,1558,1559,1560,1578,1579,1580,1581,1582,1583,1627,1628,1629,1630,1631,1632]
+    run_num = [343,344,345,346]
+for tpc in TPCs:
+    for run in run_num:
+        f_input = '/Users/vahsengrouplaptop/data/phase3/phase3_background_h5/dec7_fwd/%s_%s_stop_mode_ext_trigger_scan_interpreted.h5'%(run, tpc) 
+        f_output = '/Users/vahsengrouplaptop/data/phase3/phase3_background_root/dec7_fwd/%s_%s.root'%(run, tpc)
+        make_ntuple(f_input, f_output)
+
+
+
