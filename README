@@ -1,3 +1,6 @@
 This directory contains data processing and analysis tools for analyzing TPC and SKB data from beam background studies.
 
-Data processing steps can be found the in the calibration and the analysis directories.
+Data processing steps can be found the in the data_processing directory.
+Analysis code is found in the analysis directory.
+
+Each sub-directory includes more detailed README files

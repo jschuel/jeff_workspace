@@ -1,0 +1,5 @@
+This directory contains tools for generating usable ntuples from h5 files that are generated when completing a TPC scan.
+
+General use case:
+1. python3 generate_ntuples.py
+
