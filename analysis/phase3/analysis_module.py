@@ -1,0 +1,86 @@
+'''Module generates variables for performing single beam background studies'''
+
+import root_pandas as rp
+import pandas as pd
+import ROOT
+import math
+import numpy as np
+import matplotlib.pyplot as plt
+import array
+
+def make_heuristic_plots(df, module_ids):
+    f_lin = ROOT.TF1("f_lin", "[0]+[1]*x" )
+    tpc_dfs = {}
+    gr = {}
+    fit = {}
+    for module in module_ids:
+        tpc_dfs[module]=pd.DataFrame()
+        tpc_dfs[module]['heuristic']= df[module+'_heuristic']
+        tpc_dfs[module]['heuristic_err'] =  df[module+'_heuristic_err']
+        tpc_dfs[module]['x'] =  df['x']
+        tpc_dfs[module]['x_err'] =  df['x_err']
+        tpc_dfs[module] = tpc_dfs[module].loc[tpc_dfs[module]['heuristic']!=0]
+        tpc_dfs[module].index=[i for i in range(0,len(tpc_dfs[module]))]
+        x = array.array('d', tpc_dfs[module]['x'].to_numpy())
+        y = array.array('d', tpc_dfs[module]['heuristic'].to_numpy())
+        x_err = array.array('d', tpc_dfs[module]['x_err'].to_numpy())
+        y_err = array.array('d', tpc_dfs[module]['heuristic_err'].to_numpy())
+        gr[module] =  ROOT.TGraphErrors(len(x), x, y, x_err , y_err)
+        fit[module] = gr[module].Fit("f_lin", "S")
+        gr[module].SetTitle("%s"%(module))
+        gr[module].SetMarkerStyle(20)
+    return gr
+
+def extract_variables(df, module_ids, ring, bin_width): #module_ids is a list of TPCs to include in study
+    df = df.loc[df['Storage_Flag']==1]
+    df.index = [i for i in range(0,len(df))]
+    bin_dfs = split(df,bin_width) #splits dataframe into chunks of len(bin_width)
+    heuristic_df = pd.DataFrame()
+    ts = [Bin['ts'].mean() for Bin in bin_dfs]
+    dts = [Bin['ts'].std()/math.sqrt(len(Bin)) for Bin in bin_dfs]
+    I = [Bin['SKB_%s_current'%(ring)].mean() for Bin in bin_dfs]
+    dI = [Bin['SKB_%s_current'%(ring)].std()/math.sqrt(len(Bin)) for Bin in bin_dfs]
+    P = [Bin['SKB_%s_P_avg'%(ring)].mean() for Bin in bin_dfs]
+    dP = [Bin['SKB_%s_P_avg'%(ring)].std()/math.sqrt(len(Bin)) for Bin in bin_dfs]
+    sy = [Bin['SKB_%s_XRAY_SIGMAY'%(ring)].mean() for Bin in bin_dfs]
+    dsy = [Bin['SKB_%s_XRAY_SIGMAY'%(ring)].std()/math.sqrt(len(Bin)) for Bin in bin_dfs]
+    Nb = [Bin['SKB_%s_NOB'%(ring)].mean() for Bin in bin_dfs]
+    dNb = [Bin['SKB_%s_NOB'%(ring)].std()/math.sqrt(len(Bin)) for Bin in bin_dfs]
+    tpc = {}
+    heuristic_df['ts'] = ts
+    heuristic_df['dts'] = dts
+    heuristic_df['I'] = I
+    heuristic_df['dI'] = dI
+    heuristic_df['P'] = P
+    heuristic_df['dP'] = dP
+    heuristic_df['sy'] = sy
+    heuristic_df['dsy'] = dsy
+    heuristic_df['Nb'] = Nb
+    heuristic_df['dNb'] = dNb
+    for module in module_ids:
+        tpc[module+'_mean']=[Bin['%s_neutrons'%(module)].mean() for Bin in bin_dfs]
+        tpc[module+'_err']=[Bin['%s_neutrons'%(module)].std()/math.sqrt(len(Bin)) for Bin in bin_dfs]
+        heuristic_df[module+'_mean'] = tpc[module+'_mean']
+        heuristic_df[module+'_err'] = tpc[module+'_err']
+        heuristic_df[module+'_heuristic'] = heuristic_df[module+'_mean']/(heuristic_df['I']*heuristic_df['P']*2.3**2) #2.3 is Z_eff
+        heuristic_df[module+'_heuristic_err']=[0 for i in range(0,len(heuristic_df))] #make errors 0 and repopulate
+        for i in range(0,len(heuristic_df)):
+            if heuristic_df[module+'_heuristic'][i] == 0:
+                heuristic_df[module+'_heuristic_err'][i] = 0
+            else:
+                heuristic_df[module+'_heuristic_err'][i] = heuristic_df[module+'_heuristic'][i]*math.sqrt((heuristic_df[module+'_err'][i]/heuristic_df[module+'_mean'][i])**2 + (heuristic_df['dI'][i]/heuristic_df['I'][i])**2+(heuristic_df['dP'][i]/heuristic_df['P'][i])**2)
+    heuristic_df['x']=heuristic_df['I']/(heuristic_df['P']*heuristic_df['sy']*heuristic_df['Nb']*2.3**2)
+    heuristic_df['x_err']=[0 for i in range(0,len(heuristic_df))] #make errors 0 and repopulate
+    for i in range(0,len(heuristic_df)):
+            if heuristic_df['x'][i] == 0:
+                heuristic_df['x_err'][i] = 0
+            else:
+                heuristic_df['x_err'][i]=heuristic_df['x'][i]*math.sqrt((heuristic_df['dI'][i]/heuristic_df['I'][i])**2+(heuristic_df['dP'][i]/heuristic_df['P'][i])**2+(heuristic_df['dsy'][i]/heuristic_df['sy'][i])**2+(heuristic_df['dNb'][i]/heuristic_df['Nb'][i])**2)
+    return heuristic_df
+        
+def split(dfm, bin_width): #splits dataframe into chunks of len(bin_width)
+    indices = index_marks(dfm.shape[0], bin_width)
+    return np.split(dfm, indices)
+
+def index_marks(nrows, bin_width): #Comes up with index range to use np.split to split dataframe
+    return range(bin_width, math.ceil(nrows / bin_width) * bin_width, bin_width)
