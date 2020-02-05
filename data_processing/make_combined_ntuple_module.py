@@ -68,7 +68,8 @@ def merge_TPC_rates_with_SKB(df_TPC, ts_range):
 ##Make TPC dataframe
 def make_TPC_dataframe(tpc_input, module_id): #tpc_input is a dictionary of files with module_id's as keys
     df_TPC = read_root(tpc_input[module_id], "tracks")
-    df_TPC_neutron = df_TPC.iloc[df_TPC.loc[(df_TPC.recoil_energy < (0.25*df_TPC.length-75)) & (df_TPC.recoil_energy > (0.0411764*df_TPC.length-64.688)) & (df_TPC.recoil_energy > 100)].index] #dataframe for TPC nuclear recoils
+    df_TPC['recoil_energy'] = df_TPC['recoil_energy']/1000
+    df_TPC_neutron = df_TPC.iloc[df_TPC.loc[(df_TPC.recoil_energy < (0.5*df_TPC.length-75)) & (df_TPC.recoil_energy > (0.0411764*df_TPC.length-64.688)) & (df_TPC.recoil_energy > 100) & (df_TPC.hitside_top == 0) & (df_TPC.hitside_bottom == 0) & (df_TPC.hitside_source == 0) & (df_TPC.hitside_antisource == 0)].index] #dataframe for TPC nuclear recoils
     return df_TPC_neutron
 
 ##Make dataframe of SKB variables relevant for study
@@ -97,4 +98,6 @@ def get_study_indices(month,day,ring):
             study_indices = [i for i in range(280,2190)] + [i for i in range(3920,5425)] + [i for i in range(6850,7665)] + [i for i in range(8345,8675)] + [i for i in range(9090,9420)] + [i for i in range(9820,10180)] + [i for i in range(10600,11040)] + [i for i in range(11600,13180)] + [i for i in range(13440,13810)] + [i for i in range(13960,14440)] + [i for i in range(14975,15185)] + [i for i in range(15360,15580)] + [i for i in range(15745,16050)] + [i for i in range(16775,18110)] + [i for i in range(18540,19610)] + [i for i in range(19980,21150)]
         if ring == "HER":
             study_indices = [i for i in range(580,2510)] + [i for i in range(3465,4930)] + [i for i in range(5560,7390)] + [i for i in range(8000,10030)] + [i for i in range(10375,12115)] + [i for i in range(14100,16075)] + [i for i in range(16700,18670)] + [i for i in range(22680,25354)]
+        if ring =="LUMI":
+            study_indices = [i for i in range(0,23405)]
     return study_indices

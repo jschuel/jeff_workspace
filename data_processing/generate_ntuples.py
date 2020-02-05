@@ -16,10 +16,12 @@ sides = ["FWD", "BWD"]
 for side in sides:
     if side == "FWD":
         TPCs = ["nene","humu","iiwi"]
-        run_num = [i for i in range(24740,24749)] + [i for i in range(24827,24890)] #for dec 7th study
+        #run_num = [i for i in range(24740,24749)] + [i for i in range(24827,24890)] #for dec 7th study
+        run_num = [i for i in range(34745,34820)]
     if side == "BWD":
         TPCs = ["elepaio", "palila", "tako"]
-        run_num = [343,344,345,346] #for dec 7th study
+        #run_num = [343,344,345,346] #for dec 7th study
+        run_num = [348,349,350] #for dec 8th study
     for tpc in TPCs:
         for run in run_num:
             f_input = '/Users/vahsengrouplaptop/data/phase3/phase3_background_h5/%s_%s/%s_%s_stop_mode_ext_trigger_scan_interpreted.h5'%(month, day, run, tpc) 
