@@ -1,0 +1,75 @@
+import root_pandas as rp
+import pandas as pd
+import ROOT
+import math
+import numpy as np
+import matplotlib.pyplot as plt
+from analysis_module import extract_variables
+from analysis_module import make_heuristic_plots
+from os import sys
+
+month = sys.argv[1]
+day = sys.argv[2]
+ring = sys.argv[3]
+
+input_file = '/Users/vahsengrouplaptop/data/phase3/combined_SKB_TPC_ntuples/%s_%s_%s_study_new.root'%(month, day, ring)
+
+if ring == "LER":
+    module_ids = ["palila", "iiwi", "tako", "nene", "elepaio", "humu"]
+else:
+    module_ids = ["palila", "tako", "elepaio"]
+    
+bin_width = 240
+
+df_input = rp.read_root(input_file) #gives dataframe to pass into extract_variables
+
+df = extract_variables(df_input, module_ids, ring, bin_width) #gives dataframe that's computed averages over bin_width slices of input df. Variables can be directly passed into combined heuristic for analysis
+
+mg, legend, fit_params = make_heuristic_plots(df, module_ids)
+
+
+c1 = ROOT.TCanvas('c1','c1',800,600)
+if ring == "LER":
+    c1.Divide(2,3)
+else:
+    c1.Divide(1,3)
+    
+for i in range(0,len(module_ids)):
+    c1.cd(i+1)
+    mg[module_ids[i]].Draw("AP")
+    legend[module_ids[i]].Draw()
+
+def plot_fit(module_id,ring):
+    bg_fit = df_input['SKB_%s_current'%(ring)]*df_input['SKB_%s_P_avg'%(ring)]*2.3**2*fit_params['%s'%(module_id)].Parameter(0)
+    T_fit = df_input['SKB_%s_current'%(ring)]**2*fit_params['%s'%(module_id)].Parameter(1)/(df_input['SKB_%s_XRAY_SIGMAY'%(ring)]*df_input['SKB_%s_NOB'%(ring)])
+    if module_id == "iiwi":
+        scale = 300
+    elif (module_id == "humu" or module_id == "nene"):
+        scale = 1000
+    else:
+        scale = 4000
+    if ring == "LER":
+        plt.plot(df_input['ts'],df_input['SKB_%s_current'%(ring)]+100,'o',label='%s_current'%(ring),markersize=1,color='red')
+        plt.plot(df_input['ts'],bg_fit*scale,'o',label='Beam-gas_fit',markersize=1,color='cyan')
+        plt.plot(df_input['ts'],T_fit*scale,'o',label='Touschek_fit',markersize=1,color='yellow')
+        plt.plot(df_input['ts'],(bg_fit+T_fit)*scale,'o',label='combined_fit',markersize=1,color='silver')
+        plt.plot(df['ts'],df['%s_mean'%(module_id)]*scale,'x',label='data (%ss avg)'%(bin_width),color='black')
+    else:
+        plt.plot(df_input['ts'],df_input['SKB_%s_current'%(ring)]+100,'o',label='%s_current'%(ring),markersize=1,color='blue')
+        plt.plot(df_input['ts'],bg_fit*scale,'o',label='Beam-gas_fit',markersize=1,color='magenta')
+        plt.plot(df_input['ts'],T_fit*scale,'o',label='Touschek_fit',markersize=1,color='darkblue')
+        plt.plot(df_input['ts'],(bg_fit+T_fit)*scale,'o',label='combined_fit',markersize=1,color='silver')
+        plt.plot(df['ts'],df['%s_mean'%(module_id)]*scale,'x',label='data (%ss avg)'%(bin_width),color='black')
+    plt.legend()
+    plt.show()
+
+def extrapolate(module_id,ring): #improve later on
+    if ring == "LER":
+        bg_fit = 1200*133.3e-9*2.3**2*fit_params['%s'%(module_id)].Parameter(0)
+        T_fit = 1200**2*fit_params['%s'%(module_id)].Parameter(1)/(38*1576)
+    else:
+        bg_fit = 1000*133.3e-9*2.3**2*fit_params['%s'%(module_id)].Parameter(0)
+        T_fit = 1000**2*fit_params['%s'%(module_id)].Parameter(1)/(36*1576)
+
+    print("Extrapolated %s Beam-gas = %s"%(ring, bg_fit))
+    print("Extrapolated %s Touschek = %s"%(ring, T_fit))
