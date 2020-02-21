@@ -1,0 +1,6 @@
+def f(df):
+         keys, values = df.sort_values('event_number').values.T
+         ukeys, index = np.unique(keys, True)
+         arrays = np.split(values, index[1:])
+         df2 = pd.DataFrame({'event_number':ukeys, 'column':[list(event_number) for a in arrays]})
+         return df2

@@ -1,0 +1,9 @@
+df2 = pd.DataFrame({'a': np.random.randint(0, 60, 600), 'b': [1, 2, 5, 5, 4, 6]*100})
+
+def f(df,col):
+         keys, values = df.sort_values('event_number').values.T
+         ukeys, index = np.unique(keys, True)
+         arrays = np.split(values, index[1:])
+	 print(arrays)
+         df2 = pd.DataFrame({'event_number':ukeys, '%s'%(col):[list(a) for a in arrays]})
+         return df2
