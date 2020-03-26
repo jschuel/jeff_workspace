@@ -11,14 +11,18 @@ ROOT.gStyle.SetTitleOffset(0.75, "Y")
 ROOT.gStyle.SetTitleOffset(0.85, "X")
 
 def get_parameters(module_id):
-    ch = ROOT.TChain("tracks")
-    neutrons = ROOT.TChain("tracks")
-    #ch.Add("/Users/vahsengrouplaptop/data/phase2/background_studies/6-11_HER/tpc_tools_processed/separated_ntuples/whole_study_separated_%s.root"%(module_id))
-    ch.Add("/Users/vahsengrouplaptop/data/phase3/phase3_background_root/tpc_tools/Dec_7_%s_phase3.root"%(module_id))
-    neutrons.Add("/Users/vahsengrouplaptop/data/phase3/phase3_background_root/tpc_tools/Dec_7_%s_phase3.root"%(module_id))
-    neutron = ROOT.TCut("(recoil_energy/1000) < (0.5*length-75) && (recoil_energy/1000) > (0.0411764*length-64.688)  && (recoil_energy/1000) > 100 && hitside_top == 0 && hitside_bottom == 0 && hitside_source == 0 && hitside_antisource == 0 && num_clusters == 1")
-    neutrons.Draw("length:(recoil_energy/1000)", neutron, "goff")
-    ch.Draw("length:(recoil_energy/1000)", "hitside_top == 0 && hitside_bottom == 0 && hitside_source == 0 && hitside_antisource == 0", "goff")
+    ch = ROOT.TChain("data")
+    neutrons = ROOT.TChain("data")
+    ch.Add("/Users/vahsengrouplaptop/data/phase2/background_studies/7-12_lumi/%s_all.root"%(module_id))
+    neutrons.Add("/Users/vahsengrouplaptop/data/phase2/background_studies/7-12_lumi/%s_all.root"%(module_id))
+    neutron = ROOT.TCut("track_energy < (0.5*length-75) && track_energy > (0.04*length-65)  && track_energy > 98.375 && hitside_col_min == 0 && hitside_col_max == 0 && hitside_row_min == 0 && hitside_row_max == 0")
+    neutrons.Draw("length:track_energy", neutron, "goff")                                                                                                                                        
+    ch.Draw("length:track_energy", "hitside_col_min == 0 && hitside_row_min == 0 && hitside_col_max == 0 && hitside_row_max == 0", "goff")
+    #ch.Add("/Users/vahsengrouplaptop/data/phase3/phase3_background_root/tpc_tools/Dec_7_%s_phase3.root"%(module_id))
+    #neutrons.Add("/Users/vahsengrouplaptop/data/phase3/phase3_background_root/tpc_tools/Dec_7_%s_phase3.root"%(module_id))
+    #neutron = ROOT.TCut("(recoil_energy/1000) < (0.5*length-75) && (recoil_energy/1000) > (0.0411764*length-64.688)  && (recoil_energy/1000) > 100 && hitside_top == 0 && hitside_bottom == 0 && hitside_source == 0 && hitside_antisource == 0 && num_clusters == 1")
+    #neutrons.Draw("length:(recoil_energy/1000)", neutron, "goff")
+    #ch.Draw("length:(recoil_energy/1000)", "hitside_top == 0 && hitside_bottom == 0 && hitside_source == 0 && hitside_antisource == 0", "goff")
     e = ch.GetV2()
     l = ch.GetV1()
     n = ch.GetSelectedRows()
@@ -31,8 +35,10 @@ def get_parameters(module_id):
     neutron_length = array.array('d', [l_n[i] for i in range(0,n_n)])
     return energy, length, neutron_energy, neutron_length
 
-module_id_bwd = ["tako", "palila", "elepaio"]
-module_id_fwd = ["iiwi", "humu", "nene"]
+#module_id_bwd = ["tako", "palila", "elepaio"]
+#module_id_fwd = ["iiwi", "humu", "nene"]
+module_id_bwd = ["iiwi", "honu", "kohola", "nene"]
+module_id_fwd = ["tako", "humu", "palila", "elepaio"]
 gr_bwd = []
 gr_neutron_bwd = []
 gr_fwd = []
