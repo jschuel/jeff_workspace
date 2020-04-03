@@ -1,0 +1,239 @@
+import root_pandas as rp
+import pandas as pd
+import ROOT
+import math
+import numpy as np
+import matplotlib.pyplot as plt
+from analysis_module import extract_variables
+from analysis_module import make_heuristic_plots
+from analysis_module import get_sim_rates
+from os import sys
+
+#day = sys.argv[1]
+#ring = sys.argv[2]
+
+'''
+c1 = ROOT.TCanvas('c1','c1',800,600)
+if len(module_ids) >= 4:
+    c1.Divide(2,int(len(module_ids)/2))
+else:
+    c1.Divide(1,int(len(module_ids)))
+    
+for i in range(0,len(module_ids)):
+    c1.cd(i+1)
+    mg[module_ids[i]].Draw("AP")
+    legend[module_ids[i]].Draw()
+'''
+
+def create_stack1(day, ring):
+    stack = ROOT.THStack("","")
+    hs, params = create_histograms(day, ring)
+    for key in hs.keys():
+        hs[key].SetLineWidth(6)
+    hs['sim_rates'].SetLineStyle(9)
+    hs['sim_rates_BG'].SetLineStyle(9)
+    hs['sim_rates_T'].SetLineStyle(9)
+    hs['sim_rates'].SetLineColor(1)
+    hs['data_rates'].SetLineColor(1)
+    hs['sim_rates_BG'].SetLineColor(6)
+    hs['data_rates_BG'].SetLineColor(6)
+    hs['sim_rates_T'].SetLineColor(7)
+    hs['data_rates_T'].SetLineColor(7)
+    stack.Add(hs['data_rates'])
+    stack.Add(hs['sim_rates'])
+    stack.Add(hs['data_rates_BG'])
+    stack.Add(hs['sim_rates_BG'])
+    stack.Add(hs['data_rates_T'])
+    stack.Add(hs['sim_rates_T'])
+    #stack.Draw("nostack")
+    l = ROOT.TLegend(0.1,0.7,0.48,0.9)
+    l.AddEntry(hs['data_rates'], "Total Data", "l")
+    l.AddEntry(hs['data_rates_BG'], "Beam-Gas Data", "l")
+    l.AddEntry(hs['data_rates_T'], "Touschek Data", "l")
+    l.AddEntry(hs['sim_rates'], "Total MC", "l")
+    l.AddEntry(hs['sim_rates_BG'], "Beam-Gas MC", "l")
+    l.AddEntry(hs['sim_rates_T'], "Touschek MC", "l")
+    #l.Draw()
+    return stack, l
+
+def create_stack2(day, ring):
+    stack = ROOT.THStack("","")
+    hs, params = create_histograms(day, ring)
+    for key in hs.keys():
+        hs[key].SetLineWidth(0)
+    #hs['sim_rates'].SetLineStyle(9)
+    #hs['sim_rates_BG'].SetLineStyle(9)
+    #hs['sim_rates_T'].SetLineStyle(9)
+    #hs['sim_rates'].SetLineColor(1)
+    hs['sim_rates'].SetFillColorAlpha(3, 1)
+    hs['sim_rates'].SetFillStyle(3144)
+    #hs['data_rates'].SetLineColor(1)
+    hs['data_rates'].SetFillColor(3)
+    if day == 11:
+        for key in ['data_rates', 'data_rates_BG', 'data_rates_T']:
+            for i in range(1,9):
+                hs[key].SetBinContent(i, hs[key].GetBinContent(i)/params['dataMC'][[i for i in params[key].keys()][i-1]])
+    #hs['sim_rates_BG'].SetLineColor(6)
+    hs['sim_rates_BG'].SetFillColorAlpha(6, 1)
+    hs['sim_rates_BG'].SetFillStyle(3144)
+    #hs['data_rates_BG'].SetLineColor(6)
+    hs['data_rates_BG'].SetFillColor(6)
+    #hs['sim_rates_T'].SetLineColor(7)
+    hs['sim_rates_T'].SetFillColorAlpha(4, 1)
+    hs['sim_rates_T'].SetFillStyle(3144)
+    #hs['data_rates_T'].SetLineColor(7)
+    hs['data_rates_T'].SetFillColor(4)
+    #stack.Add(hs['data_rates'])
+    #stack.Add(hs['sim_rates'])
+    stack.Add(hs['sim_rates_T'])
+    stack.Add(hs['sim_rates_BG'])
+    stack.Add(hs['sim_rates'])
+    stack.Add(hs['data_rates_T'])
+    stack.Add(hs['data_rates_BG'])
+    stack.Add(hs['data_rates'])
+    #stack.Draw("nostack")
+    l = ROOT.TLegend(0.1,0.7,0.48,0.9)
+    l.AddEntry(hs['data_rates'], "Total Data")
+    l.AddEntry(hs['data_rates_BG'], "Beam-Gas Data")
+    l.AddEntry(hs['data_rates_T'], "Touschek Data")
+    l.AddEntry(hs['sim_rates'], "Total MC")
+    l.AddEntry(hs['sim_rates_BG'], "Beam-Gas MC")
+    l.AddEntry(hs['sim_rates_T'], "Touschek MC")
+    #l.Draw()
+    return stack, l
+
+def create_histograms(day, ring):
+    tpcs = ["kohola", "nene", "iiwi", "honu", "humu", "tako", "elepaio", "palila"]
+    phis = ["BWD 18", "BWD 90", "BWD 198", "BWD 270", "FWD 22", "FWD 90", "FWD 202", "FWD 270"]
+    params = get_fit_params(day, ring)
+    hists = {}
+    xs = [i for i in range(1,9)]
+    for key in params.keys():
+        if key != "mg":
+            hists[key] = ROOT.TH1F("", "", 8, -0.5, 7.5)
+            for i in range(0,8):
+                hists[key].SetBinContent(xs[i], params[key][tpcs[i]])
+                if key == "data_err":
+                    hists["data_rates"].SetBinError(xs[i], params[key][tpcs[i]])
+                if key == "data_BG_err":
+                    hists["data_rates_BG"].SetBinError(xs[i], params[key][tpcs[i]])
+                if key == "data_T_err":
+                    hists["data_rates_T"].SetBinError(xs[i], params[key][tpcs[i]])
+                hists[key].GetXaxis().SetBinLabel(i+1, phis[i])
+            hists[key].SetMinimum(8e-3)
+            hists[key].SetMaximum(35)
+    return hists, params
+
+def get_fit_params(day, ring):
+    input_file = '/Users/vahsengrouplaptop/data/phase2/combined_SKB_TPC_ntuples/June_%s_study.root'%(day)
+    module_ids = ["iiwi", "honu", "kohola", "nene", "tako", "humu", "palila", "elepaio"]
+    bin_width = 180
+    df_input = rp.read_root(input_file) #gives dataframe to pass into extract_variables
+    df = extract_variables(df_input, module_ids, ring, bin_width) #gives dataframe that's computed averages over bin_width slices of input df. Variables can be directly passed into combined heuristic for analysis
+    mg, legend, fit_params = make_heuristic_plots(df, module_ids, ring)
+
+    data_rates = {} #extrapolated rates using B and T from data with simulation beam parameters
+    data_rates_BG = {}
+    data_rates_Touschek = {}
+    data_error = {}
+    BG_error = {}
+    T_error = {}
+
+    if ring == "HER":
+        sim_params = {'I': 287, 'P': 1.3332e-7, 'sigy': 36, 'Nb': 789} #simulated parameters for extrapolations
+    else:
+        sim_params = {'I': 341, 'P': 1.3332e-7, 'sigy': 38, 'Nb': 789}
+
+    sim_rates_Coulomb = get_sim_rates("Coulomb", ring)
+    sim_rates_Touschek = get_sim_rates("Touschek", ring)
+    sim_rates_Brems = get_sim_rates("RBB", ring)
+    sim_rates_BG = {}
+    sim_rates = {}
+
+    dataMC = {}
+    dataMC_BG = {}
+    dataMC_Touschek = {}
+
+    for key in sim_rates_Coulomb.keys():
+        sim_rates_BG[key] = sim_rates_Brems[key] + sim_rates_Coulomb[key]
+        sim_rates[key] = sim_rates_Brems[key] + sim_rates_Coulomb[key] + sim_rates_Touschek[key]
+        data_rates[key] = fit_params[key].Parameter(0)*sim_params['I']*sim_params['P']*7**2 +  fit_params[key].Parameter(1)*sim_params['I']**2/(sim_params['sigy']*sim_params['Nb'])
+        data_error[key] = fit_params[key].ParError(0)*sim_params['I']*sim_params['P']*7**2 +  fit_params[key].ParError(1)*sim_params['I']**2/(sim_params['sigy']*sim_params['Nb'])
+        data_rates_BG[key] = fit_params[key].Parameter(0)*sim_params['I']*sim_params['P']*7**2
+        BG_error[key] = fit_params[key].ParError(0)*sim_params['I']*sim_params['P']*7**2
+        data_rates_Touschek[key] = fit_params[key].Parameter(1)*sim_params['I']**2/(sim_params['sigy']*sim_params['Nb'])
+        T_error[key] = fit_params[key].ParError(1)*sim_params['I']**2/(sim_params['sigy']*sim_params['Nb'])
+        dataMC[key] = data_rates[key]/sim_rates[key]
+        dataMC_BG[key] = data_rates_BG[key]/sim_rates_BG[key]
+        dataMC_Touschek[key] = data_rates_Touschek[key]/sim_rates_Touschek[key]
+
+    keys = ["data_rates", "data_err", "data_rates_BG", "data_BG_err",  "data_rates_T", "data_T_err",  "sim_rates", "sim_rates_BG", "sim_rates_T", "dataMC", "dataMC_BG", "dataMC_Touschek"]
+    vals = [data_rates, data_error, data_rates_BG, BG_error, data_rates_Touschek, T_error, sim_rates, sim_rates_BG, sim_rates_Touschek, dataMC, dataMC_BG, dataMC_Touschek, mg]
+    params = {}
+    for i in range(0,len(keys)):
+        params[keys[i]] = vals[i]
+    return params
+'''
+c1 = ROOT.TCanvas("c1", "c1", 2000, 1600)
+c1.SetLogy()
+c1.Divide(1,2)
+
+stack_HER1, l1 = create_stack1(11, "HER")
+stack_LER1, l2 = create_stack1(12, "LER")
+
+c1.cd(1)
+stack_HER1.Draw("nostack")
+l1.Draw()
+c1.cd(2)
+stack_LER1.Draw("nostack")
+c1.Update()
+
+c2 = ROOT.TCanvas("c2", "c2", 2000, 1600)
+c2.Divide(1,2)
+
+stack_HER2, l3 = create_stack2(11, "HER")
+stack_LER2, l4 = create_stack2(12, "LER")
+c2.cd(1)
+stack_HER2.Draw("hist")
+c2.cd(2)
+stack_LER2.Draw("hist")
+l3.Draw()
+c2.Update()
+'''
+
+'''
+def plot_fit(module_id,ring):
+    bg_fit = df_input['SKB_%s_current'%(ring)]*df_input['SKB_%s_pres_avg'%(ring)]*2.3**2*fit_params['%s'%(module_id)].Parameter(0)
+    T_fit = df_input['SKB_%s_current'%(ring)]**2*fit_params['%s'%(module_id)].Parameter(1)/(df_input['SKB_%s_XRM_sigmay'%(ring)]*df_input['SKB_%s_NOB'%(ring)])
+    
+    if ring == "LER":
+        scale = 1500
+        plt.plot(df_input['ts'],df_input['SKB_%s_current'%(ring)]+100,'o',label='%s_current'%(ring),markersize=1,color='red')
+        plt.plot(df_input['ts'],df_input['SKB_HER_current'],'o',label='HER_current',markersize=1,color='blue')
+        plt.plot(df_input['ts'],bg_fit*scale,'o',label='Beam-gas_fit',markersize=1,color='cyan')
+        plt.plot(df_input['ts'],T_fit*scale,'o',label='Touschek_fit',markersize=1,color='yellow')
+        plt.plot(df_input['ts'],(bg_fit+T_fit)*scale,'o',label='combined_fit',markersize=1,color='silver')
+        plt.plot(df['ts'],df['%s_mean'%(module_id)]*scale,'x',label='data (%ss avg)'%(bin_width),color='black')
+    else:
+        scale = 1500
+        plt.plot(df_input['ts'],df_input['SKB_LER_current'],'o',label='LER_current',markersize=1,color='red')
+        plt.plot(df_input['ts'],df_input['SKB_%s_current'%(ring)]+100,'o',label='%s_current'%(ring),markersize=1,color='blue')
+        plt.plot(df_input['ts'],bg_fit*scale,'o',label='Beam-gas_fit',markersize=1,color='magenta')
+        plt.plot(df_input['ts'],T_fit*scale,'o',label='Touschek_fit',markersize=1,color='darkblue')
+        plt.plot(df_input['ts'],(bg_fit+T_fit)*scale,'o',label='combined_fit',markersize=1,color='silver')
+        plt.plot(df['ts'],df['%s_mean'%(module_id)]*scale,'x',label='data (%ss avg)'%(bin_width),color='black')
+    plt.legend()
+    plt.ylim(0,500)
+    plt.show()
+
+def extrapolate(module_id,ring): #improve later on
+    if ring == "LER":
+        bg_fit = 1200*133.3e-9*2.3**2*fit_params['%s'%(module_id)].Parameter(0)
+        T_fit = 1200**2*fit_params['%s'%(module_id)].Parameter(1)/(38*1576)
+    else:
+        bg_fit = 1000*133.3e-9*2.3**2*fit_params['%s'%(module_id)].Parameter(0)
+        T_fit = 1000**2*fit_params['%s'%(module_id)].Parameter(1)/(36*1576)
+
+    print("Extrapolated %s Beam-gas = %s"%(ring, bg_fit))
+    print("Extrapolated %s Touschek = %s"%(ring, T_fit))
+'''
