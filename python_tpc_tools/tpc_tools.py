@@ -9,7 +9,7 @@ import ROOT
 import re
 
 class tpc_tools:
-    def __init__(self, input_file='4500_honu_stop_mode_ext_trigger_scan_interpreted.h5', module_id="honu", output_file = '4500_honu.root', clustering = False):
+    def __init__(self, input_file, module_id, output_file, clustering = False):
         self.calibration = self.get_calibration_info(module_id)
         self.hits = self.get_hits_data(input_file, module_id)
         self.meta = self.get_meta_data(input_file)
