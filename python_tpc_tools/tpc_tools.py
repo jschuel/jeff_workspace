@@ -9,13 +9,13 @@ import ROOT
 import re
 
 class tpc_tools:
-    def __init__(self, input_file='4500_honu_stop_mode_ext_trigger_scan_interpreted.h5', module_id="honu", output_file = '4500_honu.root'):
+    def __init__(self, input_file='4500_honu_stop_mode_ext_trigger_scan_interpreted.h5', module_id="honu", output_file = '4500_honu.root', clustering = False):
         self.calibration = self.get_calibration_info(module_id)
         self.hits = self.get_hits_data(input_file, module_id)
         self.meta = self.get_meta_data(input_file)
         self.data = self.merge_hits_and_meta_data(input_file, module_id)
         self.tracks = self.process_tracks()
-        self.make_ntuple(output_file, alpha=10)
+        self.make_ntuple(output_file)
 
     def get_calibration_info(self, module_id): #Consider updating to yaml headers
         df = pd.read_pickle("/Users/vahsengrouplaptop/workspace/duke_testbeam/tpc_tools/1_initial_processing/calibration_input_files/calibrated_files/calibrated_post_phase2_%s.pkl"%(module_id))
@@ -60,7 +60,7 @@ class tpc_tools:
         merged_data['x'], merged_data['y'], merged_data['z'] = self.get_xyz_from_col_row_bcid(merged_data['column'], merged_data['row'], merged_data['BCID'])
         return merged_data
 
-    def process_tracks(self):
+    def process_tracks(self, clustering = False):
         data = self.data
         data = self.get_hitside(data)
         data = data.loc[data['nhits']<10000]
@@ -108,7 +108,8 @@ class tpc_tools:
         if len(kwargs) == 1:
             df = df.loc[df['is_tight_%s'%(key)] == 1]
             if kwargs[key] >= len(df):
-                print("There are only %s %s's in the file. Processesing all %s's"%(kwargs[key], key, key))
+                print("There are only %s %s's in the file. Processesing all %s's"%(len(df), key, key))
+                filename = f + '_%s_all_events.root'%(key)
             elif kwargs[key] < len(df):
                 df = df.head(kwargs[key])
         df.index = [i for i in range(0,len(df))]
