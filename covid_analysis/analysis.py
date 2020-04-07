@@ -124,6 +124,7 @@ def plot_state(dfs, state, state_full, log):
         fit = np.array([0,0])
         print("Fit didn't converge: fit set to 0")
     a = 1/fit[0]
+    double = np.log(2)*a
     b = -fit[1]/fit[0]
     x = np.array([i for i in range(0,len(confirmed)+2)])
     
@@ -133,24 +134,114 @@ def plot_state(dfs, state, state_full, log):
 
     plt.plot(['3-%s'%(i) for i in range(1,32)], [0 for i in range(0,31)], 'o', markersize = 0)
     plt.plot(dates_plt, confirmed, 'o', color = 'tab:blue')
-    plt.plot(x+shift, np.exp(fit[0]*x+fit[1]), '--', color = 'red', label = 'exponential fit, doubling time = %s days'%(float('%.3g' % a)))
+    plt.plot(x+shift, np.exp(fit[0]*x+fit[1]), '--', color = 'red', label = 'exponential fit, doubling time = %s days'%(float('%.3g' % double)))
     locs, labels = plt.xticks()
     plt.xticks(np.arange(0, 31, step=3))
     plt.ylabel("COVID-19 Cases")
-    plt.title("Confirmed Cases %s"%(state_full))
+    if log == "lin":
+        plt.title("Confirmed Cases %s"%(state_full))
     if log == "log":
         plt.yscale("log")
     plt.legend()
     #plt.show()
-    plt.savefig('state_fits/%s_3-%s.png'%(state_full, day))
-    plt.close()
+    #plt.savefig('state_fits/%s_3-%s_%s.png'%(state_full, day, log))
+    #plt.close()
     return confirmed.max(), fit, len(confirmed)
+
+def plot_country(dfs, country, log):
+    dat = [key for key in dfs.keys()]
+    day = get_day(dat[len(dat)-1])
+    dates = ['3-%s'%(i) for i in range(1,day+1)]
+    dates_plt = []
+    confirmed = []
+    for date in dates:
+        val = dfs[date].loc[dfs[date]['Country/Region'] == country]['Confirmed'].sum()
+        if val > 0:
+            dates_plt.append(date)
+            confirmed.append(val)
+    confirmed = np.array(confirmed)
+    df = pd.DataFrame()
+    df['confirmed'] = confirmed
+    x = np.array([i for i in range(0,len(confirmed))])
+    if len(df.loc[df['confirmed']>0]) > 1:
+        fit = np.polyfit(x, np.log(confirmed), 1)
+    else:
+        fit = np.array([0,0])
+        print("Fit didn't converge: fit set to 0")
+    a = 1/fit[0]
+    double = np.log(2)*a
+    b = -fit[1]/fit[0]
+    x = np.array([i for i in range(0,len(confirmed)+2)])
+    
+    for i in range(0, len(dates)):
+        if dates[i] == dates_plt[0]:
+            shift = i
+
+    plt.plot(['3-%s'%(i) for i in range(1,32)], [0 for i in range(0,31)], 'o', markersize = 0)
+    plt.plot(dates_plt, confirmed, 'o', color = 'tab:blue')
+    plt.plot(x+shift, np.exp(fit[0]*x+fit[1]), '--', color = 'red', label = 'exponential fit, doubling time = %s days'%(float('%.3g' % double)))
+    locs, labels = plt.xticks()
+    plt.xticks(np.arange(0, 31, step=3))
+    plt.ylabel("COVID-19 Cases")
+    plt.title("Confirmed Cases %s"%(country))
+    if log == "log":
+        plt.yscale("log")
+    plt.legend()
+    #plt.show()
+    plt.savefig('country_fits/%s_3-%s_log.png'%(country, day))
+    plt.close()
+
+def plot_country_deaths(dfs, country, log):
+    dat = [key for key in dfs.keys()]
+    day = get_day(dat[len(dat)-1])
+    dates = ['3-%s'%(i) for i in range(1,day+1)]
+    dates_plt = []
+    deaths = []
+    for date in dates:
+        val = dfs[date].loc[dfs[date]['Country/Region'] == country]['Deaths'].sum()
+        if val > 0:
+            dates_plt.append(date)
+            deaths.append(val)
+    deaths = np.array(deaths)
+    df = pd.DataFrame()
+    df['deaths'] = deaths
+    x = np.array([i for i in range(0,len(deaths))])
+    if len(df.loc[df['deaths']>0]) > 1:
+        fit = np.polyfit(x, np.log(deaths), 1)
+    else:
+        fit = np.array([0,0])
+        print("Fit didn't converge: fit set to 0")
+    a = 1/fit[0]
+    double = np.log(2)*a
+    b = -fit[1]/fit[0]
+    x = np.array([i for i in range(0,len(deaths)+2)])
+
+    if len(dates_plt) > 0:
+        for i in range(0, len(dates)):
+            if (dates[i] == dates_plt[0]):
+                shift = i
+
+        plt.plot(['3-%s'%(i) for i in range(1,32)], [0 for i in range(0,31)], 'o', markersize = 0)
+        plt.plot(dates_plt, deaths, 'o', color = 'tab:blue')
+        plt.plot(x+shift, np.exp(fit[0]*x+fit[1]), '--', color = 'red', label = 'exponential fit, doubling time = %s days'%(float('%.3g' % double)))
+        locs, labels = plt.xticks()
+        plt.xticks(np.arange(0, 31, step=3))
+        plt.ylabel("COVID-19 Deaths")
+        if log == "lin":
+            plt.title("Total Deaths %s"%(country))
+        if log == "log":
+            plt.yscale("log")
+        plt.legend()
+        #plt.show()
+        #plt.savefig('country_fits/%s_3-%s_log.png'%(country, day))
+        #plt.close()
 
 def plot_fit(dfs, country, log, color): #choose lin or log
     date = [key for key in dfs.keys()]
     day = get_day(date[len(date)-1])
     fit= fit_exponential_to_march_data(dfs, country)
     a = 1/fit[0]
+    double = np.log(2)*a
     b = -fit[1]/fit[0]
     confirmed = []
     dates = ['3-%s'%(i) for i in range(1,day+1)]
@@ -161,7 +252,7 @@ def plot_fit(dfs, country, log, color): #choose lin or log
             confirmed.append(dfs[date].loc[dfs[date]['Country/Region'] == country]['Confirmed'].sum())
     for i in range(0,len(dates)):
         if i == 0:
-            plt.plot(dates[i], confirmed[i], 'o', color = '%s'%(color),  markersize = 3, label = '%s Confirmed Cases. Fit doubling time = %s days'%(country, float('%.3g' % a)))
+            plt.plot(dates[i], confirmed[i], 'o', color = '%s'%(color),  markersize = 3, label = '%s Confirmed Cases. Fit doubling time = %s days'%(country, float('%.3g' % double)))
         else:
             plt.plot(dates[i], confirmed[i], 'o', color = '%s'%(color),  markersize = 3)
     if log == "log":
@@ -184,7 +275,7 @@ def plot_fit(dfs, country, log, color): #choose lin or log
     #plt.close()
     
     
-def plot_confirmed_cases(dfs):
+def plot_confirmed_cases(dfs, log):
     date = [key for key in dfs.keys()]
     day = get_day(date[len(date)-1])
     confirmed_US = []
@@ -209,20 +300,31 @@ def plot_confirmed_cases(dfs):
     #plt.plot([len(dfs.keys())-6,len(dfs.keys())+4], [confirmed_china[len(confirmed_china)-6],confirmed_china[len(confirmed_china)-6]], '--', color = 'green', linewidth = 0.5)
     locs, labels = plt.xticks()
     plt.xticks(np.arange(0, len([key for key in dfs.keys()] + ["3-%s"%(i) for i in range(day+1,32)]), step=3))
-    plt.title("Confirmed COVID-19 Cases over time")
     plt.legend()
-    plt.ylim(0,350000)
+    if log == "log":
+        plt.yscale("log")
+        plt.ylim(1,600000)
+    else:
+        plt.ylim(0, 350000)
+        plt.title("Confirmed COVID-19 Cases over time")
     #plt.xlabel("month-day")
-
-def projection_from_death_rate(dfs, state, death_rate):
-    doubling_rate = 3.5
-    date = [key for key in dfs][len(dfs)-1]
-    date1 = [key for key in dfs][len(dfs)-2]
-    deaths = dfs[date].loc[dfs[date]['Province/State'] == "%s"%(state)]['Deaths'].sum()
-    dt = 17 #days between when person got the virus and when they died
-    date0 = [key for key in dfs][len(dfs)-1-dt]
-    cases = dfs[date0].loc[dfs[date0]['Province/State'] == "%s"%(state)]['Confirmed'].sum()
     
+def fit_exponential_to_march_data_deaths(dfs, country):
+    date = [key for key in dfs.keys()]
+    day = get_day(date[len(date)-1])
+    confirmed = []
+    #dates = ['3-%s'%(i) for i in range(1,17)]                                                                                 
+    dates = ['3-%s'%(i) for i in range(1,day+1)]
+    for date in dates:
+        if country == "World":
+            confirmed.append(dfs[date]['Deaths'].sum())
+        else:
+            confirmed.append(dfs[date].loc[dfs[date]['Country/Region'] == "%s"%(country)]['Deaths'].sum())
+    #x = np.linspace(0,15,16)                                                                                                  
+    x = np.linspace(0,day-1,day)
+    confirmed = np.array(confirmed)
+    fit = np.polyfit(x, np.log(confirmed),1)
+    return fit
     
 def fit_exponential_to_march_data(dfs, country):
     date = [key for key in dfs.keys()]
@@ -240,7 +342,44 @@ def fit_exponential_to_march_data(dfs, country):
     confirmed = np.array(confirmed)
     fit = np.polyfit(x, np.log(confirmed),1)
     return fit
-    
+
+def plot_death_rate(dfs,country):
+    date = [key for key in dfs.keys()]
+    day = get_day(date[len(date)-1])
+    dates = ["1-%s"%(i) for i in range(22,32)] + ["2-%s"%(i) for i in range(1,30)] + ["3-%s"%(i) for i in range(1,22)]
+    #dates = ['3-%s'%(i) for i in range(1,day+1)]
+    for date in dates:
+        #dfs[date]=dfs[date].replace(to_replace='.*, NY', value='New York', regex=True)
+        if dfs[date].loc[dfs[date]['Country/Region'] == country]['Deaths'].sum() >= 20:
+            month20 = get_month(date)
+            date20 = get_day(date)
+            print(month20)
+            break
+    if month20 == 3:
+        days_since_20 = day - date20 #gives the days since 20 deaths
+        dates_reduced = ['3-%s'%(i) for i in range(date20, day+1)]
+    elif month20 == 2:
+        days_since_20 = day + (29-date20) #gives the days since 20 deaths
+        dates_reduced = ['2-%s'%(i) for i in range(date20, 30)] + ['3-%s'%(i) for i in range(1, day+1)]
+    elif month20 == 1:
+        days_since_20 = day + 29 + (31-date20) #gives the days since 20 deaths
+        dates_reduced = ['1-%s'%(i) for i in range(date20, 32)] + ['2-%s'%(i) for i in range(1, 30)] + ['3-%s'%(i) for i in range(1, day+1)]
+
+    death_rate = []
+    #death_rate_NY = []
+    #death_rate_no_NY = []
+    for date in dates_reduced:
+        #death_rate_no_NY.append((dfs[date].loc[dfs[date]['Country/Region'] == country]['Deaths'].sum()-dfs[date].loc[dfs[date]['Province/State'] == 'New York']['Deaths'].sum())/(dfs[date].loc[dfs[date]['Country/Region'] == country]['Confirmed'].sum()-dfs[date].loc[dfs[date]['Province/State'] == 'New York']['Confirmed'].sum())*100)
+        #death_rate_NY.append(dfs[date].loc[dfs[date]['Province/State'] == 'New York']['Deaths'].sum()/dfs[date].loc[dfs[date]['Province/State'] == "New York"]['Confirmed'].sum()*100)
+        death_rate.append(dfs[date].loc[dfs[date]['Country/Region'] == country]['Deaths'].sum()/dfs[date].loc[dfs[date]['Country/Region'] == country]['Confirmed'].sum()*100)
+    x = [i for i in range(0,days_since_20+1)]
+    plt.plot(x, death_rate, label=country)
+    #plt.plot(x, death_rate_no_NY, label='%s excluding New York'%(country))
+    #plt.plot(x, death_rate_NY, label='New York only')
+    plt.ylabel('(deaths/cases)*100')
+    plt.ylim(0,12)
+    plt.xlabel('days since 20 deaths')
+                  
 def make_dataframes(date):
     day = get_day(date)
     dates = ["01-%s-2020"%(i) for i in range(22,32)] + ["02-0%s-2020"%(i) for i in range(1,10)] + ["02-%s-2020"%(i) for i in range(10,30)] + ["03-0%s-2020"%(i) for i in range(1,10)] + ["03-%s-2020"%(i) for i in range(10,day+1)]
@@ -281,15 +420,17 @@ def make_dataframes(date):
 def generate_report(dfs):
     plt.subplot(3,1,1)
 
-    plot_confirmed_cases(dfs)
+    plot_confirmed_cases(dfs, "lin")
 
     plt.subplot(3,1,2)
     #plot_fit(dfs, "World", "lin", "black")
-    plot_fit(dfs, "US", "lin", "blue")
+    #plot_fit(dfs, "US", "lin", "blue")
     #plot_fit(dfs, "Germany", "lin", "green")
     #plot_fit(dfs, "France", "lin", "gold")
     #plot_fit(dfs, "Italy", "lin", "red")
 
+    plot_confirmed_cases(dfs, "log")
+    
     plt.subplot(3,1,3)
     #plot_fit(dfs, "World", "log", "black")
     plot_fit(dfs, "US", "log", "blue")
@@ -304,7 +445,12 @@ def get_day(date):
     day = int(day[1])
     return day
 
-dfs = make_dataframes('3-25')
+def get_month(date):
+    month = re.findall(r'\d+', date) # takes out the integers from the date string
+    month = int(month[0])
+    return month
+
+dfs = make_dataframes('3-31')
 generate_report(dfs)
 
 
@@ -337,4 +483,13 @@ def plot_cases_on_map_projection(log):
     ax2.set_xlim(-130, -64)
     ax2.set_ylim(24, 52)
     fig.show()
+
+def projection_from_death_rate(dfs, state, death_rate):
+    doubling_rate = 3.5
+    date = [key for key in dfs][len(dfs)-1]
+    date1 = [key for key in dfs][len(dfs)-2]
+    deaths = dfs[date].loc[dfs[date]['Province/State'] == "%s"%(state)]['Deaths'].sum()
+    dt = 17 #days between when person got the virus and when they died
+    date0 = [key for key in dfs][len(dfs)-1-dt]
+    cases = dfs[date0].loc[dfs[date0]['Province/State'] == "%s"%(state)]['Confirmed'].sum()
 '''
