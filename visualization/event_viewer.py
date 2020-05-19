@@ -65,7 +65,9 @@ def get_TChain(f):
 module_id = sys.argv[1]
 run_num = sys.argv[2]
 
-f = "~/%s_%s.root"%(run_num, module_id)
+#f = "~/%s_%s.root"%(run_num, module_id)
+f = "/Users/vahsengrouplaptop/data/phase3/spring_2020/05-09-20/tpc_root_files/%s_%s.root"%(run_num, module_id)
 alpha = ROOT.TCut("hitside_col_min == 1 && hitside_col_max == 1 && hitside_row_min == 0 && hitside_row_max == 0 && track_energy > 50")
 xray = ROOT.TCut("hitside_col_min == 0 && hitside_col_max == 0 && hitside_row_min == 0 && hitside_row_max == 0 && track_energy < 10")
+neutron = ROOT.TCut("track_energy < (0.7*length-75) && track_energy > (0.015*length-65)  && track_energy > 20 && hitside_col_min == 0 && hitside_col_max == 0 && hitside_row_min == 0 && hitside_row_max == 0")
 ch = get_TChain(f)

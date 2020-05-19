@@ -1,0 +1,122 @@
+import numpy as np
+import pandas as pd
+import root_pandas as rp
+import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
+from matplotlib.patches import Patch
+from matplotlib.collections import PatchCollection
+import array
+import ROOT
+
+def import_go_data():
+    x = np.array([0.25, 0.75, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 8, 11, 16.5])
+    x_err = np.array([0.25, 0.25, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 1, 2, 3.5])
+    y = np.array([1.013, 0.916, 0.699, 0.339, -0.136, -0.634, -0.961, -0.974, -0.675, 0.089, 0.243])
+    y_err = np.array([0.028, 0.022, 0.038, 0.056, 0.075, 0.084, 0.077, 0.080, 0.109, 0.193, 0.435])
+    return x, x_err, y, y_err
+
+def import_truth_mc():
+    input_file = "digested_truth_kinematics.root"
+    df = rp.read_root(input_file)
+    df = df.loc[df['bin'].duplicated()==False]
+    x = np.array([0.25, 0.75, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 8, 11, 16.5])
+    x_err = np.array([0.25, 0.25, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 1, 2, 3.5])
+    y = []
+    for i in range(0,11):
+        y.append(df.loc[df['bin'] == i]['asymmetry'].sum())
+    y = np.array(y)
+    return x, x_err, y
+
+def make_plot():
+    plt.rc('text', usetex=True)
+    plt.rc('font', family='serif')
+    x_data, x_err_data, y_data = import_truth_mc()
+    y_err_data = np.array([0 for i in range(0,len(x_data))])
+    x_go, x_err_go, y_go, y_err_go = import_go_data()
+    fit = make_root_plot()
+    md_max = fit['truth_MC'] + fit['truth_MC_err']
+    md_min = fit['truth_MC'] - fit['truth_MC_err']
+    print(fit['truth_MC_err'],fit['truth_MC'], md_min, md_max)
+    #x_plt = np.linspace(0,20, 201)
+    y_plt1 = np.cos(md_min*x_data)
+    y_plt2 = np.cos(md_max*x_data)
+    y_fit = np.cos(fit['truth_MC']*x_data)
+    residuals = y_data - y_fit
+    fig, ax = plt.subplots(nrows = 2)
+    ax[0].errorbar(x_data, y_data, y_err_data, x_err_data, 'o', label = 'Truth MC')
+    ax[0].errorbar(x_go, y_go, y_err_go, x_err_go, 'o', label = "A. Go's data")
+    make_error_boxes(ax[0], x_data, y_plt1, x_err_data, y_plt2)
+    ax[0].add_patch(Rectangle((x_data[0] - x_err_data[0], y_plt1[0]), 2*x_err_data[0], y_plt2[0]-y_plt1[0], edgecolor = 'green', facecolor = 'yellow', alpha = 0.5, label = r'1$\sigma$ error region for QM LS model fit. $\Delta m_d =$ %s $\pm$ %s ps$^{-1}$'%(float('%.3g' % fit['truth_MC']), float('%.3g' % fit['truth_MC_err']))))
+    ax[0].legend()
+    ax[0].set_ylabel(r"$\mathcal{A}(\Delta t)$")
+    ax[1].bar(x_data,residuals,width=2*x_err_data, fill=False)
+    ax[1].axhline(y=0, xmin = 0, xmax = 20)
+    ax[1].set_ylabel(r"$\mathcal{A}_{Truth_{MC}}-\mathcal{A}_{Fit}$")
+    ax[1].set_xlabel(r"$\Delta t$")
+
+def make_error_boxes(ax, xdata, ymin, xerror, ymax, facecolor='yellow',
+                     edgecolor='green', alpha=0.5):
+    # Loop over data points; create box from errors at each point
+    errorboxes = [Rectangle((x - xe, y), 2*xe, ye-y) for x, y, xe, ye in zip(xdata, ymin, xerror, ymax)]
+    # Create patch collection with specified colour/alpha
+    pc = PatchCollection(errorboxes, facecolor=facecolor, alpha=alpha,
+                         edgecolor=edgecolor)
+    # Add collection to axes
+    ax.add_collection(pc)
+
+def make_root_plot(MC = True):
+    ROOT.gStyle.SetOptStat(1)
+    if MC == True:
+        input_file = "digested_truth_kinematics.root"
+        df = rp.read_root(input_file)
+        df = df.loc[df['bin'].duplicated()==False]
+        y = []
+        for i in range(0,12):
+            y.append(df.loc[df['bin'] == i]['asymmetry'].sum())
+        y = array.array('d', y)
+        #print(y)
+        #bins = array.array('d', [0.25, 0.75, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 8, 11, 16.5])
+        bins = array.array('d', [0, 0.5, 1, 2, 3, 4, 5, 6, 7, 9, 13, 20])  #for hist
+    else:
+        x_go, x_err_go, y_go, y_err_go = import_go_data()
+        bins = array.array('d', [0, 0.5, 1, 2, 3, 4, 5, 6, 7, 9, 13, 20])
+        y_go = np.append(y_go, [0])
+        y_err_go = np.append(y_err_go, [0])
+        y = array.array('d', y_go)
+        yerr = array.array('d', y_err_go)
+    f1 = ROOT.TF1("f1", "cos([0]*x)", 0, 20)
+    f1.SetParLimits(0,0.3,0.6)
+    h1 = ROOT.TH1D("h1","h1",len(bins)-1, bins)
+    for i in range(0,len(bins)):
+        h1.SetBinContent(i+1,y[i])
+        if MC == False:
+            h1.SetBinError(i+1, yerr[i])
+    h1.Sumw2()
+    #h1.Scale(1,"width")
+    h1.Fit("f1", "S")
+    fitdict = {"truth_MC":f1.GetParameter(0), "truth_MC_err":f1.GetParError(0)}
+    #xerr = array.array('d',[0.25, 0.25, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 1, 2, 3.5])
+    #yerr = array.array('d', [0 for i in range(0,len(xerr))])
+    #gr = ROOT.TGraphErrors(len(bins), bins, y)#, xerr, yerr)
+    #gr.SetMarkerStyle(20)
+    #f1 = ROOT.TF1("f1", "cos([0]*x)", 0, 20)
+    #f1.SetParLimits(0,0,1)
+    #gr.GetXaxis().SetLimits(0,20)
+    #gr.Fit("f1", "S")
+    #gr.GetFunction("f1").SetLineColor(1)
+    #gr.Draw("AP")
+    #f1.Draw("same")
+    #x_go, x_err_go, y_go, y_err_go = import_go_data()
+    #x_go, x_err_go, y_go, y_err_go = array.array('d', x_go), array.array('d', x_err_go), array.array('d', y_go), array.array('d', y_err_go)
+    #gr_go = ROOT.TGraphErrors(len(x_go), x_go, y_go, x_err_go, y_err_go)
+    #gr_go.SetMarkerStyle(20)
+    #gr_go.SetMarkerColor(4)
+    #gr_go.Fit("f1", "S")
+    #gr_go.GetFunction("f1").SetLineColor(4)
+    #fitdict = {"truth_MC":gr.GetFunction("f1").GetParameter(0), "truth_MC_err":gr.GetFunction("f1").GetParError(0)}
+    #mg = ROOT.TMultiGraph()
+    #mg.Add(gr)
+    #mg.Add(gr_go)
+    #mg.Draw("AP")
+    h1.Draw()
+    return fitdict

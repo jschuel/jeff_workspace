@@ -1,0 +1,12 @@
+To be updated:
+
+signal_mc_exp55.root:
+
+Signal MC is a sample of 5000 B0 B0-bar events from exp 55.
+The decay file includes a B0 decaying to a pi+pi- CP mode
+The tag side, is a semileptonic B decay going to Dstar e nu
+Cuts on B are 5.1 < Mbc < 5.4 and abs(deltaE) < 1
+
+signal_mc_exp55_tight_cut.root:
+Same as above except cut on beam constrained mass is
+5.24 < Mbc < 5.29

@@ -47,19 +47,19 @@ def make_combined_dataframe(SKB_input,tpc_input,study_indices):
         dfs[module] = make_TPC_dataframe(tpc_input, module)
         neutron_counts[module] = merge_TPC_rates_with_SKB(dfs[module], SKB_ts)
         df_SKB['%s_neutrons'%(module)] = neutron_counts[module]
-    df_SKB['Storage_Flag'] = [0 for i in range(0,len(df_SKB))]
-    df_SKB['Storage_Flag'][study_indices] = 1
+    #df_SKB['Storage_Flag'] = [0 for i in range(0,len(df_SKB))]
+    #df_SKB['Storage_Flag'][study_indices] = 1
     return df_SKB
     
 #Get TPC rates at SKB 1s time intervals
 def merge_TPC_rates_with_SKB(df_TPC, ts_range):
     #if month == "May":
     #    if side == "BWD":
-    #        df_TPC.ts = df_TPC.ts + 213 #to account for BWD TPCs being 213 seconds behind NTP. Fixxed for Autumn 2019 runs and beyond
+    #        df_TPC.timestamp_start = df_TPC.timestamp_start + 213 #to account for BWD TPCs being 213 seconds behind NTP. Fixxed for Autumn 2019 runs and beyond
     TPC_neutron_counts = []
     for i in range(0,len(ts_range)-1):
         if (ts_range[i+1]-ts_range[i]) <= 1.1:
-            TPC_neutron_counts.append(len(df_TPC.loc[(df_TPC.ts > ts_range[i]) & (df_TPC.ts < ts_range[i+1])].index))
+            TPC_neutron_counts.append(len(df_TPC.loc[(df_TPC.timestamp_start > ts_range[i]) & (df_TPC.timestamp_start < ts_range[i+1])].index))
         else:
             TPC_neutron_counts.append(0)
     TPC_neutron_counts.append(0)
@@ -67,15 +67,15 @@ def merge_TPC_rates_with_SKB(df_TPC, ts_range):
 
 ##Make TPC dataframe
 def make_TPC_dataframe(tpc_input, module_id): #tpc_input is a dictionary of files with module_id's as keys
-    df_TPC = read_root(tpc_input[module_id], "tracks")
-    df_TPC['recoil_energy'] = df_TPC['recoil_energy']/1000
-    df_TPC_neutron = df_TPC.iloc[df_TPC.loc[(df_TPC.recoil_energy < (0.5*df_TPC.length-75)) & (df_TPC.recoil_energy > (0.0411764*df_TPC.length-64.688)) & (df_TPC.recoil_energy > 100) & (df_TPC.hitside_top == 0) & (df_TPC.hitside_bottom == 0) & (df_TPC.hitside_source == 0) & (df_TPC.hitside_antisource == 0)].index] #dataframe for TPC nuclear recoils
+    df_TPC = read_root(tpc_input[module_id], "data")
+    #df_TPC['recoil_energy'] = df_TPC['recoil_energy']/1000
+    df_TPC_neutron = df_TPC.iloc[df_TPC.loc[(df_TPC.track_energy < (0.7*df_TPC.length-75)) & (df_TPC.track_energy > (0.015*df_TPC.length-65)) & (df_TPC.track_energy > 20) & (df_TPC.hitside_col_min == 0) & (df_TPC.hitside_row_min == 0) & (df_TPC.hitside_col_max == 0) & (df_TPC.hitside_row_max == 0)].index] #dataframe for TPC nuclear recoils
     return df_TPC_neutron
 
 ##Make dataframe of SKB variables relevant for study
 def make_SKB_dataframe(SKB_input):
     df_SKB = read_root(SKB_input)
-    df_SKB = df_SKB.drop(columns=['HE3', 'TPC'])
+    #df_SKB = df_SKB.drop(columns=['HE3', 'TPC'])
     df_SKB = df_SKB.sort_values(by = ['ts']) #order by ascending timestamp
     df_SKB.index = [i for i in range(0,len(df_SKB))]
     return df_SKB
@@ -83,6 +83,7 @@ def make_SKB_dataframe(SKB_input):
 #Study indices is a parameter passed into the ntuple builder. It sets the storage flag for the combined ntuple.
 #User can define boolean expressions for appropriate background studies. Should come up with a more sophisticated way to do this in the future
 def get_study_indices(month,day,ring):
+    '''
     if month == "May": #Study indices for generating storage flag
         if day == "11":
             study_indices = [i for i in range(10586,12258)] + [i for i in range(12972,13828)] + [i for i in range(14443,14764)] + [i for i in range(15180,15508)] + [i for i in range(15658,16075)] + [i for i in range(16731,17178)] + [i for i in range(17667,18142)] + [i for i in range(18989,19496)] + [i for i in range(19923,20509)] + [i for i in range(21043,22085)] + [i for i in range(22465,25085)] + [i for i in range(25815,27231)] + [i for i in range(27531,27988)] + [i for i in range(29311,30599)]
@@ -100,4 +101,6 @@ def get_study_indices(month,day,ring):
             study_indices = [i for i in range(580,2510)] + [i for i in range(3465,4930)] + [i for i in range(5560,7390)] + [i for i in range(8000,10030)] + [i for i in range(10375,12115)] + [i for i in range(14100,16075)] + [i for i in range(16700,18670)] + [i for i in range(22680,25354)]
         if ring =="LUMI":
             study_indices = [i for i in range(0,23405)]
+    '''
+    study_indices = [i for i in range(0,34000)]
     return study_indices
