@@ -223,7 +223,7 @@ def plot_with_fits():
     make_error_boxes(ax[1,1], B_plot_df['x'], y_B_sd_min, B_plot_df['xerr'], y_B_sd_max)
     ax[1,1].add_patch(Rectangle((B_plot_df['x'][0] - B_plot_df['xerr'][0], y_B_sd_min[0]), 2*B_plot_df['xerr'][0], y_B_sd_max[0]-y_B_sd_min[0], edgecolor = 'green', facecolor = 'yellow', alpha = 0.5, label = r'1$\sigma$ error region for SD model fit. $\Delta m_d =$ %s $\pm$ %s ps$^{-1}$'%(float('%.3g' % B_fits['SD']), float('%.3g' % B_fits['SD_err']))))
     ax[1,1].legend()
-    ax[1,0].set_title('SD model fit to truth B decay vertex results')
+    ax[1,1].set_title('SD model fit to truth B decay vertex results')
     ax[1,1].set_ylabel(r"$\mathcal{A}(\Delta t)$")
     fig.show()
     #ax[1].bar(x_data,residuals,width=2*x_err_data, fill=False)
