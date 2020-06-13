@@ -27,7 +27,7 @@ for i in range(0,len(module_ids)):
 
 def create_stack1(day, ring):
     stack = ROOT.THStack("","")
-    hs = create_histograms(day, ring)
+    hs, params = create_histograms(day, ring)
     for key in hs.keys():
         hs[key].SetLineWidth(6)
     hs['sim_rates'].SetLineStyle(9)
@@ -58,7 +58,7 @@ def create_stack1(day, ring):
 
 def create_stack2(day, ring):
     stack = ROOT.THStack("","")
-    hs = create_histograms(day, ring)
+    hs, params = create_histograms(day, ring)
     for key in hs.keys():
         hs[key].SetLineWidth(0)
     #hs['sim_rates'].SetLineStyle(9)
@@ -69,6 +69,10 @@ def create_stack2(day, ring):
     hs['sim_rates'].SetFillStyle(3144)
     #hs['data_rates'].SetLineColor(1)
     hs['data_rates'].SetFillColor(3)
+    if day == 11:
+        for key in ['data_rates', 'data_rates_BG', 'data_rates_T']:
+            for i in range(1,9):
+                hs[key].SetBinContent(i, hs[key].GetBinContent(i)/params['dataMC'][[i for i in params[key].keys()][i-1]])
     #hs['sim_rates_BG'].SetLineColor(6)
     hs['sim_rates_BG'].SetFillColorAlpha(6, 1)
     hs['sim_rates_BG'].SetFillStyle(3144)
@@ -108,20 +112,17 @@ def create_histograms(day, ring):
         if key != "mg":
             hists[key] = ROOT.TH1F("", "", 8, -0.5, 7.5)
             for i in range(0,8):
+                hists[key].SetBinContent(xs[i], params[key][tpcs[i]])
                 if key == "data_err":
-                    hists[key].SetBinContent(xs[i], params[key][tpcs[i]])
                     hists["data_rates"].SetBinError(xs[i], params[key][tpcs[i]])
                 if key == "data_BG_err":
-                    hists[key].SetBinContent(xs[i], params[key][tpcs[i]])
                     hists["data_rates_BG"].SetBinError(xs[i], params[key][tpcs[i]])
                 if key == "data_T_err":
-                    
                     hists["data_rates_T"].SetBinError(xs[i], params[key][tpcs[i]])
-                hists[key].SetBinContent(xs[i], params[key][tpcs[i]])
                 hists[key].GetXaxis().SetBinLabel(i+1, phis[i])
             hists[key].SetMinimum(8e-3)
             hists[key].SetMaximum(35)
-    return hists
+    return hists, params
 
 def get_fit_params(day, ring):
     input_file = '/Users/vahsengrouplaptop/data/phase2/combined_SKB_TPC_ntuples/June_%s_study.root'%(day)
@@ -172,7 +173,7 @@ def get_fit_params(day, ring):
     for i in range(0,len(keys)):
         params[keys[i]] = vals[i]
     return params
-
+'''
 c1 = ROOT.TCanvas("c1", "c1", 2000, 1600)
 c1.SetLogy()
 c1.Divide(1,2)
@@ -198,6 +199,7 @@ c2.cd(2)
 stack_LER2.Draw("hist")
 l3.Draw()
 c2.Update()
+'''
 
 '''
 def plot_fit(module_id,ring):
