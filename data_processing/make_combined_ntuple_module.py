@@ -69,7 +69,12 @@ def merge_TPC_rates_with_SKB(df_TPC, ts_range):
 def make_TPC_dataframe(tpc_input, module_id): #tpc_input is a dictionary of files with module_id's as keys
     df_TPC = read_root(tpc_input[module_id], "data")
     #df_TPC['recoil_energy'] = df_TPC['recoil_energy']/1000
-    df_TPC_neutron = df_TPC.iloc[df_TPC.loc[(df_TPC.track_energy < (0.7*df_TPC.length-75)) & (df_TPC.track_energy > (0.015*df_TPC.length-65)) & (df_TPC.track_energy > 20) & (df_TPC.hitside_col_min == 0) & (df_TPC.hitside_row_min == 0) & (df_TPC.hitside_col_max == 0) & (df_TPC.hitside_row_max == 0)].index] #dataframe for TPC nuclear recoils
+    cut_min = np.array([ 4.26706827e-06,  1.33283133e-02, -9.98995984e+00])
+    cut_max = np.array([ 5.38152610e-06,  2.73975904e-02, -1.21285141e+01])
+    ekey = 'full_corrected_energy'
+    df_TPC = df_TPC.loc[df_TPC[ekey]>20]
+    df_TPC_neutron = df_TPC.loc[(df_TPC['length']<1700) | ((df_TPC[ekey] > (cut_min[0]*df_TPC['length']**2 + cut_min[1]*df_TPC['length']+cut_min[2])) & (df_TPC['length'] >= 1700))]
+    #df_TPC_neutron = df_TPC.iloc[df_TPC.loc[(df_TPC.track_energy < (0.7*df_TPC.length-75)) & (df_TPC.track_energy > (0.015*df_TPC.length-65)) & (df_TPC.track_energy > 20) & (df_TPC.hitside_col_min == 0) & (df_TPC.hitside_row_min == 0) & (df_TPC.hitside_col_max == 0) & (df_TPC.hitside_row_max == 0)].index] #dataframe for TPC nuclear recoils
     return df_TPC_neutron
 
 ##Make dataframe of SKB variables relevant for study

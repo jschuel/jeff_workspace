@@ -18,7 +18,7 @@ tpc_input = {}
 for module in module_id:
     tpc_input[module] = "/Users/vahsengrouplaptop/data/phase3/spring_2020/05-09-20/tpc_root_files/%s_all_new.root"%(module)
 study_indices = [i for i in range(0,34000)]
-output_f = '/Users/vahsengrouplaptop/data/phase3/spring_2020/05-09-20/combined_ntuples/05-09_whole_study_new.root'
+output_f = '/Users/vahsengrouplaptop/data/phase3/spring_2020/05-09-20/combined_ntuples/05-09_whole_study_newest.root'
 make_ntuple(SKB_input, tpc_input, study_indices, output_f)
 '''
 month = sys.argv[1] #month of study

@@ -19,14 +19,30 @@ class analysis:
         self.LER_decay_avg = self.compute_means_and_errs("LER", "Decay")
         self.HER_decay_avg = self.compute_means_and_errs("HER", "Decay")
     
-    def get_raw_study_data(self, input_file= "/Users/vahsengrouplaptop/data/phase3/spring_2020/05-09-20/combined_ntuples/05-09_whole_study_new.root"):
+    def get_raw_study_data(self, input_file= "/Users/vahsengrouplaptop/data/phase3/spring_2020/05-09-20/combined_ntuples/05-09_whole_study_newest.root"):
         study_data = rp.read_root(input_file)
         return study_data
+
+    def get_tpc_data(self, input_dir = '/Users/vahsengrouplaptop/data/phase3/spring_2020/05-09-20/tpc_root_files/'):
+        data = {}
+        tpcs = ['iiwi', 'humu', 'nene', 'tako', 'palila', 'elepaio']
+        for tpc in tpcs:
+            data[tpc] = rp.read_root(input_dir + "%s_all_new_recoils_only.root"%(tpc))
+        return data
 
     def select_study(self, study_type, study_period): #LER, HER, Lumi, Cont_inj, Decay
         raw_data = self.get_raw_study_data()
         study_data = raw_data.loc[(raw_data['%s_study_flag'%(study_type)]==1) & (raw_data['%s_flag'%(study_period)] == 1)]
         return study_data
+
+    def get_tpc_data_during_study_period(self, study_type, study_period):
+        study_data = self.select_study(study_type, study_period)
+        tpc_data = self.get_tpc_data()
+        tpcs = tpc_data.keys()
+        tpc_study_data = {}
+        for tpc in tpcs:
+            tpc_study_data[tpc] = tpc_data[tpc].loc[(tpc_data[tpc]['timestamp_start'].astype('int')).isin(study_data['ts'].astype('int'))==True]
+        return tpc_study_data
 
     def partition_data_into_subsets(self, study_type, study_period, bins=10):
         study_data = self.select_study(study_type, study_period)
@@ -133,10 +149,17 @@ class analysis:
             partitions = [data[study_period].index.to_list()[0]] + data[study_period].loc[np.abs(data[study_period]['ts'].diff())>100].index.to_list() + [data[study_period].index.to_list()[len(data[study_period])-1]]
             indices = []
             for i in range(0,len(partitions)-1):
-                indices += [i for i in range(partitions[i], partitions[i+1])]
-            plt.fill_between(data[study_period]['ts'][indices], (fit_bg[study_period][indices]-fit_bg_err[study_period][indices]), (fit_bg[study_period][indices]+fit_bg_err[study_period][indices]), 'o', color = 'cyan', alpha = 0.3, label = 'Predicted beam-gas rate')
-            plt.fill_between(data[study_period]['ts'][indices], (fit_t[study_period][indices]-fit_t_err[study_period][indices]), (fit_t[study_period][indices]+fit_t_err[study_period][indices]), 'o', color = 'limegreen', alpha = 0.3, label = 'Predicted Touschek rate')
-            plt.fill_between(data[study_period]['ts'][indices], (fit[study_period][indices]-fit_err[study_period][indices]), (fit[study_period][indices]+fit_err[study_period][indices]), 'o', color = 'magenta', alpha = 0.3, label = 'Predicted total rate')
+                indices = [i for i in range(partitions[i], partitions[i+1])]
+                data_tmp = data[study_period].loc[data[study_period].index.isin(indices) == True]
+                fit_bg_tmp = fit_bg[study_period].loc[fit_bg[study_period].index.isin(indices) == True]
+                fit_bg_err_tmp = fit_bg_err[study_period].loc[fit_bg_err[study_period].index.isin(indices) == True]
+                fit_t_tmp = fit_t[study_period].loc[fit_t[study_period].index.isin(indices) == True]
+                fit_t_err_tmp = fit_t_err[study_period].loc[fit_t_err[study_period].index.isin(indices) == True]
+                fit_tmp = fit[study_period].loc[fit[study_period].index.isin(indices) == True]
+                fit_err_tmp = fit_err[study_period].loc[fit_err[study_period].index.isin(indices) == True]
+                plt.fill_between(data_tmp['ts'], (fit_bg_tmp-fit_bg_err_tmp), (fit_bg_tmp+fit_bg_err_tmp), 'o', color = 'cyan', alpha = 0.3, label = 'Predicted beam-gas rate')
+                plt.fill_between(data_tmp['ts'], (fit_t_tmp-fit_t_err_tmp), (fit_t_tmp+fit_t_err_tmp), 'o', color = 'limegreen', alpha = 0.3, label = 'Predicted Touschek rate')
+                plt.fill_between(data_tmp['ts'], (fit_tmp-fit_err_tmp), (fit_tmp+fit_err_tmp), 'o', color = 'magenta', alpha = 0.3, label = 'Predicted total rate')
         plt.ylim(-0.01,ymax)
         plt.ylabel('Rate[Hz]')
         if legend == True:
@@ -169,7 +192,7 @@ class analysis:
         else:
             ymax = 0.05
         plt.subplot(3,1,1)
-        self.plot_fit("palila", study_type, bins, ymax, legend = False)
+        self.plot_fit("palila", study_type, bins, ymax, legend = True)
         plt.title("Palila (z = -5.6 m)")
         plt.subplot(3,1,2)
         self.plot_fit("tako", study_type, bins, ymax)
