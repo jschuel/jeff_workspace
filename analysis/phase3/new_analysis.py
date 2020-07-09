@@ -10,6 +10,8 @@ from sklearn.base import RegressorMixin
 from sklearn.utils import check_X_y
 import numpy as np
 from matplotlib.lines import Line2D
+from matplotlib import rc
+rc('text', usetex=True)
 
 class analysis:
 
@@ -27,7 +29,7 @@ class analysis:
         data = {}
         tpcs = ['iiwi', 'humu', 'nene', 'tako', 'palila', 'elepaio']
         for tpc in tpcs:
-            data[tpc] = rp.read_root(input_dir + "%s_all_new_recoils_only.root"%(tpc))
+            data[tpc] = rp.read_root(input_dir + "%s_all_recoils_only_newest.root"%(tpc))
         return data
 
     def select_study(self, study_type, study_period): #LER, HER, Lumi, Cont_inj, Decay
@@ -44,7 +46,7 @@ class analysis:
             tpc_study_data[tpc] = tpc_data[tpc].loc[(tpc_data[tpc]['timestamp_start'].astype('int')).isin(study_data['ts'].astype('int'))==True]
         return tpc_study_data
 
-    def partition_data_into_subsets(self, study_type, study_period, bins=10):
+    def partition_data_into_subsets(self, study_type, study_period, bins=5):
         study_data = self.select_study(study_type, study_period)
         study_data.index = [i for i in range(0,len(study_data))] #reindexes from 0 to length of dataset
         partition_indices = [study_data.index.to_list()[0]] + study_data.loc[np.abs(study_data['ts'].diff())>10].index.to_list() + [study_data.index.to_list()[len(study_data)-1]]
@@ -57,7 +59,7 @@ class analysis:
             dfs['fill_%s'%(i)] = np.array_split(study_data.iloc[data_subsets['fill_%s'%(i)]], bins)
         return dfs
 
-    def compute_means_and_errs(self, study_type, study_period, bins = 10):
+    def compute_means_and_errs(self, study_type, study_period, bins=5):
         partitioned_data = self.partition_data_into_subsets(study_type, study_period, bins)
         means = partitioned_data['fill_0'][0].head(1) #to give structure to new dataframe
         errs = partitioned_data['fill_0'][0].head(1) #to give structure to new dataframe
@@ -78,7 +80,7 @@ class analysis:
         means = means.drop(columns = ['LER_study_flag_err', 'HER_study_flag_err', 'Lumi_study_flag_err', 'Cont_inj_flag_err', 'Decay_flag_err', 'Nb_HER_err', 'Nb_LER_err'])
         return means
 
-    def get_fit_parameters(self, study_type, study_period, bins=10): #Gives parameters B0, B1, and T defined by Rate/I = B0 + B1*I + T*I/(sy*Nb)
+    def get_fit_parameters(self, study_type, study_period, bins=5): #Gives parameters B0, B1, and T defined by Rate/I = B0 + B1*I + T*I/(sy*Nb)
         averaged_data = self.compute_means_and_errs(study_type, study_period, bins)
         tpcs = ['iiwi', 'humu', 'nene', 'tako', 'elepaio', 'palila']
         fit = {}
@@ -97,17 +99,14 @@ class analysis:
             y_root = array.array('d', y)
             y_root_err = array.array('d', yerr)
             f2 = ROOT.TF2("f2","[0] + [1]*x + [2]*y", 0, X['I_'+study_type].max(), 0, X['heuristic_x'].max())
-            #f2.SetParLimits(0,0,1)
-            #f2.SetParLimits(1,0,1)
-            #f2.SetParLimits(2,0,1)
+            f2.SetParLimits(0,0,1e-1)
+            f2.SetParLimits(1,0,1e-4)
+            f2.SetParLimits(2,0,1e-1)
+            #f2.SetParLimits(0,1e-6,5e-2)
+            #f2.SetParLimits(1,1e-15,1)
+            #f2.SetParLimits(2,1e-6,1)
             gr = ROOT.TGraph2DErrors(len(x1), x1, x2, y_root, x1err, x2err, y_root_err)
-            gr.Fit(f2, 'S')
-            print(f2.GetParameter(0), f2.GetParameter(1), f2.GetParameter(2))
-            regr = linear_model.LinearRegression()
-            regr.fit(X,y)
-            #fit[tpc+'_B0'] = regr.intercept_
-            #fit[tpc+'_B1'] = regr.coef_[0]
-            #fit[tpc+'_T'] = regr.coef_[1]
+            gr.Fit(f2, 'SREM')
             fit[tpc+'_B0'] = f2.GetParameter(0)
             fit[tpc+'_B1'] = f2.GetParameter(1)
             fit[tpc+'_T'] = f2.GetParameter(2)
@@ -116,7 +115,7 @@ class analysis:
             fit[tpc+'_T_err'] = f2.GetParError(2)
         return fit
 
-    def plot_fit(self, tpc, study_type,  bins = 10, ymax = 2, legend = False):
+    def plot_fit(self, tpc, study_type,  bins=5, ymax = 2, legend = False):
         study_periods = ["Cont_inj", "Decay"]
         fit_params = {}
         data = {}
@@ -138,14 +137,14 @@ class analysis:
             fit[study_period] = fit_params[study_period][tpc+'_B0']*data[study_period]['I_%s'%(study_type)] + fit_params[study_period][tpc+'_B1']*data[study_period]['I_%s'%(study_type)]**2 + fit_params[study_period][tpc+'_T']*data[study_period]['I_%s'%(study_type)]**2/(data[study_period]['Sy_%s'%(study_type)]*data[study_period]['Nb_%s'%(study_type)])
             fit_err[study_period] = np.sqrt(fit_bg_err[study_period]**2 + fit_t_err[study_period]**2)
             if study_type == "LER":
-                plt.plot(data[study_period]['ts'], data[study_period]['I_%s'%(study_type)], 'o', markersize = 1, color = 'blue', label = "I_LER [mA]")
+                plt.plot(data[study_period]['ts'], data[study_period]['I_%s'%(study_type)], 'o', markersize = 1, color = 'red', label = "I_LER [mA]")
             else:
-                plt.plot(data[study_period]['ts'], data[study_period]['I_%s'%(study_type)], 'o', markersize = 1, color = 'red', label = "I_HER [mA]")
-        plt.ylim(0,550)
+                plt.plot(data[study_period]['ts'], data[study_period]['I_%s'%(study_type)], 'o', markersize = 1, color = 'blue', label = "I_HER [mA]")
+        plt.ylim(0,620)
         plt.ylabel('Beam Current [mA]')
         plt.twinx()
         for study_period in study_periods:
-            plt.errorbar(data_avg[study_period]['ts'], data_avg[study_period][tpc+'_neutrons'], data_avg[study_period][tpc+'_neutrons_err'], data_avg[study_period]['ts_err'], 'o', markersize = 2, color = 'black', label = 'data')
+            plt.errorbar(data_avg[study_period]['ts'], data_avg[study_period][tpc+'_neutrons'], data_avg[study_period][tpc+'_neutrons_err'], data_avg[study_period]['ts_err'], 'o', markersize = 2, color = 'black', label = 'data', alpha = 0.6)
             partitions = [data[study_period].index.to_list()[0]] + data[study_period].loc[np.abs(data[study_period]['ts'].diff())>100].index.to_list() + [data[study_period].index.to_list()[len(data[study_period])-1]]
             indices = []
             for i in range(0,len(partitions)-1):
@@ -164,59 +163,77 @@ class analysis:
         plt.ylabel('Rate[Hz]')
         if legend == True:
             if study_type == "LER":
-                custom_lines = [Line2D([0], [0], color='blue', lw=4), Line2D([0], [0], color='magenta', lw=4), Line2D([0], [0], color='limegreen', lw=4), Line2D([0], [0], color='cyan', lw=4)]
+                custom_lines = [Line2D([0], [0], color='red', lw=4, label = '%s Current [mA]'%(study_type)), Line2D([0], [0], color='magenta', lw=4, label = 'TPC predicted rate'), Line2D([0], [0], color='limegreen', lw=4, label = 'TPC predicted Touschek rate'), Line2D([0], [0], color='cyan', lw=4, label = 'TPC predicted beam-gas rate'), Line2D([0], [0], marker='o', color='w', markersize=6, lw=0, markerfacecolor = 'black', label = 'Data')]
             else:
-                custom_lines = [Line2D([0], [0], color='red', lw=4), Line2D([0], [0], color='magenta', lw=4), Line2D([0], [0], color='limegreen', lw=4), Line2D([0], [0], color='cyan', lw=4)]
-            plt.legend(custom_lines, ['%s Current [mA]'%(study_type), 'TPC predicted rate', 'TPC predicted Touschek rate', 'TPC predicted beam-gas rate'])
+                custom_lines = [Line2D([0], [0], color='blue', lw=4, label = '%s Current [mA]'%(study_type)), Line2D([0], [0], color='magenta', lw=4, label = 'TPC predicted rate'), Line2D([0], [0], color='limegreen', lw=4, label = 'TPC predicted Touschek rate'), Line2D([0], [0], color='cyan', lw=4, label = 'TPC predicted beam-gas rate'), Line2D([0], [0], marker='o', color='w', markersize=6, lw=0, markerfacecolor = 'black', label = 'Data')]
+            plt.legend(handles = custom_lines, loc = 'upper right')
             
-    def make_fwd_plots(self, study_type, bins = 10):
+    def make_fwd_plots(self, study_type, bins=5):
         if study_type == "LER":
             ymax = 2
         else:
-            ymax = 0.1
+            ymax = 2
+        plt.figure(figsize = (16,8))
+        plt.rc('legend', fontsize=10)
+        plt.rc('xtick', labelsize=16)
+        plt.rc('ytick', labelsize=16)
+        plt.rc('axes', labelsize=16)
+        plt.rc('axes', titlesize=16)
         plt.subplot(3,1,1)
         self.plot_fit("iiwi", study_type, bins, ymax, legend = True)
         plt.title("Iiwi (z = +6.6 m)")
+        plt.xticks([])
         plt.subplot(3,1,2)
         self.plot_fit("nene", study_type, bins, ymax)
         plt.title("Nene (z = +14 m)")
+        plt.xticks([])
         plt.subplot(3,1,3)
         self.plot_fit("humu", study_type, bins, ymax)
         plt.title("Humu (z = +16 m)")
         plt.tight_layout()
+        plt.subplots_adjust(hspace = 0.2)
         plt.show()
 
-    def make_bwd_plots(self, study_type, bins = 10):
+    def make_bwd_plots(self, study_type, bins=5):
         if study_type == "HER":
-            ymax = 0.2
+            ymax = 0.3
         else:
-            ymax = 0.05
+            ymax = 0.3
+        plt.figure(figsize = (16,8))
+        plt.rc('legend', fontsize=10)
+        plt.rc('xtick', labelsize=16)
+        plt.rc('ytick', labelsize=16)
+        plt.rc('axes', labelsize=16)
+        plt.rc('axes', titlesize=16)
         plt.subplot(3,1,1)
         self.plot_fit("palila", study_type, bins, ymax, legend = True)
         plt.title("Palila (z = -5.6 m)")
+        plt.xticks([])
         plt.subplot(3,1,2)
         self.plot_fit("tako", study_type, bins, ymax)
         plt.title("Tako (z = -8.0 m)")
+        plt.xticks([])
         plt.subplot(3,1,3)
         self.plot_fit("elepaio", study_type, bins, ymax)
         plt.title("elepaio (z = -14 m)")
         plt.tight_layout()
+        plt.subplots_adjust(hspace = 0.2)
         plt.show()
 
-    def measure_and_fit_lumi_bgs(self, tpc, study_period ,bins = 10):
-        lumi_data_avg = self.compute_means_and_errs("Lumi", study_period, bins)
+    def measure_and_fit_lumi_bgs(self, tpc, study_period ,bins=5):
+        lumi_data_avg = self.compute_means_and_errs("Lumi", study_period, bins=20)
         LER_fit_params = self.get_fit_parameters("LER", study_period, bins)
         HER_fit_params = self.get_fit_parameters("HER", study_period, bins)
         LER_rates = LER_fit_params[tpc+'_B0']*lumi_data_avg['I_LER'] + LER_fit_params[tpc+'_B1']*lumi_data_avg['I_LER']**2 + LER_fit_params[tpc+'_T']*lumi_data_avg['I_LER']**2/(lumi_data_avg['Sy_LER']*lumi_data_avg['Nb_LER'])
         HER_rates = HER_fit_params[tpc+'_B0']*lumi_data_avg['I_HER'] + HER_fit_params[tpc+'_B1']*lumi_data_avg['I_HER']**2 + HER_fit_params[tpc+'_T']*lumi_data_avg['I_HER']**2/(lumi_data_avg['Sy_HER']*lumi_data_avg['Nb_HER'])
         LER_rates_err = np.sqrt((LER_fit_params[tpc+'_B0']+2*LER_fit_params[tpc+'_B1']*lumi_data_avg['I_LER']+2*LER_fit_params[tpc+'_T']*lumi_data_avg['I_LER']/(lumi_data_avg['Sy_LER']**2*lumi_data_avg['Nb_LER'])*lumi_data_avg['I_LER_err'])**2+(LER_fit_params[tpc+'_T']*lumi_data_avg['I_LER']**2/(lumi_data_avg['Sy_LER']**2*lumi_data_avg['Nb_LER'])*lumi_data_avg['Sy_LER_err'])**2)
         HER_rates_err = np.sqrt((HER_fit_params[tpc+'_B0']+2*HER_fit_params[tpc+'_B1']*lumi_data_avg['I_HER']+2*HER_fit_params[tpc+'_T']*lumi_data_avg['I_HER']/(lumi_data_avg['Sy_HER']**2*lumi_data_avg['Nb_HER'])*lumi_data_avg['I_HER_err'])**2+(HER_fit_params[tpc+'_T']*lumi_data_avg['I_HER']**2/(lumi_data_avg['Sy_HER']**2*lumi_data_avg['Nb_HER'])*lumi_data_avg['Sy_HER_err'])**2)
-        lumi_rates = lumi_data_avg[tpc+'_neutrons'] - LER_rates# - HER_rates
+        lumi_rates = lumi_data_avg[tpc+'_neutrons'] - LER_rates - HER_rates
         lumi_rates_err = np.sqrt(lumi_data_avg[tpc+'_neutrons_err']**2 + LER_rates_err**2 + HER_rates_err**2)
         
         gr = ROOT.TGraphErrors(len(lumi_rates), array.array('d', lumi_data_avg['ECL_lumi']/10000), array.array('d', lumi_rates), array.array('d', lumi_data_avg['ECL_lumi_err']/10000), array.array('d', lumi_rates_err))
         f1 = ROOT.TF1("f1", "[0] + [1]*x", 0, 2)
-        gr.Fit("f1", "SEM")
+        gr.Fit("f1", "SEMR")
         fits = {}
         fits['%s_int'%(tpc)] = gr.GetFunction("f1").GetParameter(0)
         fits['%s_int_err'%(tpc)] = gr.GetFunction("f1").GetParError(0)
@@ -224,16 +241,23 @@ class analysis:
         fits['%s_slope_err'%(tpc)] = gr.GetFunction("f1").GetParError(1)
 
         x = np.linspace(0,2,10000) #for plotting fit
-        plt.errorbar(lumi_data_avg['ECL_lumi']/10000,lumi_rates,lumi_rates_err,lumi_data_avg['ECL_lumi_err']/10000,'o', label = 'Data')
-        plt.plot(x, fits['%s_int'%(tpc)]+ fits['%s_slope'%(tpc)]*x, color = 'black', label = 'offset=%s+/-%s, slope=%s+/-%s'%(float('%.2g' % fits[tpc+'_int']), float('%.2g' % fits[tpc+'_int_err']), float('%.2g' % fits[tpc+'_slope']), float('%.2g' % fits[tpc+'_slope_err'])))
+        plt.errorbar(lumi_data_avg['ECL_lumi']/10000,lumi_rates,lumi_rates_err,lumi_data_avg['ECL_lumi_err']/10000,'o', label = 'Data', alpha = 0.6)
+        plt.plot(x, fits['%s_int'%(tpc)]+ fits['%s_slope'%(tpc)]*x, color = 'black', label = r'offset=%s$\pm$%s'%(float('%.2g' % fits[tpc+'_int']), float('%.2g' % fits[tpc+'_int_err'])))
+        plt.fill_between([0],[0],[0], lw = 0, label = r'slope=%s$\pm$%s'%(float('%.2g' % fits[tpc+'_slope']), float('%.2g' % fits[tpc+'_slope_err'])), color = 'white')
         plt.xlim(0,2)
-        plt.xlabel("Luminosity [10^34cm-2s-1]")
-        plt.ylabel("Rate - LER_fit - HER_fit [Hz]")
-        plt.ylim(-1,2)
+        plt.xlabel(r'Luminosity [$10^{34}cm^{-2}s^{-1}$]')
+        plt.ylabel(r'Rate - $LER_{fit}$ - $HER_{fit}$ [Hz]')
+        plt.ylim(-1,3)
         plt.legend()
         return fits
 
-    def plot_bwd_luminosity(self, bins=10):
+    def plot_bwd_luminosity(self, bins=5):
+        plt.figure(figsize = (16,8))
+        plt.rc('legend', fontsize=12)
+        plt.rc('xtick', labelsize=16)
+        plt.rc('ytick', labelsize=16)
+        plt.rc('axes', labelsize=16)
+        plt.rc('axes', titlesize=16)
         plt.subplot(2,3,1)
         self.measure_and_fit_lumi_bgs("palila", "Cont_inj", bins)
         plt.title("Palila (z = -5.6 m) Cont. Inj. Fit")
@@ -252,9 +276,16 @@ class analysis:
         plt.subplot(2,3,6)
         self.measure_and_fit_lumi_bgs("elepaio", "Decay", bins)
         plt.title("Elepaio (z = -14 m) Decay Fit")
+        plt.tight_layout()
         plt.show()
 
-    def plot_fwd_luminosity(self, bins=10):
+    def plot_fwd_luminosity(self, bins=5):
+        plt.figure(figsize = (16,8))
+        plt.rc('legend', fontsize=12)
+        plt.rc('xtick', labelsize=16)
+        plt.rc('ytick', labelsize=16)
+        plt.rc('axes', labelsize=16)
+        plt.rc('axes', titlesize=16)
         plt.subplot(2,3,1)
         self.measure_and_fit_lumi_bgs("iiwi", "Cont_inj", bins)
         plt.title("Iiwi (z = +6.6 m) Cont. Inj. Fit")
@@ -273,16 +304,18 @@ class analysis:
         plt.subplot(2,3,6)
         self.measure_and_fit_lumi_bgs("humu", "Decay", bins)
         plt.title("Humu (z = +16 m) Decay Fit")
+        plt.tight_layout()
         plt.show()
 
-    def plot_bg_summary(self, study_period, bins = 10):
-        tpcs = ['iiwi', 'nene', 'humu', 'palila', 'tako', 'elepaio']
+    def plot_bg_summary(self, study_period, bins=5):
+        #tpcs = ['iiwi', 'nene', 'humu', 'palila', 'tako', 'elepaio']
+        tpcs = ['palila', 'tako', 'elepaio', 'iiwi', 'nene', 'humu']
         LER_fit_params = self.get_fit_parameters("LER", study_period, bins)
         HER_fit_params = self.get_fit_parameters("HER", study_period, bins)
         fit_dict = {}
         df = pd.DataFrame() #order is LER_bg, LER_T, HER_bg, HER_T, Lumi 
         for tpc in tpcs:
-            lumi_fits = self.measure_and_fit_lumi_bgs(tpc, study_period ,bins = 10)
+            lumi_fits = self.measure_and_fit_lumi_bgs(tpc, study_period ,bins=5)
             fit_dict['%s_lumi_int'%(tpc)]=lumi_fits['%s_int'%(tpc)]
             fit_dict['%s_lumi_slope'%(tpc)]=lumi_fits['%s_slope'%(tpc)]
             fit_dict['%s_LER_B0'%(tpc)] = LER_fit_params[tpc+'_B0']
@@ -291,11 +324,11 @@ class analysis:
             fit_dict['%s_HER_B0'%(tpc)] = HER_fit_params[tpc+'_B0']
             fit_dict['%s_HER_B1'%(tpc)] = HER_fit_params[tpc+'_B1']
             fit_dict['%s_HER_T'%(tpc)] = HER_fit_params[tpc+'_T']
-            LER_bg = fit_dict['%s_LER_B0'%(tpc)]*510 + fit_dict['%s_LER_B1'%(tpc)]*510**2
-            LER_T = fit_dict['%s_LER_T'%(tpc)]*510**2/(60*783)
-            HER_bg = fit_dict['%s_HER_B0'%(tpc)]*510 + fit_dict['%s_HER_B1'%(tpc)]*510**2
-            HER_T = fit_dict['%s_HER_T'%(tpc)]*510**2/(60*783)
-            Lumi = fit_dict['%s_lumi_int'%(tpc)]+fit_dict['%s_lumi_slope'%(tpc)]*1.6
+            LER_bg = fit_dict['%s_LER_B0'%(tpc)]*700 + fit_dict['%s_LER_B1'%(tpc)]*700**2
+            LER_T = fit_dict['%s_LER_T'%(tpc)]*700**2/(50*783)
+            HER_bg = fit_dict['%s_HER_B0'%(tpc)]*700 + fit_dict['%s_HER_B1'%(tpc)]*700**2
+            HER_T = fit_dict['%s_HER_T'%(tpc)]*700**2/(50*783)
+            Lumi = fit_dict['%s_lumi_int'%(tpc)]+fit_dict['%s_lumi_slope'%(tpc)]*2.0
             if LER_bg < 0:
                 LER_bg = 0
             if LER_T < 0:
@@ -314,21 +347,29 @@ class analysis:
             Lumi_frac = Lumi/total * 100
             df[tpc] = [LER_bg_frac, LER_T_frac, HER_bg_frac, HER_T_frac, Lumi_frac]
         plt.close()
+        rc('text', usetex=False)
+        #plt.figure(figsize=(16,8))
+        plt.rc('legend', fontsize=12)
+        plt.rc('xtick', labelsize=16)
+        plt.rc('ytick', labelsize=16)
+        plt.rc('axes', labelsize=16)
+        plt.rc('axes', titlesize=16)
         df = df.T
         df.columns = ['LER_bg', 'LER_Touschek', 'HER_bg', 'HER_Touschek', 'Lumi']
         colors = ['cyan' ,'magenta', 'yellow', 'purple', 'limegreen']
         df.plot(kind='bar', stacked=True, color = colors)
-        if study_period == "Cont_inj":
-            plt.title("Background breakdown continuous injection fits")
-        else:
-            plt.title("Background breakdown decay fits")
+        #if study_period == "Cont_inj":
+        #    plt.title("Background breakdown continuous injection fits")
+        #else:
+        #    plt.title("Background breakdown decay fits")
         plt.xlabel("TPC")
-        plt.ylabel("Background Fraction (%)")
+        plt.ylabel('Background Fraction [%]')
+        plt.ylim(0,110)
         plt.show()
         return df
         
     '''
-    def get_fit_parameters(self, study_type, study_period, bins=10):
+    def get_fit_parameters(self, study_type, study_period, bins=n):
         data = self.heuristic_averages(study_type, study_period, bins)
         tpcs = ['iiwi', 'humu', 'nene', 'tako', 'elepaio', 'palila']
         #x = {}
@@ -354,7 +395,7 @@ class analysis:
         #    fits['%s_T_err'%(tpc)] = gr[tpc].GetFunction("f1").GetParError(1)
         #return fits
 
-    def plot_heuristic_fit(self, tpc, study_type, study_period, bins=10):
+    def plot_heuristic_fit(self, tpc, study_type, study_period, bins=n):
         data = self.heuristic_averages(study_type, study_period, bins)
         #fit = self.get_fit_parameters(study_type, study_period, bins)
         Nbs = [393, 783, 1565]
