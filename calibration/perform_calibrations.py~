@@ -1,0 +1,484 @@
+import numpy as np
+import pandas as pd
+import root_pandas as rp
+import ROOT
+import array
+import matplotlib.pyplot as plt
+import matplotlib
+from matplotlib import rc
+from matplotlib.patches import Patch
+rc('text', usetex=True)
+
+class tpc_calibration():
+
+    def __init__(self):
+        #Use for plotting before and after alpha calibration
+        #plt.subplot(2,1,1)
+        #self.plot_alpha_distributions(corrected_energy = False, calibrated = False, corrected_length = 0, gain = False)
+        #self.plot_alpha_distributions(corrected_energy = False, calibrated = True, corrected_length = 0, gain = True)
+        #self.plot_alpha_distributions(corrected_energy = True, calibrated = True, corrected_length = 0, gain = True)
+        #plt.ylim(0,1600)
+        #plt.ylabel(r'$G_{eff}$')
+        #colors = self.load_colors()
+        #legend_elements = [Patch(facecolor=matplotlib.colors.colorConverter.to_rgba(colors[0], alpha=0.2), edgecolor=matplotlib.colors.colorConverter.to_rgba(colors[0], alpha=1), label = 'iiwi'), Patch(facecolor=matplotlib.colors.colorConverter.to_rgba(colors[1], alpha=0.2), edgecolor=matplotlib.colors.colorConverter.to_rgba(colors[1], alpha=1), label = 'humu'), Patch(facecolor=matplotlib.colors.colorConverter.to_rgba(colors[2], alpha=0.2), edgecolor=matplotlib.colors.colorConverter.to_rgba(colors[2], alpha=1), label = 'nene'), Patch(facecolor=matplotlib.colors.colorConverter.to_rgba(colors[3], alpha=0.2), edgecolor=matplotlib.colors.colorConverter.to_rgba(colors[3], alpha=1), label = 'tako'), Patch(facecolor=matplotlib.colors.colorConverter.to_rgba(colors[4], alpha=0.2), edgecolor=matplotlib.colors.colorConverter.to_rgba(colors[4], alpha=1), label = 'palila'), Patch(facecolor=matplotlib.colors.colorConverter.to_rgba(colors[5], alpha=0.2), edgecolor=matplotlib.colors.colorConverter.to_rgba(colors[5], alpha=1), label = 'elepaio'), Patch(facecolor=matplotlib.colors.colorConverter.to_rgba(colors[0], alpha=0.2), edgecolor=matplotlib.colors.colorConverter.to_rgba(colors[0], alpha=1), hatch = '//\\\\', label = 'iiwi'), Patch(facecolor=matplotlib.colors.colorConverter.to_rgba(colors[1], alpha=0.2), edgecolor=matplotlib.colors.colorConverter.to_rgba(colors[1], alpha=1), hatch = '//\\\\', label = 'humu'), Patch(facecolor=matplotlib.colors.colorConverter.to_rgba(colors[2], alpha=0.2), edgecolor=matplotlib.colors.colorConverter.to_rgba(colors[2], alpha=1), hatch = '//\\\\', label = 'nene'), Patch(facecolor=matplotlib.colors.colorConverter.to_rgba(colors[3], alpha=0.2), edgecolor=matplotlib.colors.colorConverter.to_rgba(colors[3], alpha=1), hatch = '//\\\\', label = 'tako'), Patch(facecolor=matplotlib.colors.colorConverter.to_rgba(colors[4], alpha=0.2), edgecolor=matplotlib.colors.colorConverter.to_rgba(colors[4], alpha=1), hatch = '//\\\\', label = 'palila'), Patch(facecolor=matplotlib.colors.colorConverter.to_rgba(colors[5], alpha=0.2), edgecolor=matplotlib.colors.colorConverter.to_rgba(colors[5], alpha=1), hatch = '//\\\\', label = 'elepaio')]
+        #plt.legend(handles = legend_elements, ncol = 2, title = r'Uncalibrated $\qquad\quad$ Calibrated')
+        #plt.subplot(2,1,2)
+        #self.plot_alpha_distributions(corrected_energy = True, calibrated = False, corrected_length = 0)
+        #self.plot_alpha_distributions(corrected_energy = True, calibrated = True, corrected_length = 0, gain = False)
+        #plt.legend(ncol = 2)
+        #plt.xlim(1000,2000)
+        #plt.ylim(0,10)
+        #plt.savefig('calibrated_alphas.png')
+        #plt.show()
+        
+        #self.write_to_root_file()
+        pass
+    def get_tpc_list(self, tpc_list = ['iiwi', 'humu', 'nene', 'tako', 'palila', 'elepaio']):
+        return tpc_list
+
+    def load_alphas(self):
+        tpcs = self.get_tpc_list()
+        df = {}
+        for tpc in tpcs:
+            df[tpc] = rp.read_root('/Users/vahsengrouplaptop/data/phase3/spring_2020/maintenance_day_test/%s_alphas_all.root'%(tpc))
+            df[tpc]['BCID_range'] = [df[tpc]['BCID'][i].max()-df[tpc]['BCID'][i].min() for i in range (0,len(df[tpc]))]
+            df[tpc] = df[tpc].loc[(df[tpc]['track_energy'] > 400) & (df[tpc]['BCID_range'] < 90)] #selection for alphas
+            df[tpc] = df[tpc].loc[(np.abs(df[tpc]['phi']) < 5) | (np.abs(df[tpc]['phi']-180) < 5) | (np.abs(-180 - df[tpc]['phi']) < 5)]
+            df[tpc] = df[tpc].loc[(df[tpc]['theta']>85) & (df[tpc]['theta']<95)]
+            df[tpc]['track_energy'] = df[tpc]['track_charge']*35.075/2000*1e-3 # "uncalibrates" energy to start fresh
+            df[tpc]['pixel_energy'] = df[tpc]['pixel_charge']*35.075/2000*1e-3 # "uncalibrates" energy to start fresh
+        return df #returns dictionary of horizontal alphas
+
+    def get_study_data(self):
+        tpcs = self.get_tpc_list()
+        df = {}
+        for tpc in tpcs:
+            df[tpc] = rp.read_root('/Users/vahsengrouplaptop/data/phase3/spring_2020/05-09-20/tpc_root_files/%s_all_new.root'%(tpc))
+            df[tpc]['track_energy'] = df[tpc]['track_charge']*35.075/2000*1e-3 # "uncalibrates" energy to start fresh
+            df[tpc]['pixel_energy'] = df[tpc]['pixel_charge']*35.075/2000*1e-3 # "uncalibrates" energy to start fresh
+        return df
+
+    def loose_neutron_cuts(self, dataframe): #computes minimal set of cuts to start
+        dataframe = dataframe.loc[(dataframe['hitside_row_min']==0) & (dataframe['hitside_row_max']==0) & (dataframe['hitside_col_min']==0) & (dataframe['hitside_col_max']==0)]
+        return dataframe
+
+    def load_recoils(self):
+        df = self.get_study_data()
+        tpcs = df.keys()
+        for tpc in tpcs:
+            df[tpc] = self.loose_neutron_cuts(df[tpc])
+        return df
+
+    def get_saturation_correction_factor(self, x):
+        return -1.03*x**4 +3.73*x**3 -4.65*x**2 + 0.94*x + 0.79
+
+    def get_threshold_correction_factor(self, x):
+        return 6.7e-5*x**5 -7.9e-4*x**4 - 3.5e-3 * x**3 + 4.9e-2*x**2 +7e-2*x + 1.2e-1
+
+    def perform_saturation_correction(self, dataframe):
+        saturation_fraction = []
+        for i in range(0,len(dataframe)):
+            saturation_fraction.append(len([val for val in dataframe['tot'].iloc[i] if val == 13])/len(dataframe['tot'].iloc[i]))
+        dataframe['saturation_fraction'] = saturation_fraction
+        dataframe['saturation_corrected_energy'] = 1/self.get_saturation_correction_factor(dataframe['saturation_fraction'])*dataframe['track_energy']
+        return dataframe
+
+    def perform_threshold_correction(self, dataframe):
+        tot_mean = []
+        for i in range(0,len(dataframe)):
+            tot_mean.append(dataframe['tot'].iloc[i].mean())
+        dataframe['mean_tot'] = tot_mean
+        dataframe['full_corrected_energy'] = 1/self.get_threshold_correction_factor(dataframe['mean_tot'])*dataframe['saturation_corrected_energy']
+        return dataframe
+
+    def correct_alphas(self): #corrects alphas for saturation and threshold
+        alphas = self.load_alphas()
+        tpcs = alphas.keys()
+        for tpc in tpcs:
+            alphas[tpc] = self.perform_saturation_correction(alphas[tpc])
+            alphas[tpc] = self.perform_threshold_correction(alphas[tpc])
+        return alphas
+
+    def correct_recoils(self): #corrects alphas for saturation and threshold
+        recoils = self.load_recoils()
+        tpcs = recoils.keys()
+        for tpc in tpcs:
+            recoils[tpc] = self.perform_saturation_correction(recoils[tpc])
+            recoils[tpc] = self.perform_threshold_correction(recoils[tpc])
+        return recoils
+
+    def calibrate_alphas(self, corrected_energy = True, corrected_length = 0): #calibrates alphas to a de/dx reference value of 500 keV/cm
+        if corrected_energy == True:
+            alphas = self.correct_alphas()
+            ekey = 'full_corrected_energy'
+        else:
+            alphas = self.load_alphas()
+            ekey = 'track_energy'
+        if corrected_length == 0:
+            lkey = 'length'
+        elif corrected_length == 1:
+            lkey = 'max_corrected_length'
+        else:
+            lkey = 'rms_corrected_length'
+        tpcs = alphas.keys()
+        scale_factor = {}
+        for tpc in tpcs:
+            #alphas[tpc]['dedx'] = alphas[tpc][ekey]/alphas[tpc][lkey]
+            scale_factor[tpc] = 1430/((alphas[tpc][ekey]*np.sin(alphas[tpc]['theta']*np.pi/180)).mean())
+            alphas[tpc][ekey] = scale_factor[tpc]*alphas[tpc][ekey]
+        return alphas, scale_factor
+
+    def calibrate_recoils(self, corrected_energy = True, corrected_length = 0): #calibrates recoils to a de/dx reference value of 500 keV/cm
+        if corrected_energy == True:
+            recoils = self.correct_recoils()
+            ekey = 'full_corrected_energy'
+        else:
+            recoils = self.load_recoils()
+            ekey = 'track_energy'
+        if corrected_length == 0:
+            lkey = 'length'
+        elif corrected_length == 1:
+            lkey = 'max_corrected_length'
+        else:
+            lkey = 'rms_corrected_length'
+        alphas, scale_factor = self.calibrate_alphas(corrected_energy, corrected_length)
+        tpcs = recoils.keys()
+        for tpc in tpcs:
+            recoils[tpc]['track_energy'] = scale_factor[tpc]*recoils[tpc]['track_energy']
+            if corrected_energy == True:
+                recoils[tpc]['saturation_corrected_energy'] = scale_factor[tpc]*recoils[tpc]['saturation_corrected_energy']
+                recoils[tpc]['full_corrected_energy'] = scale_factor[tpc]*recoils[tpc]['full_corrected_energy']
+        return recoils
+            
+    def load_colors(self): #makes colorblind friendly palette
+        color_codes = ['#377eb8', '#ff7f00', '#4daf4a', '#f781bf', '#a65628', '#984ea3', '#999999', '#e41a1c', '#dede00'] #friendly colors for color blind
+        #color_codes = ['#FFD700', '#4B0082', '#FF00FF', '#00FFFF', '#FF0000', '#808080']
+        return color_codes
+
+    def plot_alpha_distributions(self, corrected_energy = True, calibrated = True, corrected_length = 0, gain = False):
+        if calibrated == True:
+            alphas, scale_factor = self.calibrate_alphas(corrected_energy, corrected_length)
+        else:
+            alphas = self.correct_alphas()
+        if corrected_energy == True:
+            ekey = 'full_corrected_energy'
+        else:
+            ekey = 'track_energy'
+        if corrected_length == 0:
+            lkey = 'length'
+        elif corrected_length == 1:
+            lkey = 'max_corrected_length'
+        else:
+            lkey = 'rms_corrected_length'
+        if corrected_energy == True and corrected_length == 0:
+            title = 'Corrected energy'
+            fig = 'calibration_figures/corrected_energy_raw_length_alphas.png'
+        elif corrected_energy == True and corrected_length == 1:
+            title = 'Corrected energy with max length correction'
+            fig = 'calibration_figures/corrected_energy_max_length_alphas.png'
+        elif corrected_energy == True and corrected_length == 2:
+            title = 'Corrected energy with RMS length correction'
+            fig = 'calibration_figures/corrected_energy_rms_length_alphas.png'
+        elif corrected_energy == False and corrected_length == 0:
+            title = 'Uncorrected energy'
+            fig = 'calibration_figures/uncorrected_energy_raw_length_alphas.png'
+        elif corrected_energy == False and corrected_length == 1:
+            title = 'Uncorrected energy with max length correction'
+            fig = 'calibration_figures/uncorrected_energy_max_length_alphas.png'
+        elif corrected_energy == False and corrected_length == 2:
+            title = 'Uncorrected energy with RMS length correction'
+            fig = 'calibration_figures/uncorrected_energy_rms_length_alphas.png'
+        tpcs = alphas.keys()
+        color_codes = self.load_colors()
+        colors = [color_codes[i] for i in range(0,len(tpcs))]
+        i = 0
+        for tpc in tpcs:
+            #plt.hist(alphas[tpc][ekey]/alphas[tpc][lkey]*1e4, bins = 30, range = (200, 800), linewidth = 2, edgecolor = matplotlib.colors.colorConverter.to_rgba(colors[i], alpha=1), color = matplotlib.colors.colorConverter.to_rgba(colors[i], alpha=0.2), label = tpc)
+            if gain == True:
+                alphas[tpc][ekey] = alphas[tpc]['track_charge']*35.075/alphas[tpc][ekey]*1e-3
+                print(tpc, alphas[tpc][ekey].mean())
+                plt.bar(tpc, alphas[tpc][ekey].unique(),linewidth = 2, edgecolor = matplotlib.colors.colorConverter.to_rgba(colors[i], alpha=1), color = matplotlib.colors.colorConverter.to_rgba(colors[i], alpha=0.2))
+            elif calibrated == True:
+                plt.hist(alphas[tpc][ekey], bins = 60, range = (0, 2000), linewidth = 2, edgecolor = matplotlib.colors.colorConverter.to_rgba(colors[i], alpha=1), color = matplotlib.colors.colorConverter.to_rgba(colors[i], alpha=0.2), label = '%s'%(tpc)) #hatch = '/\\'
+            elif calibrated == False:
+                plt.hist(alphas[tpc][ekey], bins = 60, range = (0, 2000), linewidth = 2, edgecolor = matplotlib.colors.colorConverter.to_rgba(colors[i], alpha=1), color = matplotlib.colors.colorConverter.to_rgba(colors[i], alpha=0.2), label = '%s uncalibrated'%(tpc))
+            i += 1
+        if gain == False:
+            plt.xlabel(r'$E\cos(\theta)$ [keV]') #theta is z-x angle (equiv to sine of theta in our dataframes)
+        #plt.title(title)
+        #plt.savefig(fig)
+        #plt.clf()
+
+    def plot_calibrated_recoil_distributions(self, corrected_energy = True, corrected_length = 0):
+        recoils = self.calibrate_recoils(corrected_energy, corrected_length)
+        if corrected_energy == True:
+            ekey = 'full_corrected_energy'
+        else:
+            ekey = 'track_energy'
+        if corrected_length == 0:
+            lkey = 'length'
+        if corrected_length == 1:
+            lkey = 'max_corrected_length'
+        if corrected_length == 2:
+            lkey = 'rms_corrected_length'
+        if corrected_energy == True and corrected_length == 0:
+            fig = 'calibration_figures/corrected_energy_raw_length'
+        elif corrected_energy == True and corrected_length == 1:
+            fig = 'calibration_figures/corrected_energy_max_length'
+        elif corrected_energy == True and corrected_length == 2:
+            fig = 'calibration_figures/corrected_energy_rms_length'
+        elif corrected_energy == False and corrected_length == 0:
+            fig = 'calibration_figures/uncorrected_energy_raw_length'
+        elif corrected_energy == False and corrected_length == 1:
+            fig = 'calibration_figures/uncorrected_energy_max_length'
+        elif corrected_energy == False and corrected_length == 2:
+            fig = 'calibration_figures/uncorrected_energy_rms_length'
+        tpcs = recoils.keys()
+        color_codes = self.load_colors()
+        colors = [color_codes[i] for i in range(0,len(tpcs))]
+        i = 0
+        for tpc in tpcs:
+            plt.plot(recoils[tpc][lkey], recoils[tpc][ekey], 'o', markersize = 1, alpha = 0.5, label = tpc)
+            plt.legend()
+            plt.ylabel('Energy [keV]')
+            plt.xlabel('length [um]')
+            plt.xlim(0,10000)
+            plt.ylim(0,200)
+            plt.savefig(fig + '_%s.png'%(i))
+            i += 1
+        plt.clf()
+
+    def apply_recoil_cuts(self, corrected_energy = True, corrected_length = 0): #Cuts to train double Gaussian fit
+        recoils =  self.calibrate_recoils(corrected_energy, corrected_length)
+        for tpc in recoils.keys():
+            if corrected_energy == False:
+                #cut_min = np.array([ 5.51204819e-06, -6.90060241e-03,  1.78012048e+01])
+                #cut_max = np.array([ 4.70883534e-06,  3.64728916e-02, -3.56124498e+01])
+                cut_min = np.array([ 2.46987952e-06,  1.71265060e-02, -1.82530120e+01])
+                cut_max = np.array([ 3.10240964e-06,  4.32198795e-02, -4.24397590e+01])
+                ekey = 'track_energy'
+                #recoils[tpc] = recoils[tpc].loc[recoils[tpc][ekey]>20]
+                recoils[tpc] = recoils[tpc].loc[recoils[tpc][ekey]>8]
+            else:
+                #cut_min = np.array([ 4.26706827e-06,  1.33283133e-02, -9.98995984e+00])
+                #cut_max = np.array([ 5.38152610e-06,  2.73975904e-02, -1.21285141e+01])
+                if tpc == 'humu':
+                    cut_min = np.array([1.62248996e-06, 3.18554217e-03, 5.89558233e+00])
+                else:
+                    cut_min = np.array([4.71887550e-06, 7.68072289e-03, 1.30522088e+00])
+                cut_max = np.array([6.15461847e-06,  3.04006024e-02, -1.94678715e+01])
+                ekey = 'full_corrected_energy'
+                #recoils[tpc] = recoils[tpc].loc[recoils[tpc][ekey]>20]
+                recoils[tpc] = recoils[tpc].loc[recoils[tpc][ekey]>10]
+            index = recoils[tpc].loc[(recoils[tpc][ekey] > (cut_min[0]*recoils[tpc]['length']**2 + cut_min[1]*recoils[tpc]['length']+cut_min[2])) & (recoils[tpc][ekey]<(cut_max[0]*recoils[tpc]['length']**2  +cut_max[1]*recoils[tpc]['length']+cut_max[2]))].index.to_numpy()
+            recoils[tpc] = recoils[tpc].loc[recoils[tpc][ekey] > (cut_min[0]*recoils[tpc]['length']**2 + cut_min[1]*recoils[tpc]['length']+cut_min[2])]
+            recoils[tpc]['He_recoil'] = 0
+            recoils[tpc]['He_recoil'][index] = 1
+        return recoils
+
+    def write_to_root_file(self, recoils_only = True, corrected_energy = True, corrected_length = 0, outdir = '/Users/vahsengrouplaptop/data/phase3/spring_2020/05-09-20/tpc_root_files/'):
+        if recoils_only == False:
+            recoils = self.calibrate_recoils(corrected_energy, corrected_length)
+        else:
+            recoils = self.apply_recoil_cuts(corrected_energy, corrected_length)
+        tpcs = recoils.keys()
+        for tpc in tpcs:
+            try:
+                recoils[tpc] = recoils[tpc].drop(columns = [['rms_width', 'max_corrected_length', 'rms_corrected_length']]) #attemts to remove obsolete branches if they exist
+            except KeyError:
+                pass
+            
+            recoils[tpc].index = [i for i in range(0,len(recoils[tpc]))]
+            recoils[tpc]['event_number'] = recoils[tpc].index
+            keys = [val for val in recoils[tpc].columns]
+            if recoils_only == True:
+                output = ROOT.TFile(outdir + '%s_all_recoils_only_newest.root'%(tpc), 'new')
+            else:
+                output = ROOT.TFile(outdir + '%s_all_new.root'%(tpc), 'recreate')
+            tout = ROOT.TTree('data','data')
+            branches = {}
+            data={}
+        
+            for key in keys:
+                if recoils[tpc][key].dtype == "O": #Determines the size of an array in a dataframe to be pushed to ntuple
+                    data[key]=array.array('d',[0 for j in range(0,50000)])
+                    branches[key]=tout.Branch("%s"%(key), data[key], "%s[npoints]/D"%(key))
+                elif key == 'npoints':
+                    data[key]=array.array('i',[0])
+                    branches[key]=tout.Branch("%s"%(key), data[key], "%s/I"%(key))
+                else:
+                    data[key]=array.array('d',[0])
+                    branches[key]=tout.Branch("%s"%(key), data[key], "%s/D"%(key))
+
+            for j in range(0,len(recoils[tpc])):
+                data['npoints'][0] = recoils[tpc]['npoints'].to_numpy()[j].astype(int)
+                for key in keys:
+                    if recoils[tpc][key].dtype == "O":
+                        for i in range(0,data['npoints'][0]):
+                            data[key][i]=recoils[tpc][key][j][i]
+                    elif key != 'npoints':
+                        data[key][0]=recoils[tpc][key][j]
+                print("Filling event %s out of %s"%(j, len(recoils[tpc])))
+                tout.Fill()
+
+            output.Write()
+            output.Close()
+            
+         
+t = tpc_calibration()
+
+
+#Old code below#
+
+'''
+def plot_uncalibrated_recoil_distributions(self):
+        recoils = self.load_recoils()
+        tpcs = recoils.keys()
+        color_codes = self.load_colors()
+        colors = [color_codes[i] for i in range(0,len(tpcs))]
+        i = 0
+        for tpc in tpcs:
+            plt.plot(recoils[tpc]['length'], recoils[tpc]['track_energy'], 'o', markersize = 1, alpha = 0.5, label = tpc)
+            plt.legend()
+            plt.ylabel('Energy [keV]')
+            plt.xlabel('length [um]')
+            plt.xlim(0,20000)
+            plt.ylim(0,1000)
+            plt.savefig('calibration_figures/uncalibrated_EvL_%s.png'%(i))
+            i += 1
+        plt.clf()
+
+    def plot_corrected_uncalibrated_alpha_distributions(self):
+        alphas = self.correct_alphas()
+        tpcs = alphas.keys()
+        color_codes = self.load_colors()
+        colors = [color_codes[i] for i in range(0,len(tpcs))]
+        i = 0
+        for tpc in tpcs:
+            plt.hist(alphas[tpc]['full_corrected_energy']/alphas[tpc]['length']*1e4, bins = 30, range = (200, 800), linewidth = 2, edgecolor = matplotlib.colors.colorConverter.to_rgba(colors[i], alpha=1), color = matplotlib.colors.colorConverter.to_rgba(colors[i], alpha=0.2), label = tpc)
+            i += 1
+        plt.xlabel('dE/dx [keV/cm]')
+        plt.legend()
+        plt.title('Corrected Uncalibrated Horizontal Alpha Distribution')
+        plt.savefig('calibration_figures/corrected_uncalibrated_alphas.png')
+        plt.clf()
+
+    def plot_corrected_uncalibrated_recoil_distributions(self):
+        recoils = self.correct_recoils()
+        tpcs = recoils.keys()
+        color_codes = self.load_colors()
+        colors = [color_codes[i] for i in range(0,len(tpcs))]
+        i = 0
+        for tpc in tpcs:
+            plt.plot(recoils[tpc]['length'], recoils[tpc]['full_corrected_energy'], 'o', markersize = 1, alpha = 0.5, label = tpc)
+            plt.legend()
+            plt.ylabel('Energy [keV]')
+            plt.xlabel('length [um]')
+            plt.xlim(0,20000)
+            plt.ylim(0,1000)
+            plt.savefig('calibration_figures/corrected_uncalibrated_EvL_%s.png'%(i))
+            i += 1
+        plt.clf()
+
+    
+
+    def plot_uncorrected_calibrated_alpha_distributions(self):
+        alphas, scale_factor = self.calibrate_uncorrected_alphas()
+        tpcs = alphas.keys()
+        color_codes = self.load_colors()
+        colors = [color_codes[i] for i in range(0,len(tpcs))]
+        i = 0
+        for tpc in tpcs:
+            plt.hist(alphas[tpc]['track_energy']/alphas[tpc]['length']*1e4, bins = 30, range = (200,800), linewidth = 2, edgecolor = matplotlib.colors.colorConverter.to_rgba(colors[i], alpha=1), color = matplotlib.colors.colorConverter.to_rgba(colors[i], alpha=0.2), label = tpc)
+            i += 1
+        plt.xlabel('dE/dx [keV/cm]')
+        plt.legend()
+        plt.title('Uncorrected Calibrated Horizontal Alpha Distribution')
+        plt.savefig('calibration_figures/uncorrected_calibrated_alphas.png')
+        plt.clf()
+        
+    def plot_corrected_calibrated_alpha_distributions(self):
+        alphas, scale_factor = self.calibrate_corrected_alphas()
+        tpcs = alphas.keys()
+        color_codes = self.load_colors()
+        colors = [color_codes[i] for i in range(0,len(tpcs))]
+        i = 0
+        for tpc in tpcs:
+            plt.hist(alphas[tpc]['full_corrected_energy']/alphas[tpc]['length']*1e4, bins = 30, range = (200,800), linewidth = 2, edgecolor = matplotlib.colors.colorConverter.to_rgba(colors[i], alpha=1), color = matplotlib.colors.colorConverter.to_rgba(colors[i], alpha=0.2), label = tpc)
+            i += 1
+        plt.xlabel('dE/dx [keV/cm]')
+        plt.legend()
+        plt.title('Corrected Calibrated Horizontal Alpha Distribution')
+        plt.savefig('calibration_figures/corrected_calibrated_alphas.png')
+        plt.clf()
+
+    def plot_corrected_calibrated_recoil_distributions(self):
+        p = np.array([ 2.43367743e-06,  1.01652514e-02, -3.24232712e+00])
+        recoils = self.calibrate_corrected_recoils()
+        tpcs = recoils.keys()
+        color_codes = self.load_colors()
+        colors = [color_codes[i] for i in range(0,len(tpcs))]
+        i = 0
+        for tpc in tpcs:
+            plt.plot(recoils[tpc]['length'], recoils[tpc]['full_corrected_energy'], 'o', markersize = 1, alpha = 0.5, label = tpc)
+            plt.legend()
+            plt.ylabel('Energy [keV]')
+            plt.xlabel('length [um]')
+            plt.xlim(0,20000)
+            plt.ylim(0,1000)
+            x = np.linspace(0,30000,10001)
+            plt.savefig('calibration_figures/corrected_calibrated_EvL_%s.png'%(i))
+            i += 1
+        plt.plot(x, p[0]*x**2+p[1]*x+p[2])
+        plt.savefig('calibration_figures/corrected_calibrated_EvL_all.png')
+        plt.clf()
+        i= 0
+        recoils_uncorrected = self.calibrate_uncorrected_recoils()
+        for tpc in tpcs: #plot uncorrected energy for reference
+            plt.plot(recoils_uncorrected[tpc]['length'], recoils_uncorrected[tpc]['track_energy'], 'o', markersize = 1, alpha = 0.5, label = tpc)
+            plt.legend()
+            plt.ylabel('Energy [keV]')
+            plt.xlabel('length [um]')
+            plt.xlim(0,20000)
+            plt.ylim(0,1000)
+            plt.savefig('calibration_figures/uncorrected_calibrated_EvL_%s.png'%(i))
+            i += 1
+        plt.plot(x, p[0]*x**2+p[1]*x+p[2])
+        plt.savefig('calibration_figures/uncorrected_calibrated_EvL_all.png')
+        plt.clf()
+
+    def post_calibration_cuts(self, dataframe):
+        p = np.array([ 2.43367743e-06,  1.01652514e-02, -3.24232712e+00])
+        dataframe = dataframe.loc[(dataframe['hitside_row_min']==0) & (dataframe['hitside_row_max']==0) & (dataframe['hitside_col_min']==0) & (dataframe['hitside_col_min']==0) & (dataframe['full_corrected_energy']>15) & (dataframe['full_corrected_energy']>(p[0]*dataframe['length']**2+p[1]*dataframe['length']+p[2]))]
+        return dataframe
+
+    def plot_corrected_calibrated_recoil_distributions_after_cuts(self):
+        recoils = self.calibrate_corrected_recoils()
+        tpcs = recoils.keys()
+        for tpc in tpcs:
+            recoils[tpc] = self.post_calibration_cuts(recoils[tpc])
+        color_codes = self.load_colors()
+        colors = [color_codes[i] for i in range(0,len(tpcs))]
+        i = 0
+        for tpc in tpcs:
+            plt.plot(recoils[tpc]['length'], recoils[tpc]['full_corrected_energy'], 'o', markersize = 1, alpha = 0.5, label = tpc)
+            plt.legend()
+            plt.ylabel('Energy [keV]')
+            plt.xlabel('length [um]')
+            plt.xlim(0,10000)
+            plt.ylim(0,500)
+            plt.savefig('calibration_figures/corrected_calibrated_EvL_final_cuts_%s.png'%(i))
+            i += 1
+        plt.clf()
+        i= 0
+        for tpc in tpcs: #plot uncorrected energy for reference
+            plt.plot(recoils[tpc]['length'], recoils[tpc]['full_corrected_energy'], 'o', markersize = 1, alpha = 0.5, label = tpc)
+            plt.legend()
+            plt.ylabel('Energy [keV]')
+            plt.xlabel('length [um]')
+            plt.xlim(0,10000)
+            plt.ylim(0,500)
+            plt.savefig('calibration_figures/uncorrected_calibrated_EvL_final_cuts_%s.png'%(i))
+            i += 1
+        plt.clf()
+'''

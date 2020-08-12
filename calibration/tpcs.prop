@@ -1,0 +1,161 @@
+# This file contains the OFFICIAL chip and TPC properties and calibrations. 
+#
+
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# Selections for TIGHT particle identification
+#   Loose PID requires no configuration. 
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+#
+#  Each row corresponds to one selection. Format:
+#   <candidate>   <selector>   <min>   <max>
+#     <candidate> = alpha, neutron, x-ray, other
+#     <selector>  = dedx (keV/micron), sum_e (keV), phi (alpha only; degrees), theta (alpha only; degrees) 
+#     <min>       = none (no minimum), <number>
+#     <max>       = <number>, none (no max)
+#
+# Alpha candidates are drawn from identified is_loose_alpha events 
+# identified by the loose PID algorithm, which requires only that the tracks
+# cross hitside_source and hitside_antisource and sum_e>????. Neutron and 
+# xray candidates are drawn from 
+# Events are considered alpha candidates if they satisfy
+# hitside_source && hitside_antisource. Events are considered
+# neutron and x-ray candidates if they have false values for all
+# hitside flags.
+#
+
+alpha	dedx   none   none
+alpha   sum_e  none   none
+alpha   phi    none   none
+alpha   theta  85     95
+neutron dedx   none   none
+neutron sum_e  none   none
+xray    dedx   none   none
+xray    sum_e  none   none
+
+
+
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# TPC-specific properties and calibrations
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+#
+# Macros and scripts in this directory will help in generating some of these values
+#
+# Required fields (case-sensitive) are:
+#   name:      unique string associated with each TPC
+#   tot_to_q:  charge (in electrons) of each TOT level (14) from calibrate_tot_scale.cc
+#   tot_to_qe: uncertainty in the charge of each TOT level (exactly 14!)
+#   x_source:  x coordinate of each source (from find_source_positions.cc)
+#   y_source:  y coordinate of each source (whitespace delimited)
+#   z_source:  z coordinate of each source (cannot derive from macro)
+#   work_fcn:  work function of the gas (in eV; 70:30 He:CO2 is 35.075)
+#   v_drift:   drift velocity (in microns/bcid) (from UNNAMED SCRIPT)
+#   gain:      the effective double-GEM gain (from UNNAMED SCRIPT)
+#   threshold: threshold (in electrons). This is only used by simulation code.
+#   absz_A:    first parameter of absolute Z fit (from fit_sigma_vs_z.cc)
+#   absz_B:    second parameter of absolute Z fit (from fit_sigma_vs_z.cc)
+
+### What was used for Michael's BEAST TPC recoils. Shown as an example ###
+name       phase1_Michael
+id         4
+tot_to_q   2920.5 3456.3 5319.9 7366.1 9828.0 13080.7 16785.2 20654.2 24646.3 28814.2 33179.4 37737.0 42751.6 50153.5
+tot_to_qe  0 0 0 0 0 0 0 0 0 0 0  0  0  0
+x_source   -27760  -24380
+y_source   3131    13174
+z_source   25000   85000
+work_fcn   35.075
+v_drift    250
+gain       1500
+threshold  2700
+absz_A     200
+absz_B     127
+
+### TPC info below is what should be used for simulated recoils for energy resolution measurement ###
+name       nene
+id         0
+tot_to_q   1085.31 2482.24 4126.52 5621.03 7920.43 11667.35 15117.97 19489.23 23211.63 27483.98 32272.73 37262.83 42283.59 47304.34
+x_source   53780
+y_source   14120
+z_source   85600
+work_fcn   35.075
+v_drift    219
+gain       899
+threshold  2000
+#absz_A     293.7
+#absz_B     80.7
+absz_A     200
+absz_B     127
+
+name       palila
+id         1
+tot_to_q   1768.71 2202.75 2670.76 4049.25 6586.25 8954.45 11551.60 14428.46 17618.81 21140.34 24831.56 28804.80 33534.23 40821.35
+x_source   54120
+y_source   13602
+z_source   85600
+work_fcn   35.075
+v_drift    219
+gain       1033
+threshold  2000
+#absz_A     115.8
+#absz_B     133.8
+absz_A     200
+absz_B     127
+
+name       humu
+id         3
+tot_to_q   1758.29 2324.41 3679.37 5433.43 6862.72 10000.83 13701.08 17258.86 21438.70 25821.34 30153.82 34460.74 39042.80 43624.85
+x_source   52680 
+y_source   12326
+z_source   85600
+work_fcn   35.075
+v_drift    219
+gain       878
+threshold  2000
+#absz_A     238.8
+#absz_B     115.2
+absz_A     200
+absz_B     127
+
+name       iiwi
+id         4
+tot_to_q   1833.00 2345.17 3017.33 6001.54 8891.71 11497.43 14335.32 18081.33 22526.06 27236.90 32056.16 36955.09 41874.75 46794.40
+x_source   54860
+y_source   13079
+z_source   85600
+work_fcn   35.075
+v_drift    219
+gain       1502
+threshold  2000
+#absz_A     168.2
+#absz_B     125.9
+absz_A     200
+absz_B     127
+
+name       elepaio
+id         5
+tot_to_q   1859.09 2496.61 4128.03 6844.95 9450.70 12158.68 15125.31 18507.89 22166.14 25826.40 29597.06 33588.70 38207.92 42827.15
+x_source   52600 
+y_source   12828
+z_source   85600
+work_fcn   35.075
+v_drift    172
+gain       797
+threshold  2000
+#absz_A     238.9
+#absz_B     113.1
+absz_A     200
+absz_B     127
+
+name       tako
+id         7
+tot_to_q   2761.20 3077.66 3509.80 5475.02 9230.59 11955.00 16837.46 20761.78 24514.73 28445.96 33071.27 38033.29 43011.21 47989.15
+x_source   54620 
+y_source   12976
+z_source   85600
+work_fcn   35.075
+v_drift    219
+gain       807
+threshold  2700
+#absz_A     216.9
+#absz_B     113.7
+absz_A     200
+absz_B     127

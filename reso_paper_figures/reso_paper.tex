@@ -1,0 +1,99 @@
+%\documentclass[preprint,12pt]{elsarticle}   	% use "amsart" instead of "article" for AMSLaTeX format
+%\documentclass[preprint,12pt]{article}   	% use "amsart" instead of "article" for AMSLaTeX format
+\documentclass[final,5p,times,twocolumn]{elsarticle}
+%\documentclass[preprint,12pt]{article}   	% use "amsart" instead of "article" for AMSLaTeX format
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
+\usepackage{geometry}                		% See geometry.pdf to learn the layout options. There are lots.
+\geometry{a4paper}                   		% ... or a4paper or a5paper or ...
+%\geometry{landscape}                		% Activate for rotated page geometry
+%\usepackage[parfill]{parskip}    		% Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}				% Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode
+								% TeX will automatically convert eps --> pdf in pdflatex		
+
+\graphicspath{ {./Figures/}  } 
+
+
+\usepackage{graphicx}                 % Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode
+\graphicspath{ {./Figures/} }
+
+\usepackage{epstopdf}                 % TeX will automatically convert eps --> pdf in pdflatex
+\epstopdfDeclareGraphicsRule{.pdf}{png}{.png}{convert #1 \OutputFile}
+\DeclareGraphicsExtensions{.png,.pdf,.jpg}  % Don't add file extension in \includegraphics. That is the order graphic files are searched.
+
+% from Phase 1 paper
+\usepackage{booktabs}
+\usepackage[backref=page,         % Add page links to..
+            pagebackref=false,    % ... not from reference
+            hyperindex=true,      % ... in index if present
+            colorlinks=true,      %
+            citecolor=blue,       %
+            filecolor=black,      %
+            linkcolor=blue,       %
+            urlcolor=blue,        %
+            breaklinks=true,      %
+            bookmarks=true,       % create bookmarks in pdf for better navigation
+            bookmarksopen=false,  %  ... but display only if we want to.
+            %
+            % Info appearing in the document information and evince Title
+            pdftitle   = {Second Measurements of Beam Backgrounds at the SuperKEKB Electron-Positron Collider},
+            pdfauthor  = {The BEAST2 group},
+            pdfsubject = {The subject}
+]{hyperref}                       % use \autoref instead of the \ref command
+
+\usepackage{amssymb}
+\usepackage{lipsum}                   % blind text
+\usepackage{textcomp}
+
+
+\usepackage{natbib}
+\setcitestyle{square,numbers}
+\bibliographystyle{unsrtnat}
+%SetFonts
+
+%SetFonts
+
+
+% ------------------------------------------------------------------------------
+% newcommands
+
+% ------------------------------------------------------------------------------
+
+					
+\begin{document}
+\title{}
+\author{[authorlist]}
+% Activate to display a given date or no date
+\date{}		
+
+\begin{abstract}
+
+\end{abstract}
+
+\maketitle
+
+\tableofcontents
+
+
+\input{01_Introduction/Ch_1_Introduction} % Sven, Hiro, Carlos, Tom, Zac?
+\input{02_Experimental_Setup/Ch_2_Experimental_Setup}
+%\input{03_Background_Simulation/Ch_3_Background_Simulation}
+
+\input{05_Beam_Gas_and_Touschek_Study/Ch_5_Beam_Gas_and_Touschek_Study}
+%\input{06_Luminosity_Study/Ch_6_Luminosity_Study} %Luka, PLUME group
+%\input{07_Injection_BG_Study_and_Mitigation/Ch_7_Injection_BG_Study_and_Mitigation} %Hendrik, Iida
+\input{08_Synchrotron_Radiation/Ch_8_Synchrotron_Radiation} % Hiro, Benjamin, Carsten
+\input{09_Track_and_Vertex_Distributions/Ch_9_Track_and_Vertex_Distributions} %Bryan
+\input{10_BelleII_Operation_Experience/Ch_10_BelleII_Operation_Experience} %Detector Experts, Carlos, ??
+\input{04_Collimator_Study/Ch_4_Collimator_Study} %Antonio, Hiro, Luka
+\input{11_Extrapolation_to_Early_Phase_3/Ch_11_Extrapolation_to_Early_Phase_3} %Zac, Sven, Hiro, Carlos, Tom
+\input{12_Summary/Ch_12_Summary} %Zac, Sven, Hiro, Carlos, Tom
+
+
+\cleardoublepage
+
+
+\bibliography{biblio}
+
+\end{document}

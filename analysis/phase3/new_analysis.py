@@ -9,6 +9,7 @@ from sklearn.linear_model.base import LinearModel
 from sklearn.base import RegressorMixin
 from sklearn.utils import check_X_y
 import numpy as np
+import matplotlib
 from matplotlib.lines import Line2D
 from matplotlib import rc
 rc('text', usetex=True)
@@ -192,6 +193,7 @@ class analysis:
         plt.title("Humu (z = +16 m)")
         plt.tight_layout()
         plt.subplots_adjust(hspace = 0.2)
+        plt.subplots_adjust(wspace = 0.5)
         plt.show()
 
     def make_bwd_plots(self, study_type, bins=5):
@@ -245,11 +247,53 @@ class analysis:
         plt.plot(x, fits['%s_int'%(tpc)]+ fits['%s_slope'%(tpc)]*x, color = 'black', label = r'offset=%s$\pm$%s'%(float('%.2g' % fits[tpc+'_int']), float('%.2g' % fits[tpc+'_int_err'])))
         plt.fill_between([0],[0],[0], lw = 0, label = r'slope=%s$\pm$%s'%(float('%.2g' % fits[tpc+'_slope']), float('%.2g' % fits[tpc+'_slope_err'])), color = 'white')
         plt.xlim(0,2)
-        plt.xlabel(r'Luminosity [$10^{34}cm^{-2}s^{-1}$]')
-        plt.ylabel(r'Rate - $LER_{fit}$ - $HER_{fit}$ [Hz]')
-        plt.ylim(-1,3)
-        plt.legend()
+        plt.xlabel(r'Luminosity [$10^{34}$cm$^{-2}$s$^{-1}$]')
+        #plt.ylabel(r'Rate - $LER_{fit}$ - $HER_{fit}$ [Hz]')
+        plt.ylabel(r'R$_L$ [Hz]')
+        plt.ylim(-1.5,3.5)
+        plt.yticks([-1,0,1,2,3])
+        plt.legend(loc = 'best')
         return fits
+
+    def plot_all_luminosity(self, study_period = "Cont_inj", bins = 20):
+        plt.figure(figsize = (10,10))
+        plt.rc('legend', fontsize=12)
+        plt.rc('xtick', labelsize=16)
+        plt.rc('ytick', labelsize=16)
+        plt.rc('axes', labelsize=16)
+        plt.rc('axes', titlesize=16)
+        plt.subplot(3,2,1)
+        self.measure_and_fit_lumi_bgs("palila", study_period, bins)
+        plt.title("Palila (z = -5.6 m)")
+        
+        plt.grid()
+        plt.subplot(3,2,2)
+        self.measure_and_fit_lumi_bgs("iiwi", study_period, bins)
+        plt.title("Iiwi (z = +6.6 m)")
+        
+        plt.grid()
+        plt.subplot(3,2,3)
+        self.measure_and_fit_lumi_bgs("tako", study_period, bins)
+        plt.title("Tako (z = -8.0 m)")
+        
+        plt.grid()
+        plt.subplot(3,2,4)
+        self.measure_and_fit_lumi_bgs("nene", study_period, bins)
+        plt.title("Nene (z = 14 m)")
+        
+        plt.grid()
+        plt.subplot(3,2,5)
+        self.measure_and_fit_lumi_bgs("elepaio", study_period, bins)
+        plt.title("Elepaio (z = -14 m)")
+        plt.grid()
+        plt.subplot(3,2,6)
+        self.measure_and_fit_lumi_bgs("humu", study_period, bins)
+        plt.title("Humu (z = +16 m)")
+        plt.subplots_adjust(hspace=0.5)
+        plt.subplots_adjust(wspace=0.5)
+        plt.grid()
+        plt.savefig('lumi_fits.png', bbox_inches='tight')
+        plt.show()
 
     def plot_bwd_luminosity(self, bins=5):
         plt.figure(figsize = (16,8))
@@ -355,16 +399,20 @@ class analysis:
         plt.rc('axes', labelsize=16)
         plt.rc('axes', titlesize=16)
         df = df.T
-        df.columns = ['LER_bg', 'LER_Touschek', 'HER_bg', 'HER_Touschek', 'Lumi']
+        df.columns = ['LER Beam Gas', 'LER Touschek', 'HER Beam Gas', 'HER Touschek', 'Luminosity']
         colors = ['cyan' ,'magenta', 'yellow', 'purple', 'limegreen']
-        df.plot(kind='bar', stacked=True, color = colors)
+        df.plot(kind='bar', stacked=True, color = colors, legend = False)
         #if study_period == "Cont_inj":
         #    plt.title("Background breakdown continuous injection fits")
         #else:
         #    plt.title("Background breakdown decay fits")
-        plt.xlabel("TPC")
+        #plt.xlabel("TPC")
         plt.ylabel('Background Fraction [%]')
-        plt.ylim(0,110)
+        plt.ylim(0,105)
+        plt.xticks(rotation=45, ha="right")
+        plt.legend(framealpha = 1, ncol = 3, bbox_to_anchor=(1.06, 1.25))
+        plt.tight_layout()
+        plt.savefig("bg_breakdown.png")
         plt.show()
         return df
         
