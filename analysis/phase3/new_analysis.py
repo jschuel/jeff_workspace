@@ -12,7 +12,7 @@ import numpy as np
 import matplotlib
 from matplotlib.lines import Line2D
 from matplotlib import rc
-rc('text', usetex=True)
+rc('text', usetex=False)
 
 class analysis:
 
