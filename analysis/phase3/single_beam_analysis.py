@@ -12,7 +12,7 @@ month = sys.argv[1]
 day = sys.argv[2]
 ring = sys.argv[3]
 
-input_file = '/Users/vahsengrouplaptop/data/phase3/combined_SKB_TPC_ntuples/%s_%s_%s_study_new.root'%(month, day, ring)
+input_file = '~/data/phase3/combined_SKB_TPC_ntuples/%s_%s_%s_study_new.root'%(month, day, ring)
 
 if ring == "LER":
     module_ids = ["palila", "iiwi", "tako", "nene", "elepaio", "humu"]

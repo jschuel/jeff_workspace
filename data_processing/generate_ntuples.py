@@ -29,7 +29,7 @@ for side in sides:
         #run_num = [348,349,350] #for dec 8th study
     for tpc in TPCs:
         for run in run_num:
-            f_input = '/Users/vahsengrouplaptop/data/phase3/phase3_background_h5/%s_%s/%s_%s_stop_mode_ext_trigger_scan_interpreted.h5'%(month, day, run, tpc) 
-            #f_output = '/Users/vahsengrouplaptop/data/phase3/phase3_background_root/%s_%s/%s_%s.root'%(month, day, run, tpc)
+            f_input = '~/data/phase3/phase3_background_h5/%s_%s/%s_%s_stop_mode_ext_trigger_scan_interpreted.h5'%(month, day, run, tpc) 
+            #f_output = '~/data/phase3/phase3_background_root/%s_%s/%s_%s.root'%(month, day, run, tpc)
             f_output = 'output/%s/%s_%s.root'%(speed,tpc,run)
             create_ntuple(f_input, f_output, speed)

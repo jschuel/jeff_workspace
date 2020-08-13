@@ -7,7 +7,7 @@ import matplotlib as mpl
 class event_viewer():
     def __init__(self):
         pass
-    def read_file(self, inputdir = '/Users/vahsengrouplaptop/data/phase3/spring_2020/maintenance_day_test/', tpc = 'tako'):
+    def read_file(self, inputdir = '~/data/phase3/spring_2020/maintenance_day_test/', tpc = 'tako'):
         f = inputdir + tpc + "_all.root"
         df = rp.read_root(f)
         return df

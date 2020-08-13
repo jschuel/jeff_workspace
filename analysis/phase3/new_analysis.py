@@ -16,17 +16,17 @@ rc('text', usetex=True)
 
 class analysis:
 
-    def __init__(self, input_file= "/Users/vahsengrouplaptop/data/phase3/spring_2020/05-09-20/combined_ntuples/05-09_whole_study_new.root"):
+    def __init__(self, input_file= "~/data/phase3/spring_2020/05-09-20/combined_ntuples/05-09_whole_study_new.root"):
         self.LER_inj_avg = self.compute_means_and_errs("LER", "Cont_inj")
         self.HER_inj_avg = self.compute_means_and_errs("HER", "Cont_inj")
         self.LER_decay_avg = self.compute_means_and_errs("LER", "Decay")
         self.HER_decay_avg = self.compute_means_and_errs("HER", "Decay")
     
-    def get_raw_study_data(self, input_file= "/Users/vahsengrouplaptop/data/phase3/spring_2020/05-09-20/combined_ntuples/05-09_whole_study_newest.root"):
+    def get_raw_study_data(self, input_file= "~/data/phase3/spring_2020/05-09-20/combined_ntuples/05-09_whole_study_newest.root"):
         study_data = rp.read_root(input_file)
         return study_data
 
-    def get_tpc_data(self, input_dir = '/Users/vahsengrouplaptop/data/phase3/spring_2020/05-09-20/tpc_root_files/'):
+    def get_tpc_data(self, input_dir = '~/data/phase3/spring_2020/05-09-20/tpc_root_files/'):
         data = {}
         tpcs = ['iiwi', 'humu', 'nene', 'tako', 'palila', 'elepaio']
         for tpc in tpcs:

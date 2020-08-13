@@ -86,7 +86,7 @@ def plot_cases_on_map(dfs, date):
     
         
 def make_state_map():
-    usa = gpd.read_file('/Users/vahsengrouplaptop/Downloads/cb_2018_us_state_500k/cb_2018_us_state_500k.shp')
+    usa = gpd.read_file('~/Downloads/cb_2018_us_state_500k/cb_2018_us_state_500k.shp')
     usa = usa.drop(columns = ['STATEFP', 'STATENS', 'AFFGEOID', 'GEOID', 'LSAD'])
     usa.columns = ['StateAbbr', 'Name', 'Land_Area', 'Water_Area', 'geometry']
     usa = usa.loc[(usa['Name'] != 'Guam')]

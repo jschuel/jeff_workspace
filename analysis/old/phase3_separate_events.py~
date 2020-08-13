@@ -19,8 +19,8 @@ if side == "BWD":
 
 for tpc in TPCs:
     for run in run_num:
-        f_input = '/Users/vahsengrouplaptop/data/phase3/phase3_background_root/%s_%s.root'%(run, tpc)
-        f_output = '/Users/vahsengrouplaptop/data/phase3/phase3_background_root/%s_%s_separated_events.root'%(run, tpc)
+        f_input = '~/data/phase3/phase3_background_root/%s_%s.root'%(run, tpc)
+        f_output = '~/data/phase3/phase3_background_root/%s_%s_separated_events.root'%(run, tpc)
         make_ntuple(f_input, f_output)
 
 

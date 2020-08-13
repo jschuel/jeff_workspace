@@ -10,7 +10,7 @@ from os import sys
 #bg_type = {Coulomb, Touschek, Brems}, ring = {LER,HER}, species = {He, C, O}
 def get_pressure_reweight_sim_rates(bg_type, ring, species):
     
-    f = ROOT.TFile("/Users/vahsengrouplaptop/workspace/jeff_workspace/old/background_analyses/simulation_files/pressure_reweight/phase2.1.3_Touschek_tpc2d.root")
+    f = ROOT.TFile("~/workspace/jeff_workspace/old/background_analyses/simulation_files/pressure_reweight/phase2.1.3_Touschek_tpc2d.root")
 
     recoil_e = ROOT.TH2D(f.Get("%s_%s_%s"%(bg_type,ring,species)))
     module_id = ['humu','tako','elepaio','palila','kohola','nene','iiwi','honu']
@@ -26,7 +26,7 @@ def get_pressure_reweight_sim_rates(bg_type, ring, species):
 
 def get_sim_rates(bg_type, ring):
     
-    f = ROOT.TFile("/Users/vahsengrouplaptop/data/phase2/phase2.1.3_simulation_files/%s_%s_all.root"%(bg_type,ring))
+    f = ROOT.TFile("~/data/phase2/phase2.1.3_simulation_files/%s_%s_all.root"%(bg_type,ring))
     
     if bg_type != "RBB":
         if ring == "HER":
@@ -129,7 +129,7 @@ def get_indices(dataframe, Nb, knob):
     return indices
 
 def make_heuristic_dataframe(day, ring, module_id):
-    df = read_root('/Users/vahsengrouplaptop/data/phase2/combined_SKB_TPC_ntuples/June_%s_%s.root'%(day, ring))
+    df = read_root('~/data/phase2/combined_SKB_TPC_ntuples/June_%s_%s.root'%(day, ring))
 
     bin_width = 90 #standard value
     nbins = math.floor(len(df)/bin_width)

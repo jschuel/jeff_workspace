@@ -16,7 +16,7 @@ ring = sys.argv[2]
 ### GENERATE DATA  ###
 
 
-df = read_root("/Users/vahsengrouplaptop/data/phase2/combined_SKB_TPC_ntuples/June_%s_%s_all_pressures.root"%(date, ring))
+df = read_root("~/data/phase2/combined_SKB_TPC_ntuples/June_%s_%s_all_pressures.root"%(date, ring))
 df.index = [i for i in range(0,len(df))]
 index = [i for i in range (3693, len(df))]
 df = df.drop(index, axis=0)

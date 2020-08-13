@@ -14,11 +14,11 @@ class lepton_analysis:
         self.signal = self.get_signal()
         self.bg = self.get_background()
     
-    def load_data(self, input_file = '/Users/vahsengrouplaptop/workspace/thesis_data/mc_with_deltaT.root', key = 'truth_lepton'):
+    def load_data(self, input_file = '~/workspace/thesis_data/mc_with_deltaT.root', key = 'truth_lepton'):
         data = rp.read_root(input_file, key=key)
         return data
 
-    def get_data_with_cuts(self, input_file = '/Users/vahsengrouplaptop/workspace/thesis_data/mc_with_deltaT.root', key = 'truth_lepton'):
+    def get_data_with_cuts(self, input_file = '~/workspace/thesis_data/mc_with_deltaT.root', key = 'truth_lepton'):
         data = self.load_data()
         data_post_cut = data.loc[data['Mbc'] < 5.245]
         return data_post_cut
@@ -86,7 +86,7 @@ class truth_B_analysis:
     def __init__(self):
         self.data = self.load_data()
     
-    def load_data(self, input_file = '/Users/vahsengrouplaptop/workspace/thesis_data/mc_with_deltaT.root', key = 'truthB_lab'):
+    def load_data(self, input_file = '~/workspace/thesis_data/mc_with_deltaT.root', key = 'truthB_lab'):
         data = rp.read_root(input_file, key=key)
         return data
 
@@ -140,13 +140,13 @@ class truth_B_analysis:
         return d
 
 class process_lepton_data(lepton_analysis): #only call to add deltaT branches to root file. Takes a while to run
-    def __init__(self, input_data = '/Users/vahsengrouplaptop/workspace/thesis_data/mc_with_reco.root', output_data = '/Users/vahsengrouplaptop/workspace/thesis_data/mc_with_deltaT.root', key = 'truth_lepton'):
+    def __init__(self, input_data = '~/workspace/thesis_data/mc_with_reco.root', output_data = '~/workspace/thesis_data/mc_with_deltaT.root', key = 'truth_lepton'):
         super().__init__()
         self.data = self.process_deltaT_and_flavor_tag(self.get_data_with_cuts(input_file=input_data, key=key))
         self.data.to_root(output_data, key = key)
 
 class process_B_data(truth_B_analysis): #only call to add deltaT branches to root file. Takes a while to run
-    def __init__(self, input_data = '/Users/vahsengrouplaptop/workspace/thesis_data/mc_with_reco.root', output_data = '/Users/vahsengrouplaptop/workspace/thesis_data/mc_with_deltaT.root', key = 'truthB_lab'):
+    def __init__(self, input_data = '~/workspace/thesis_data/mc_with_reco.root', output_data = '~/workspace/thesis_data/mc_with_deltaT.root', key = 'truthB_lab'):
         super().__init__()
         self.data = self.process_deltaT_and_flavor_tag(self.load_data(input_file=input_data, key=key))
         self.data.to_root(output_data, key = key, mode = 'a')

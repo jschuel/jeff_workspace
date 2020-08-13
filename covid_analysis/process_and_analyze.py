@@ -19,7 +19,7 @@ class process_and_analyze:
         dataframes = {}
         for date in dates:
             try:
-                dataframes[date] = pd.read_csv('/Users/vahsengrouplaptop/covid/COVID-19/csse_covid_19_data/csse_covid_19_daily_reports/%s.csv'%(date))
+                dataframes[date] = pd.read_csv('~/covid/COVID-19/csse_covid_19_data/csse_covid_19_daily_reports/%s.csv'%(date))
             except FileNotFoundError:
                 continue
         

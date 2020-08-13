@@ -59,13 +59,13 @@ def merge_TPC_rates_with_SKB(df_TPC, ts_range):
 
 ##Make TPC dataframe
 def make_TPC_dataframe(date, ring, module_id):
-    df_TPC = read_root("/Users/vahsengrouplaptop/data/phase2/background_studies/6-%s_%s/tpc_tools_processed/separated_ntuples/whole_study_separated_%s.root"%(date, ring, module_id),"tracks")
+    df_TPC = read_root("~/data/phase2/background_studies/6-%s_%s/tpc_tools_processed/separated_ntuples/whole_study_separated_%s.root"%(date, ring, module_id),"tracks")
     df_TPC_neutron = df_TPC.iloc[df_TPC.loc[(df_TPC.recoil_energy < (0.25*df_TPC.length-75)) & (df_TPC.recoil_energy > (0.0411764*df_TPC.length-64.688)) & (df_TPC.recoil_energy > 100) & (df_TPC.hitside_top == 0) & (df_TPC.hitside_bottom == 0) & (df_TPC.hitside_source == 0) & (df_TPC.hitside_antisource == 0)].index] #dataframe for TPC nuclear recoils
     return df_TPC_neutron
 
 ##Make dataframe of SKB variables relevant for study
 def make_SKB_dataframe(date):
-    df_SKB = read_root("/Users/vahsengrouplaptop/data/phase2/SKB_data/SKB_processed_2018-06-%s_all_pressures.root"%(date))
+    df_SKB = read_root("~/data/phase2/SKB_data/SKB_processed_2018-06-%s_all_pressures.root"%(date))
     df_SKB = df_SKB.sort_values(by = ['ts']) #order by ascending timestamp
     df_SKB.index = [i for i in range(0,len(df_SKB))]
     return df_SKB

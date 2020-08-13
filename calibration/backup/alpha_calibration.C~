@@ -18,29 +18,29 @@ TChain *elepaio = new TChain("data");
 
   
   for(int iRun=first_run; iRun<=last_run; iRun++) {
-    iiwi->Add(Form("/Users/vahsengrouplaptop/data/post_phase2/iiwi/%d_iiwi.root",iRun));
+    iiwi->Add(Form("~/data/post_phase2/iiwi/%d_iiwi.root",iRun));
     std::cout << "Added run " << iRun << " from module " << "iiwi" << std::endl;
     
-    honu->Add(Form("/Users/vahsengrouplaptop/data/post_phase2/honu/%d_honu.root",iRun));
+    honu->Add(Form("~/data/post_phase2/honu/%d_honu.root",iRun));
     std::cout << "Added run " << iRun << " from module " << "honu" << std::endl;
 
-    kohola->Add(Form("/Users/vahsengrouplaptop/data/post_phase2/kohola/%d_kohola.root",iRun));
+    kohola->Add(Form("~/data/post_phase2/kohola/%d_kohola.root",iRun));
     std::cout << "Added run " << iRun << " from module " << "kohola" << std::endl;
 
-    nene->Add(Form("/Users/vahsengrouplaptop/data/post_phase2/nene/%d_nene.root",iRun));
+    nene->Add(Form("~/data/post_phase2/nene/%d_nene.root",iRun));
     std::cout << "Added run " << iRun << " from module " << "nene" << std::endl;
     
-    tako->Add(Form("/Users/vahsengrouplaptop/data/post_phase2/tako/%d_tako.root",iRun));
+    tako->Add(Form("~/data/post_phase2/tako/%d_tako.root",iRun));
     std::cout << "Added run " << iRun << " from module " << "tako" << std::endl;
 
-    humu->Add(Form("/Users/vahsengrouplaptop/data/post_phase2/humu/%d_humu.root",iRun));
+    humu->Add(Form("~/data/post_phase2/humu/%d_humu.root",iRun));
     std::cout << "Added run " << iRun << " from module " << "humu" << std::endl;
 
-    palila->Add(Form("/Users/vahsengrouplaptop/data/post_phase2/palila/%d_palila.root",iRun));
+    palila->Add(Form("~/data/post_phase2/palila/%d_palila.root",iRun));
     std::cout << "Added run " << iRun << " from module " << "palila" << std::endl;
 
     
-    elepaio->Add(Form("/Users/vahsengrouplaptop/data/post_phase2/elepaio/%d_elepaio.root",iRun));
+    elepaio->Add(Form("~/data/post_phase2/elepaio/%d_elepaio.root",iRun));
     std::cout << "Added run " << iRun << " from module " << "elepaio" << std::endl;
 
     

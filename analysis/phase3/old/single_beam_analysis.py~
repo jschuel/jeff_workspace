@@ -11,7 +11,7 @@ from compute_heuristic_y import *
 day = sys.argv[1]
 ring = sys.argv[2]
 
-df = read_root('/Users/vahsengrouplaptop/data/phase3/combined_SKB_TPC_ntuples/May_%s_%s.root'%(day, ring))
+df = read_root('~/data/phase3/combined_SKB_TPC_ntuples/May_%s_%s.root'%(day, ring))
 
 bin_width = 450
 nbins = math.floor(len(df)/bin_width)

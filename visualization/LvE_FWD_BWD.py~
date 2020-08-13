@@ -12,7 +12,7 @@ ROOT.gStyle.SetTitleOffset(0.85, "X")
 
 def get_parameters(module_id):
     ch = ROOT.TChain("tracks")
-    ch.Add("/Users/vahsengrouplaptop/data/phase2/background_studies/6-11_HER/tpc_tools_processed/separated_ntuples/whole_study_separated_%s.root"%(module_id))
+    ch.Add("~/data/phase2/background_studies/6-11_HER/tpc_tools_processed/separated_ntuples/whole_study_separated_%s.root"%(module_id))
     neutron = ROOT.TCut("recoil_energy < (0.25*length-75) && recoil_energy > (0.0411764*length-64.688)  && recoil_energy > 100 && hitside_top == 0 && hitside_bottom == 0 && hitside_source == 0 && hitside_antisource == 0 && num_clusters == 0")
     ch.Draw("length:recoil_energy", neutron, "goff")
     #ch.Draw("length:recoil_energy", "hitside_top == 0 && hitside_bottom == 0 && hitside_source == 0 && hitside_antisource == 0", "goff")

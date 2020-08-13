@@ -11,8 +11,8 @@ Script will be written to automatically generate for all TPCs
 
 void fast_energy_calibration(string module_id, int run_num) {
 
-  //TFile *f = new TFile(Form("/Users/vahsengrouplaptop/data/post_phase2/%s/%d_%s.root", module_id.c_str(), run_num, module_id.c_str()),"update");
-  TFile *f = new TFile(Form("/Users/vahsengrouplaptop/data/phase2/%s/%d_%s.root", module_id.c_str(), run_num, module_id.c_str()),"update");
+  //TFile *f = new TFile(Form("~/data/post_phase2/%s/%d_%s.root", module_id.c_str(), run_num, module_id.c_str()),"update");
+  TFile *f = new TFile(Form("~/data/phase2/%s/%d_%s.root", module_id.c_str(), run_num, module_id.c_str()),"update");
   TTree *T = (TTree*)f->Get("data");
 
     /* Available branches        

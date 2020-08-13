@@ -11,7 +11,7 @@ day = sys.argv[1]
 ring = sys.argv[2]
 module_id = sys.argv[3]
 
-df = read_root('/Users/vahsengrouplaptop/data/phase2/combined_SKB_TPC_ntuples/June_%s_%s.root'%(day, ring))
+df = read_root('~/data/phase2/combined_SKB_TPC_ntuples/June_%s_%s.root'%(day, ring))
 
 bin_width = 300
 nbins = math.floor(len(df)/bin_width)

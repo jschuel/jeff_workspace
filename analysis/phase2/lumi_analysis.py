@@ -10,10 +10,10 @@ from analysis_module import extract_variables_LUMI
 from analysis_module import make_heuristic_plots
 from os import sys
 
-input_file = '/Users/vahsengrouplaptop/data/phase2/combined_SKB_TPC_ntuples/July_12_lumi_study.root'
+input_file = '~/data/phase2/combined_SKB_TPC_ntuples/July_12_lumi_study.root'
 #Following are for DEC studies...generalize later
-HER_input = '/Users/vahsengrouplaptop/data/phase2/combined_SKB_TPC_ntuples/July_16_study.root'
-LER_input = '/Users/vahsengrouplaptop/data/phase2/combined_SKB_TPC_ntuples/July_16_study.root'
+HER_input = '~/data/phase2/combined_SKB_TPC_ntuples/July_16_study.root'
+LER_input = '~/data/phase2/combined_SKB_TPC_ntuples/July_16_study.root'
 
 module_ids = ["iiwi", "honu", "kohola", "nene", "tako", "humu", "palila", "elepaio"]
 #fit_params_LER = {}

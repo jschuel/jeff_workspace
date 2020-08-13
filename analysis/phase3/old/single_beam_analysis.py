@@ -12,7 +12,7 @@ month = sys.argv[1] #Choose May or Dec
 day = sys.argv[2]
 ring = sys.argv[3]
 
-df = read_root('/Users/vahsengrouplaptop/data/phase3/combined_SKB_TPC_ntuples/%s_%s_%s.root'%(month, day, ring))
+df = read_root('~/data/phase3/combined_SKB_TPC_ntuples/%s_%s_%s.root'%(month, day, ring))
 
 bin_width = 450
 nbins = math.floor(len(df)/bin_width)

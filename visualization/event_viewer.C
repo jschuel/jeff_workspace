@@ -149,7 +149,7 @@ void view_event(std::string module_id, int run_num, int entry) {
   gPad->Modified();
 
   c2->Update();
-  //c2->SaveAs(Form("/Users/vahsengrouplaptop/Desktop/root_scans/above_section_boundary/%s/%s_run_%d_event_%d.png", module_id.c_str(), module_id.c_str(), run_num, entry));
+  //c2->SaveAs(Form("~/Desktop/root_scans/above_section_boundary/%s/%s_run_%d_event_%d.png", module_id.c_str(), module_id.c_str(), run_num, entry));
 
 
 }

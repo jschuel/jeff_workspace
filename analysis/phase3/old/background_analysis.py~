@@ -12,7 +12,7 @@ month = sys.argv[1]
 day = sys.argv[2]
 ring = sys.argv[3]
 
-input_file = '/Users/vahsengrouplaptop/data/phase3/combined_SKB_TPC_ntuples/%s_%s_%s_study.root'%(month, day, ring)
+input_file = '~/data/phase3/combined_SKB_TPC_ntuples/%s_%s_%s_study.root'%(month, day, ring)
 module_ids = ["iiwi", "humu", "nene", "tako", "palila", "elepaio"]
 bin_width = 300
 

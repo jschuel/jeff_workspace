@@ -18,7 +18,7 @@ class tpc_tools:
         self.make_ntuple(output_file)
 
     def get_calibration_info(self, module_id): #Consider updating to yaml headers
-        df = pd.read_pickle("/Users/vahsengrouplaptop/workspace/duke_testbeam/tpc_tools/1_initial_processing/calibration_input_files/calibrated_files/calibrated_post_phase2_%s.pkl"%(module_id))
+        df = pd.read_pickle("~/workspace/duke_testbeam/tpc_tools/1_initial_processing/calibration_input_files/calibrated_files/calibrated_post_phase2_%s.pkl"%(module_id))
         return df
 
     def get_hits_data(self, input_file, module_id):

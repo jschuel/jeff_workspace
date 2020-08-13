@@ -18,7 +18,7 @@ def get_background(data):
     return bg
 
 
-input_file = '/Users/vahsengrouplaptop/workspace/thesis/signal_MC/signal_mc_exp55.root'
+input_file = '~/workspace/thesis/signal_MC/signal_mc_exp55.root'
 data = get_data(input_file)
 sig = get_signal(data)
 bg = get_background(data)

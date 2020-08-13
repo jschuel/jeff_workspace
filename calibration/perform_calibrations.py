@@ -40,7 +40,7 @@ class tpc_calibration():
         tpcs = self.get_tpc_list()
         df = {}
         for tpc in tpcs:
-            df[tpc] = rp.read_root('/Users/vahsengrouplaptop/data/phase3/spring_2020/maintenance_day_test/%s_alphas_all.root'%(tpc))
+            df[tpc] = rp.read_root('~/data/phase3/spring_2020/maintenance_day_test/%s_alphas_all.root'%(tpc))
             df[tpc]['BCID_range'] = [df[tpc]['BCID'][i].max()-df[tpc]['BCID'][i].min() for i in range (0,len(df[tpc]))]
             df[tpc] = df[tpc].loc[(df[tpc]['track_energy'] > 400) & (df[tpc]['BCID_range'] < 90)] #selection for alphas
             df[tpc] = df[tpc].loc[(np.abs(df[tpc]['phi']) < 5) | (np.abs(df[tpc]['phi']-180) < 5) | (np.abs(-180 - df[tpc]['phi']) < 5)]
@@ -53,7 +53,7 @@ class tpc_calibration():
         tpcs = self.get_tpc_list()
         df = {}
         for tpc in tpcs:
-            df[tpc] = rp.read_root('/Users/vahsengrouplaptop/data/phase3/spring_2020/05-09-20/tpc_root_files/%s_all_new.root'%(tpc))
+            df[tpc] = rp.read_root('~/data/phase3/spring_2020/05-09-20/tpc_root_files/%s_all_new.root'%(tpc))
             df[tpc]['track_energy'] = df[tpc]['track_charge']*35.075/2000*1e-3 # "uncalibrates" energy to start fresh
             df[tpc]['pixel_energy'] = df[tpc]['pixel_charge']*35.075/2000*1e-3 # "uncalibrates" energy to start fresh
         return df
@@ -303,7 +303,7 @@ class tpc_calibration():
             recoils[tpc]['He_recoil'][index] = 1
         return recoils
 
-    def write_to_root_file(self, recoils_only = True, corrected_energy = True, corrected_length = 0, outdir = '/Users/vahsengrouplaptop/data/phase3/spring_2020/05-09-20/tpc_root_files/'):
+    def write_to_root_file(self, recoils_only = True, corrected_energy = True, corrected_length = 0, outdir = '~/data/phase3/spring_2020/05-09-20/tpc_root_files/'):
         if recoils_only == False:
             recoils = self.calibrate_recoils(corrected_energy, corrected_length)
         else:

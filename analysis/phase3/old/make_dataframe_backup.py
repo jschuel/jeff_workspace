@@ -62,9 +62,9 @@ def merge_TPC_rates_with_SKB(df_TPC, ts_range, side):
 ##Make TPC dataframe
 def make_TPC_dataframe(month, day, ring, module_id):
     if month == "May":
-        df_TPC = read_root("/Users/vahsengrouplaptop/data/phase3/phase3_background_root/tpc_tools/%s_%s_%s_%s_phase3.root"%(month, day, ring, module_id),"tracks")
+        df_TPC = read_root("~/data/phase3/phase3_background_root/tpc_tools/%s_%s_%s_%s_phase3.root"%(month, day, ring, module_id),"tracks")
     else:
-        df_TPC = read_root("/Users/vahsengrouplaptop/data/phase3/phase3_background_root/tpc_tools/%s_%s_%s_phase3.root"%(month, day, module_id),"tracks")
+        df_TPC = read_root("~/data/phase3/phase3_background_root/tpc_tools/%s_%s_%s_phase3.root"%(month, day, module_id),"tracks")
     df_TPC_neutron = df_TPC.iloc[df_TPC.loc[(df_TPC.recoil_energy < (0.25*df_TPC.length-75)) & (df_TPC.recoil_energy > (0.0411764*df_TPC.length-64.688)) & (df_TPC.recoil_energy > 100)].index] #dataframe for TPC nuclear recoils
     return df_TPC_neutron
 
@@ -72,11 +72,11 @@ def make_TPC_dataframe(month, day, ring, module_id):
 def make_SKB_dataframe(month, day, ring):
     if month == "May":
         if day == "11" or day == "14":
-            df_SKB = read_root("/Users/vahsengrouplaptop/data/phase3/PVM/%s_%s_PVM.root"%(month,day), columns=['ts', 'SKB_BMLDCCT_CURRENT', 'SKB_BMLXRM_BEAM_SIGMAY', 'SKB_VALCCG_LER_PRES_AVG', 'SKB_CGLINJ_BKSEL_NOB_SET'])
+            df_SKB = read_root("~/data/phase3/PVM/%s_%s_PVM.root"%(month,day), columns=['ts', 'SKB_BMLDCCT_CURRENT', 'SKB_BMLXRM_BEAM_SIGMAY', 'SKB_VALCCG_LER_PRES_AVG', 'SKB_CGLINJ_BKSEL_NOB_SET'])
         else:
-            df_SKB = read_root("/Users/vahsengrouplaptop/data/phase3/PVM/%s_%s_PVM.root"%(month,day), columns=['ts', 'SKB_BMHDCCT_CURRENT', 'SKB_BMHXRM_BEAM_SIGMAY', 'SKB_VAHCCG_HER_PRES_AVG', 'SKB_CGHINJ_BKSEL_NOB_SET'])
+            df_SKB = read_root("~/data/phase3/PVM/%s_%s_PVM.root"%(month,day), columns=['ts', 'SKB_BMHDCCT_CURRENT', 'SKB_BMHXRM_BEAM_SIGMAY', 'SKB_VAHCCG_HER_PRES_AVG', 'SKB_CGHINJ_BKSEL_NOB_SET'])
     else:
-        df_SKB = read_root("/Users/vahsengrouplaptop/data/phase3/PVM/Dec_7_%s_updated.root"%(ring))
+        df_SKB = read_root("~/data/phase3/PVM/Dec_7_%s_updated.root"%(ring))
         #df_SKB.columns = ['ts', 'I', 'sigy', 'P', 'Nb']
         df_SKB=df_SKB.drop(columns=['HE3', 'TPC'])
         df_SKB = df_SKB.sort_values(by = ['ts']) #order by ascending timestamp

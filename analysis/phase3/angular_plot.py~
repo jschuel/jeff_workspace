@@ -12,14 +12,14 @@ module = sys.argv[1]
 
 def make_plot(ring, module_id):
     if ring == "LUMI":
-        df = rp.read_root("/Users/vahsengrouplaptop/data/phase3/PVM/Dec_8_LUMI_updated.root")
+        df = rp.read_root("~/data/phase3/PVM/Dec_8_LUMI_updated.root")
         index = df.loc[(df['ECL_LUM_MON_ACC']>7000) & (df['continuous_inj'] == 1)].index.to_numpy()
         t_low = df['ts'][index].min()
         t_high = df['ts'][index].max()
         ch = ROOT.TChain("tracks")
         ch1 = ROOT.TChain("tracks")
-        ch.Add("/Users/vahsengrouplaptop/data/phase3/phase3_background_root/tpc_tools/Dec_8_%s_phase3.root"%(module_id))
-        ch1.Add("/Users/vahsengrouplaptop/data/phase3/phase3_background_root/tpc_tools/Dec_8_%s_phase3.root"%(module_id))
+        ch.Add("~/data/phase3/phase3_background_root/tpc_tools/Dec_8_%s_phase3.root"%(module_id))
+        ch1.Add("~/data/phase3/phase3_background_root/tpc_tools/Dec_8_%s_phase3.root"%(module_id))
         ch.Draw("phi:theta:recoil_energy", "ts >%s && ts < %s && (recoil_energy/1000) < (0.5*length-75) && (recoil_energy/1000) > (0.0411764*length-64.688)  && (recoil_energy/1000) > 100 && hitside_top == 0 && hitside_bottom == 0 && hitside_source == 0 && hitside_antisource == 0 && num_clusters == 1"%(t_low,t_high), "goff")
         theta = ch.GetV1()
         phi = ch.GetV2()
@@ -49,16 +49,16 @@ def make_plot(ring, module_id):
             phi_dist.SetLineWidth(3)
             
     else:
-        df_tpc = rp.read_root("/Users/vahsengrouplaptop/data/phase3/phase3_background_root/tpc_tools/Dec_7_%s_phase3.root"%(module_id),"tracks")
+        df_tpc = rp.read_root("~/data/phase3/phase3_background_root/tpc_tools/Dec_7_%s_phase3.root"%(module_id),"tracks")
         ch = ROOT.TChain("tracks")
-        ch.Add("/Users/vahsengrouplaptop/data/phase3/phase3_background_root/tpc_tools/Dec_7_%s_phase3.root"%(module_id))
+        ch.Add("~/data/phase3/phase3_background_root/tpc_tools/Dec_7_%s_phase3.root"%(module_id))
         ch.Draw("ts", "(recoil_energy/1000) < (0.5*length-75) && (recoil_energy/1000) > (0.0411764*length-64.688)  && (recoil_energy/1000) > 100 && hitside_top == 0 && hitside_bottom == 0 && hitside_source == 0 && hitside_antisource == 0 && num_clusters == 1", "goff")
         time = ch.GetV1()
         ts = [time[i] for i in range(0,ch.GetSelectedRows())]
         df_tpc = df_tpc[df_tpc['ts'].isin(ts)]
         df_tpc.index = [i for i in range(0,len(df_tpc))]
         df_tpc['ts'] = [int(val) for val in df_tpc['ts']]
-        df = rp.read_root("/Users/vahsengrouplaptop/data/phase3/PVM/Dec_7_%s_updated.root"%(ring))
+        df = rp.read_root("~/data/phase3/PVM/Dec_7_%s_updated.root"%(ring))
         ts_index = df.loc[df['Storage_Flag'] == 1].index.to_numpy()
         #ts_index = df.loc[df['Storage_Flag'] < 2].index.to_numpy()
         timestamps = [int(ts) for ts in df['ts'][ts_index]]

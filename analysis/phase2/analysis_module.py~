@@ -11,7 +11,7 @@ import array
 
 def get_sim_rates(bg_type, ring):
     
-    f = ROOT.TFile("/Users/vahsengrouplaptop/data/phase2/phase2.1.7_simulation_files/%s_%s_all.root"%(bg_type,ring))
+    f = ROOT.TFile("~/data/phase2/phase2.1.7_simulation_files/%s_%s_all.root"%(bg_type,ring))
     
     if bg_type != "RBB":
         if ring == "HER":

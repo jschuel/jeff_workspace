@@ -125,7 +125,7 @@ def create_histograms(day, ring):
     return hists, params
 
 def get_fit_params(day, ring):
-    input_file = '/Users/vahsengrouplaptop/data/phase2/combined_SKB_TPC_ntuples/June_%s_study.root'%(day)
+    input_file = '~/data/phase2/combined_SKB_TPC_ntuples/June_%s_study.root'%(day)
     module_ids = ["iiwi", "honu", "kohola", "nene", "tako", "humu", "palila", "elepaio"]
     bin_width = 180
     df_input = rp.read_root(input_file) #gives dataframe to pass into extract_variables

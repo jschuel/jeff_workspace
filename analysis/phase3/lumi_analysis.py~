@@ -13,10 +13,10 @@ from os import sys
 month = sys.argv[1]
 day = sys.argv[2]
 
-input_file = '/Users/vahsengrouplaptop/data/phase3/combined_SKB_TPC_ntuples/%s_%s_LUMI_study_new.root'%(month, day)
+input_file = '~/data/phase3/combined_SKB_TPC_ntuples/%s_%s_LUMI_study_new.root'%(month, day)
 #Following are for DEC studies...generalize later
-HER_input = '/Users/vahsengrouplaptop/data/phase3/combined_SKB_TPC_ntuples/Dec_7_HER_study_new.root'
-LER_input = '/Users/vahsengrouplaptop/data/phase3/combined_SKB_TPC_ntuples/Dec_7_LER_study_new.root'
+HER_input = '~/data/phase3/combined_SKB_TPC_ntuples/Dec_7_HER_study_new.root'
+LER_input = '~/data/phase3/combined_SKB_TPC_ntuples/Dec_7_LER_study_new.root'
 
 #module_ids = ["elepaio","tako","palila"]
 module_ids = ["iiwi", "nene", "humu"]

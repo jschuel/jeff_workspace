@@ -20,11 +20,11 @@ if side == "BWD":
 '''    
 for tpc in TPCs:
     for run in run_num:
-        f_input = '/Users/vahsengrouplaptop/data/phase3/phase3_background_root/%s_%s.root'%(run, tpc)
-        f_output = '/Users/vahsengrouplaptop/data/phase3/phase3_background_root/%s_%s_separated_events.root'%(run, tpc)
+        f_input = '~/data/phase3/phase3_background_root/%s_%s.root'%(run, tpc)
+        f_output = '~/data/phase3/phase3_background_root/%s_%s_separated_events.root'%(run, tpc)
         create_ntuple(f_input, f_output)
 '''
 for tpc in TPCs:
-    f_input = '/Users/vahsengrouplaptop/data/phase3/phase3_background_root/dec7_fwd/dec7_%s.root'%(tpc)
-    f_output = '/Users/vahsengrouplaptop/data/phase3/phase3_background_root/dec7_fwd/dec7_%s_separated_events.root'%(tpc)
+    f_input = '~/data/phase3/phase3_background_root/dec7_fwd/dec7_%s.root'%(tpc)
+    f_output = '~/data/phase3/phase3_background_root/dec7_fwd/dec7_%s_separated_events.root'%(tpc)
     create_ntuple(f_input,f_output)

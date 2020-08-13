@@ -6,7 +6,7 @@ class update_file:
     def __init__(self):
         add_branches()
     
-    def load_file(self, input_file='/Users/vahsengrouplaptop/workspace/thesis_data/mc_with_reco_cm.root'):
+    def load_file(self, input_file='~/workspace/thesis_data/mc_with_reco_cm.root'):
         lepton = rp.read_root(input_file, key = 'e_lab')
         return lepton
 
@@ -23,7 +23,7 @@ class update_file:
         data['CMS_p'] = np.sqrt((data['px'])**2+(data['py'])**2+(data['CMS_pz'])**2)
         return data
 
-    def add_branches(self, output_file='/Users/vahsengrouplaptop/workspace/thesis_data/mc_with_reco_cm.root'):
+    def add_branches(self, output_file='~/workspace/thesis_data/mc_with_reco_cm.root'):
         boosted_data = self.apply_boost()
         boosted_data.to_root(output_file, key = 'lepton_lab', mode = 'a')
 
