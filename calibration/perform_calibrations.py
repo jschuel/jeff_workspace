@@ -1,3 +1,5 @@
+### Program has a simulation class and a calibration class. Write longer description later
+
 import numpy as np
 import pandas as pd
 import root_pandas as rp
@@ -7,9 +9,259 @@ import matplotlib.pyplot as plt
 import matplotlib
 from matplotlib import rc
 from matplotlib.patches import Patch
-rc('text', usetex=True)
+rc('text', usetex=False)
 
-class tpc_calibration():
+class simulation:
+
+    def __init__(self):
+        self.make_MC_summary_plots(recoil_species = 'He')
+    
+    def load_MC(self, base_path = '~/data/phase3/simulation/resolution_paper/tpc_sims/', recoil_species = 'all'):
+        after_threshold_C = {}
+        after_threshold_O = {}
+        after_threshold_He = {}
+        after_threshold = {}
+        tpcs = ['iiwi', 'nene', 'humu', 'palila', 'tako', 'elepaio']
+        for tpc in tpcs:
+            after_threshold_C[tpc] = rp.read_root(base_path + "%s_after_threshold_C_all.root"%(tpc))
+            after_threshold_O[tpc] = rp.read_root(base_path + "%s_after_threshold_O_all.root"%(tpc))
+            after_threshold_He[tpc] = rp.read_root(base_path + "%s_after_threshold_He_all.root"%(tpc))
+            after_threshold_C[tpc]['recoil_species'] = 'C'
+            after_threshold_O[tpc]['recoil_species'] = 'O'
+            after_threshold_He[tpc]['recoil_species'] = 'He'
+            after_threshold[tpc] = after_threshold_He[tpc].append(after_threshold_C[tpc].append(after_threshold_O[tpc]))
+            after_threshold[tpc] = after_threshold[tpc].sort_values(by = 'truth_energy')
+            if recoil_species == 'He':
+                after_threshold[tpc] = after_threshold[tpc].loc[after_threshold[tpc]['recoil_species'] == 'He']
+            elif recoil_species == 'C':
+                after_threshold[tpc] = after_threshold[tpc].loc[after_threshold[tpc]['recoil_species'] == 'C']
+            elif recoil_species == 'O':
+                after_threshold[tpc] = after_threshold[tpc].loc[after_threshold[tpc]['recoil_species'] == 'O']
+            after_threshold[tpc].index = [i for i in range(0,len(after_threshold[tpc]))] #reindex
+        return after_threshold
+
+    def apply_energy_calibrations(self, base_path =  '~/data/phase3/simulation/resolution_paper/tpc_sims/', recoil_species = 'all', zmin = 2, zmax = 8):
+        MC = self.load_MC(base_path, recoil_species)
+        tpcs = MC.keys()
+        gain = {'iiwi': 1502, 'nene': 899, 'humu': 878, 'palila': 1033, 'tako': 807, 'elepaio': 797}
+        W = 35.075
+        tot_to_q = {}
+        for tpc in tpcs:
+            tot_to_q[tpc] = pd.DataFrame()
+            tot_to_q[tpc]['tot_code'] = [i for i in range(0,14)]
+        tot_to_q['iiwi']['conversion'] = [1833.00, 2345.17, 3017.33, 6001.54, 8891.71,
+                                  11497.43, 14335.32, 18081.33, 22526.06, 27236.90,
+                                  32056.16, 36955.09, 41874.75, 46794.40]
+
+        tot_to_q['nene']['conversion'] = [1085.31, 2482.24, 4126.52, 5621.03, 7920.43,
+                                  11667.35, 15117.97, 19489.23, 23211.63, 27483.98,
+                                  32272.73, 37262.83, 42283.59, 47304.34]
+
+        tot_to_q['humu']['conversion'] = [1758.29, 2324.41, 3679.37, 5433.43, 6862.72,
+                                  10000.83, 13701.08, 17258.86, 21438.70, 25821.34,
+                                  30153.82, 34460.74, 39042.80, 43624.85]
+
+        tot_to_q['palila']['conversion'] = [1768.71, 2202.75, 2670.76, 4049.25, 6586.25,
+                                    8954.45, 11551.60, 14428.46, 17618.81, 21140.34,
+                                    24831.56, 28804.80, 33534.23, 40821.35]
+
+        tot_to_q['tako']['conversion'] = [2761.20, 3077.66, 3509.80, 5475.02, 9230.59, 
+                                  11955.00, 16837.46, 20761.78, 24514.73, 28445.96, 
+                                  33071.27, 38033.29, 43011.21, 47989.15]
+
+        tot_to_q['elepaio']['conversion'] = [1859.09, 2496.61, 4128.03, 6844.95, 9450.70,
+                                     12158.68, 15125.31, 18507.89, 22166.14, 25826.40,
+                                     29597.06, 33588.70, 38207.92, 42827.15]
+        for tpc in tpcs:
+            MC[tpc]['q_from_tot'] = MC[tpc]['tot']
+            for i in range(0,len(MC[tpc])):
+                MC[tpc]['q_from_tot'].iloc[i] = pd.Series(MC[tpc].iloc[i]['tot']).map(tot_to_q[tpc].set_index('tot_code')['conversion']).to_numpy()
+            MC[tpc]['sumtot'] = [MC[tpc]['q_from_tot'][i].sum() for i in range(0,len(MC[tpc]))]
+            MC[tpc]['reco_energy'] = MC[tpc]['sumtot']*35.075/gain[tpc]*1e-3
+    
+            #Add truth z fiducial cuts
+            MC[tpc]['truth_z'] = [MC[tpc]['truth_center'].iloc[i][2] for i in range(0,len(MC[tpc]))]
+            MC[tpc] = MC[tpc].loc[(MC[tpc]['truth_z'] > zmin) & (MC[tpc]['truth_z'] < zmax)]
+            MC[tpc].index = [i for i in range(0,len(MC[tpc]))]
+
+        return MC
+            
+    def add_saturation_fraction_and_mean_tot(self, base_path =  '~/data/phase3/simulation/resolution_paper/tpc_sims/', recoil_species = 'all', zmin = 2, zmax = 8):
+        MC = self.apply_energy_calibrations(base_path = base_path, recoil_species = recoil_species, zmin = zmin, zmax = zmax)
+        tpcs = MC.keys()
+        # mapping functions
+        def get_saturation_fraction(dataframe):
+            saturation_fraction = []
+            for i in range(0,len(dataframe)):
+                saturation_fraction.append(len([val for val in dataframe['tot'].iloc[i] if val == 13])/len(dataframe['tot'].iloc[i]))
+            dataframe['saturation_fraction'] = saturation_fraction
+            return dataframe
+        def get_mean_tot(dataframe):
+            tot_mean = []
+            for i in range(0,len(dataframe)):
+                tot_mean.append(dataframe['tot'].iloc[i].mean())
+            dataframe['mean_tot'] = tot_mean
+            return dataframe
+        for tpc in tpcs:
+            MC[tpc] = get_saturation_fraction(MC[tpc])
+            MC[tpc] = get_mean_tot(MC[tpc])
+        return MC
+
+    def perform_saturation_corrections(self, base_path = '~/data/phase3/simulation/resolution_paper/tpc_sims/', recoil_species = 'all', zmin = 2, zmax = 8, poly_deg = 3):
+        MC = self.add_saturation_fraction_and_mean_tot(base_path = base_path, recoil_species = recoil_species, zmin = zmin, zmax = zmax)
+        tpcs = MC.keys()
+        sat_frac_group = {} #dictionary of binned saturation fractions
+        fit = {} #dictionary of polyfit calibration curve parameters for each TPC
+        means = {} #dictionary of means in the saturation_frac group used to filter out NaNs
+        sems = {} #dictionary of std errors in the saturation_frac group used to filter out NaNs
+        for tpc in tpcs:
+            sat_frac_group[tpc] = MC[tpc].groupby(pd.cut(MC[tpc]['saturation_fraction'], bins = np.linspace(0,0.5,21)))
+            means[tpc] = sat_frac_group[tpc].mean().loc[sat_frac_group[tpc].sem()['reco_energy'].isna() == False]
+            sems[tpc] = sat_frac_group[tpc].sem().loc[sat_frac_group[tpc].sem()['reco_energy'].isna() == False]
+            fit[tpc] = np.polyfit(means[tpc]['saturation_fraction'], (means[tpc]['reco_energy']/means[tpc]['truth_energy']), poly_deg)
+        #function for using fit calibration curve to correct for charge loss due to saturation
+        def perform_saturation_correction(dataframe, fit):
+            def get_correction_factor(x, fit):
+                func = 0
+                for i in range(0,len(fit)):
+                    func += fit[i]*x**(len(fit)-i-1)
+                return func
+            dataframe['saturation_corrected_energy'] = 1/get_correction_factor(dataframe['saturation_fraction'], fit)*dataframe['reco_energy']
+            return dataframe
+        #apply function to MC
+        for tpc in tpcs:
+            MC[tpc] = perform_saturation_correction(MC[tpc], fit[tpc])
+        return MC, fit #param [1] can be used with data
+
+    def perform_threshold_corrections(self, base_path = '~/data/phase3/simulation/resolution_paper/tpc_sims/', recoil_species = 'all', zmin = 2, zmax = 8, poly_deg = 5):
+        MC = self.perform_saturation_corrections(base_path, recoil_species, zmin, zmax, 3)[0]
+        tpcs = MC.keys()
+        mean_tot_group = {} #dictionary of binned mean_tots
+        fit = {} #dictionary of polyfit calibration curve parameters for each TPC
+        means = {} #dictionary of means in the saturation_frac group used to filter out NaNs
+        sems = {} #dictionary of std errors in the saturation_frac group used to filter out NaNs
+        for tpc in tpcs:
+            mean_tot_group[tpc] = MC[tpc].groupby(pd.cut(MC[tpc]['mean_tot'], bins = np.linspace(0,8,26))) #cutoff at 8, may change later
+            means[tpc] = mean_tot_group[tpc].mean().loc[mean_tot_group[tpc].sem()['saturation_corrected_energy'].isna() == False]
+            sems[tpc] = mean_tot_group[tpc].sem().loc[mean_tot_group[tpc].sem()['saturation_corrected_energy'].isna() == False]
+            fit[tpc] = np.polyfit(means[tpc]['mean_tot'], (means[tpc]['saturation_corrected_energy']/means[tpc]['truth_energy']), poly_deg)
+        #function for applying threshold correction calibration curve
+        def perform_threshold_correction(dataframe, fit):
+            def get_correction_factor(x, fit):
+                func = 0
+                for i in range(0,len(fit)):
+                    func += fit[i]*x**(len(fit)-i-1)
+                return func
+            dataframe['full_corrected_energy'] = 1/get_correction_factor(dataframe['mean_tot'], fit)*dataframe['saturation_corrected_energy']
+            index = dataframe.loc[dataframe['mean_tot']>8].index.to_numpy()
+            dataframe['full_corrected_energy'][index] = dataframe['saturation_corrected_energy'][index] #truncate full correction range
+            return dataframe
+        #apply function to MC
+        for tpc in tpcs:
+            MC[tpc] = perform_threshold_correction(MC[tpc], fit[tpc])
+        return MC, fit #param[1] can be used with data
+
+    def make_MC_summary_plots(self, base_path = '~/data/phase3/simulation/resolution_paper/tpc_sims/', recoil_species = 'all', zmin = 2, zmax = 8):
+        MC, fit_thresh = self.perform_threshold_corrections(base_path, recoil_species, zmin, zmax, 5)
+        fit_sat = self.perform_saturation_corrections(base_path, recoil_species, zmin, zmax, 3)[1]
+        tpcs = MC.keys()
+        
+        def plot_fit(x, fit): #plots polyfit
+            func = 0
+            for i in range(0,len(fit)):
+                func += fit[i]*x**(len(fit)-i-1)
+            plt.plot(x,func)
+
+        #Bin data for visualization of correction curves
+        sat_frac_group = {}
+        mean_tot_group = {}
+        for tpc in tpcs:
+            sat_frac_group[tpc] = MC[tpc].groupby(pd.cut(MC[tpc]['saturation_fraction'], bins = np.linspace(0.0,0.5,11)))
+            mean_tot_group[tpc] = MC[tpc].groupby(pd.cut(MC[tpc]['mean_tot'], bins = np.linspace(0,8,26)))
+
+        #fig 1
+        plt.figure(1, figsize = (10,10))
+        i = 1
+        for tpc in tpcs:
+            plt.subplot(3,2,i)
+            plt.plot(MC[tpc]['saturation_fraction'], MC[tpc]['reco_energy']/MC[tpc]['truth_energy'],'o', markersize = 1)
+            plt.xlabel('Fraction of saturated pixels')
+            plt.ylabel(r'$E_{reco}/E_{truth}$')
+            plt.title(tpc)
+            plt.xlim(0.0,1)
+            plt.ylim(0,1)
+            plt.grid()
+            i += 1
+        plt.tight_layout()
+        plt.show()
+
+        #fig 2
+        means = {}
+        sems = {}
+        plt.figure(2, figsize = (10,10))
+        i = 1
+        x = np.linspace(0,1,101)
+        for tpc in tpcs:
+            plt.subplot(3,2,i)
+            means[tpc] = sat_frac_group[tpc].mean().loc[sat_frac_group[tpc].sem()['reco_energy'].isna() == False]
+            sems[tpc] = sat_frac_group[tpc].sem().loc[sat_frac_group[tpc].sem()['reco_energy'].isna() == False]
+            plt.errorbar(means[tpc]['saturation_fraction'], 
+                 means[tpc]['reco_energy']/means[tpc]['truth_energy'],
+                 sems[tpc]['reco_energy']/means[tpc]['truth_energy'],
+                 sems[tpc]['saturation_fraction'], 'o')
+            plot_fit(x,fit_sat[tpc])
+            plt.xlabel('Fraction of saturated pixels')
+            plt.ylabel(r'$E_{reco}/E_{truth}$')
+            plt.title(tpc)
+            plt.ylim(0,1)
+            plt.xlim(-0.01,1.1)
+            plt.grid()
+            i += 1
+        plt.tight_layout()
+        plt.show()
+
+        #fig 3
+        plt.figure(3, figsize = (10,10))
+        i = 1
+        for tpc in tpcs:
+            plt.subplot(3,2,i)
+            plt.plot(MC[tpc]['mean_tot'], MC[tpc]['saturation_corrected_energy']/MC[tpc]['truth_energy'],'o',markersize = 1)
+            plt.xlabel('Mean ToT per event')
+            plt.ylabel(r'$E_{reco,sat cor}/E_{truth}$')
+            plt.xlim(0,9)
+            plt.ylim(0,1.5)
+            plt.title(tpc)
+            plt.grid()
+            i += 1
+        plt.tight_layout()
+        plt.show()
+
+        #fig 4
+        plt.figure(4, figsize = (10,10))
+        means = {}
+        sems = {}
+        i  = 1
+        x = np.linspace(0,10,101)
+        for tpc in tpcs:
+            plt.subplot(3,2,i)
+            means[tpc] = mean_tot_group[tpc].mean().loc[mean_tot_group[tpc].sem()['saturation_corrected_energy'].isna() == False]
+            sems[tpc] = mean_tot_group[tpc].sem().loc[mean_tot_group[tpc].sem()['saturation_corrected_energy'].isna() == False]
+            plt.errorbar(means[tpc]['mean_tot'], 
+                 means[tpc]['saturation_corrected_energy']/means[tpc]['truth_energy'],
+                 sems[tpc]['saturation_corrected_energy']/means[tpc]['truth_energy'],
+                 sems[tpc]['mean_tot'], 'o')
+            plot_fit(x, fit_thresh[tpc])
+            plt.xlabel('Mean tot')
+            plt.ylabel(r'$E_{reco}/E_{truth}$')
+            plt.title(tpc)
+            plt.ylim(-1,2)
+            plt.xlim(-0.01,8.2)
+            plt.grid()
+            i += 1
+        plt.tight_layout()
+        plt.show()
+            
+class tpc_calibration(simulation):
 
     def __init__(self):
         #Use for plotting before and after alpha calibration
@@ -32,7 +284,8 @@ class tpc_calibration():
         #plt.show()
         
         #self.write_to_root_file()
-        pass
+
+        super().__init__(self) # inherit simulation classes methods
     def get_tpc_list(self, tpc_list = ['iiwi', 'humu', 'nene', 'tako', 'palila', 'elepaio']):
         return tpc_list
 
@@ -352,7 +605,7 @@ class tpc_calibration():
             output.Close()
             
          
-t = tpc_calibration()
+#t = tpc_calibration()
 
 
 #Old code below#
