@@ -14,34 +14,52 @@ rc('text', usetex=False)
 class simulation:
 
     def __init__(self):
-        self.make_MC_summary_plots(recoil_species = 'He')
-    
+        #self.make_MC_summary_plots(recoil_species = 'all')
+        pass
     def load_MC(self, base_path = '~/data/phase3/simulation/resolution_paper/tpc_sims/', recoil_species = 'all'):
         after_threshold_C = {}
         after_threshold_O = {}
         after_threshold_He = {}
         after_threshold = {}
+        after_drift_C = {}
+        after_drift_O = {}
+        after_drift_He = {}
+        after_drift = {}
+
         tpcs = ['iiwi', 'nene', 'humu', 'palila', 'tako', 'elepaio']
         for tpc in tpcs:
             after_threshold_C[tpc] = rp.read_root(base_path + "%s_after_threshold_C_all.root"%(tpc))
             after_threshold_O[tpc] = rp.read_root(base_path + "%s_after_threshold_O_all.root"%(tpc))
             after_threshold_He[tpc] = rp.read_root(base_path + "%s_after_threshold_He_all.root"%(tpc))
+            after_drift_C[tpc] = rp.read_root(base_path + "%s_after_drift_C_all.root"%(tpc))
+            after_drift_O[tpc] = rp.read_root(base_path + "%s_after_drift_O_all.root"%(tpc))
+            after_drift_He[tpc] = rp.read_root(base_path + "%s_after_drift_He_all.root"%(tpc))
             after_threshold_C[tpc]['recoil_species'] = 'C'
             after_threshold_O[tpc]['recoil_species'] = 'O'
             after_threshold_He[tpc]['recoil_species'] = 'He'
+            after_drift_C[tpc]['recoil_species'] = 'C'
+            after_drift_O[tpc]['recoil_species'] = 'O'
+            after_drift_He[tpc]['recoil_species'] = 'He'
             after_threshold[tpc] = after_threshold_He[tpc].append(after_threshold_C[tpc].append(after_threshold_O[tpc]))
             after_threshold[tpc] = after_threshold[tpc].sort_values(by = 'truth_energy')
+            after_drift[tpc] = after_drift_He[tpc].append(after_drift_C[tpc].append(after_drift_O[tpc]))
+            after_drift[tpc] = after_drift[tpc].sort_values(by = 'truth_energy')
             if recoil_species == 'He':
                 after_threshold[tpc] = after_threshold[tpc].loc[after_threshold[tpc]['recoil_species'] == 'He']
+                after_drift[tpc] = after_drift[tpc].loc[after_drift[tpc]['recoil_species'] == 'He']
             elif recoil_species == 'C':
                 after_threshold[tpc] = after_threshold[tpc].loc[after_threshold[tpc]['recoil_species'] == 'C']
+                after_drift[tpc] = after_drift[tpc].loc[after_drift[tpc]['recoil_species'] == 'C']
             elif recoil_species == 'O':
                 after_threshold[tpc] = after_threshold[tpc].loc[after_threshold[tpc]['recoil_species'] == 'O']
+                after_drift[tpc] = after_drift[tpc].loc[after_drift[tpc]['recoil_species'] == 'O']
             after_threshold[tpc].index = [i for i in range(0,len(after_threshold[tpc]))] #reindex
-        return after_threshold
+            after_drift[tpc].index = [i for i in range(0,len(after_drift[tpc]))] #reindex 
+        return after_threshold, after_drift
 
     def apply_energy_calibrations(self, base_path =  '~/data/phase3/simulation/resolution_paper/tpc_sims/', recoil_species = 'all', zmin = 2, zmax = 8):
-        MC = self.load_MC(base_path, recoil_species)
+        MC = self.load_MC(base_path, recoil_species)[0]
+        MC_drift = self.load_MC(base_path, recoil_species)[1] #only adding fiducial cuts
         tpcs = MC.keys()
         gain = {'iiwi': 1502, 'nene': 899, 'humu': 878, 'palila': 1033, 'tako': 807, 'elepaio': 797}
         W = 35.075
@@ -83,11 +101,15 @@ class simulation:
             MC[tpc]['truth_z'] = [MC[tpc]['truth_center'].iloc[i][2] for i in range(0,len(MC[tpc]))]
             MC[tpc] = MC[tpc].loc[(MC[tpc]['truth_z'] > zmin) & (MC[tpc]['truth_z'] < zmax)]
             MC[tpc].index = [i for i in range(0,len(MC[tpc]))]
+            MC_drift[tpc]['truth_z'] = [MC_drift[tpc]['truth_center'].iloc[i][2] for i in range(0,len(MC_drift[tpc]))]
+            MC_drift[tpc] = MC_drift[tpc].loc[(MC_drift[tpc]['truth_z'] > zmin) & (MC_drift[tpc]['truth_z'] < zmax)]
+            MC_drift[tpc].index = [i for i in range(0,len(MC_drift[tpc]))]
 
-        return MC
+
+        return MC, MC_drift
             
     def add_saturation_fraction_and_mean_tot(self, base_path =  '~/data/phase3/simulation/resolution_paper/tpc_sims/', recoil_species = 'all', zmin = 2, zmax = 8):
-        MC = self.apply_energy_calibrations(base_path = base_path, recoil_species = recoil_species, zmin = zmin, zmax = zmax)
+        MC = self.apply_energy_calibrations(base_path = base_path, recoil_species = recoil_species, zmin = zmin, zmax = zmax)[0]
         tpcs = MC.keys()
         # mapping functions
         def get_saturation_fraction(dataframe):
@@ -160,6 +182,17 @@ class simulation:
         for tpc in tpcs:
             MC[tpc] = perform_threshold_correction(MC[tpc], fit[tpc])
         return MC, fit #param[1] can be used with data
+
+    def get_grouped_MC(self, base_path = '~/data/phase3/simulation/resolution_paper/tpc_sims/', recoil_species = 'all', zmin = 2, zmax = 8):
+        after_threshold_data = self.apply_energy_calibrations(base_path = base_path, recoil_species = recoil_species, zmin = zmin, zmax = zmax)[0]
+        IQF_data = self.apply_energy_calibrations(base_path = base_path, recoil_species = recoil_species, zmin = zmin, zmax = zmax)[1]
+        tpcs = IQF_data.keys()
+        IQF_group = {}
+        after_threshold_group = {}
+        for tpc in tpcs:
+            IQF_group[tpc] = IQF_data[tpc].groupby(['truth_energy'])
+            after_threshold_group[tpc] = after_threshold_data[tpc].groupby(['truth_energy'])
+        return IQF_group, after_threshold_group
 
     def make_MC_summary_plots(self, base_path = '~/data/phase3/simulation/resolution_paper/tpc_sims/', recoil_species = 'all', zmin = 2, zmax = 8):
         MC, fit_thresh = self.perform_threshold_corrections(base_path, recoil_species, zmin, zmax, 5)
@@ -260,6 +293,40 @@ class simulation:
             i += 1
         plt.tight_layout()
         plt.show()
+
+        #fig 5
+        plt.figure(5, figsize = (10,10))
+        i = 1
+        for tpc in tpcs:
+            plt.subplot(3,2,i)
+            plt.plot(MC[tpc]['fit_length'], MC[tpc]['reco_energy'],'o',markersize = 1)
+            plt.xlabel('Length [cm]')
+            plt.ylabel(r'E_{reco}[keV]')
+            
+            #plt.ylim(0,1.5)
+            plt.title(tpc)
+            plt.grid()
+            i += 1
+        plt.tight_layout()
+        plt.show()
+
+        #fig 6
+        plt.figure(6, figsize = (10,10))
+        i = 1
+        for tpc in tpcs:
+            plt.subplot(3,2,i)
+            plt.plot(MC[tpc]['fit_length'], MC[tpc]['full_corrected_energy'],'o',markersize = 1)
+            plt.xlabel('Length [cm]')
+            plt.ylabel(r'E_{reco}[keV]')
+            
+            #plt.ylim(0,1.5)
+            plt.title(tpc)
+            plt.grid()
+            i += 1
+        plt.tight_layout()
+        plt.show()
+
+        
             
 class tpc_calibration(simulation):
 
@@ -282,10 +349,11 @@ class tpc_calibration(simulation):
         #plt.ylim(0,10)
         #plt.savefig('calibrated_alphas.png')
         #plt.show()
-        
-        #self.write_to_root_file()
 
-        super().__init__(self) # inherit simulation classes methods
+        super().__init__() # inherit simulation classes methods
+
+        pass
+        
     def get_tpc_list(self, tpc_list = ['iiwi', 'humu', 'nene', 'tako', 'palila', 'elepaio']):
         return tpc_list
 
@@ -322,51 +390,35 @@ class tpc_calibration(simulation):
             df[tpc] = self.loose_neutron_cuts(df[tpc])
         return df
 
-    def get_saturation_correction_factor(self, x, tpc):
-        #return -1.03*x**4 +3.73*x**3 -4.65*x**2 + 0.94*x + 0.79 #Michael's correction factor
-        # We add a factor for each TPC
-        if tpc == 'iiwi':
-            return 5.23761576*x**3 - 6.47802118*x**2 + 0.93892604*x + 0.83334045
-        elif tpc == 'nene':
-            return -5.91479095*x**3 - 2.65705013*x**2 + 0.23009873*x + 0.90323406
-        elif tpc == 'humu':
-            return -8.76138552*x**3 - 0.96954642*x**2 + 0.03448548*x + 0.90489453
-        elif tpc == 'palila':
-            return -4.37978775*x**3 - 2.50459537*x**2 + 0.47394541*x + 0.86833121
-        elif tpc == 'tako':
-            return -12.53215255*x**3 + 0.30074972*x**2 - 0.01369277*x + 0.90256485
-        else:
-            return -10.66400767*x**3 - 0.6798144*x**2 + 0.0741054*x + 0.90220777
-    def get_threshold_correction_factor(self, x, tpc):
-        #return 6.7e-5*x**5 -7.9e-4*x**4 - 3.5e-3 * x**3 + 4.9e-2*x**2 +7e-2*x + 1.2e-1 #Michael
-        # We add a factor for each TPC
-        if tpc == 'iiwi':
-            return -0.00037915*x**5 + 0.00852275*x**4 - 0.06861498*x**3 + 0.20417531*x**2 + 0.07342217*x - 0.08126494
-        elif tpc == 'nene':
-            return 1.27921130e-03*x**5 - 2.68735581e-02*x**4 + 2.15812460e-01*x**3 - 8.52899081e-01*x**2 + 1.83012421e+00*x - 1.01926510e+00
-        elif tpc == 'humu':
-            return 2.92737313e-04*x**5 - 6.00999453e-03*x**4 + 4.94755205e-02*x**3 - 2.34387367e-01*x**2 + 7.80259426e-01*x - 4.27210159e-01
-        elif tpc == 'palila':
-            return -2.01456114e-05*x**5 + 1.30812047e-03*x**4 - 1.67974858e-02*x**3 + 4.67470749e-02*x**2 + 2.78158884e-01*x - 2.88318852e-01
-        elif tpc == 'tako':
-            return -2.60333456e-04*x**5 + 7.30913577e-03*x**4 - 7.25309117e-02*x**3 + 2.82318345e-01*x**2 - 1.73012283e-01*x + 8.44353381e-02
-        else:
-            return -0.00057161*x**5 + 0.01112858*x**4 - 0.07333831*x**3 + 0.1482803*x**2 + 0.26925937*x - 0.08386942
+    #def get_saturation_correction_factor(self, x, tpc, fit, recoil_species = 'He'):
+    #    #return -1.03*x**4 +3.73*x**3 -4.65*x**2 + 0.94*x + 0.79 #Michael's correction factor
+    # Perform fit on MC using simulation class
+    #    func = 0
+    #    for i in range(0,len(fit)):
+    #        func += fit[i]*x**(len(fit)-i-1)
+    #    return func
         
-    def perform_saturation_correction(self, dataframe, tpc):
+    def get_correction_factor(self, x, tpc, fit):
+        #return 6.7e-5*x**5 -7.9e-4*x**4 - 3.5e-3 * x**3 + 4.9e-2*x**2 +7e-2*x + 1.2e-1 #Michael
+        func = 0
+        for i in range(0,len(fit)):
+            func += fit[i]*x**(len(fit)-i-1)
+        return func
+        
+    def perform_saturation_correction(self, dataframe, tpc, fit):
         saturation_fraction = []
         for i in range(0,len(dataframe)):
             saturation_fraction.append(len([val for val in dataframe['tot'].iloc[i] if val == 13])/len(dataframe['tot'].iloc[i]))
         dataframe['saturation_fraction'] = saturation_fraction
-        dataframe['saturation_corrected_energy'] = 1/self.get_saturation_correction_factor(dataframe['saturation_fraction'],tpc)*dataframe['track_energy']
+        dataframe['saturation_corrected_energy'] = 1/self.get_correction_factor(dataframe['saturation_fraction'], tpc, fit)*dataframe['track_energy']
         return dataframe
 
-    def perform_threshold_correction(self, dataframe, tpc):
+    def perform_threshold_correction(self, dataframe, tpc, fit):
         tot_mean = []
         for i in range(0,len(dataframe)):
             tot_mean.append(dataframe['tot'].iloc[i].mean())
         dataframe['mean_tot'] = tot_mean
-        dataframe['full_corrected_energy'] = 1/self.get_threshold_correction_factor(dataframe['mean_tot'],tpc)*dataframe['saturation_corrected_energy']
+        dataframe['full_corrected_energy'] = 1/self.get_correction_factor(dataframe['mean_tot'], tpc, fit)*dataframe['saturation_corrected_energy']
         index = dataframe.loc[dataframe['mean_tot']>8].index.to_numpy()
         dataframe['full_corrected_energy'][index] = dataframe['saturation_corrected_energy'][index] #truncate full correction range
         return dataframe
@@ -374,17 +426,21 @@ class tpc_calibration(simulation):
     def correct_alphas(self): #corrects alphas for saturation and threshold
         alphas = self.load_alphas()
         tpcs = alphas.keys()
+        fit_sat = self.perform_saturation_corrections(recoil_species = 'He', poly_deg = 3)[1] #dict w/ tpc names as keys. Comes from simulation class
+        fit_thresh = self.perform_threshold_corrections(recoil_species = 'He', poly_deg = 5)[1] #dict w/ tpc names as keys. From simulation class
         for tpc in tpcs:
-            alphas[tpc] = self.perform_saturation_correction(alphas[tpc], tpc)
-            alphas[tpc] = self.perform_threshold_correction(alphas[tpc], tpc)
+            alphas[tpc] = self.perform_saturation_correction(alphas[tpc], tpc, fit_sat[tpc])
+            alphas[tpc] = self.perform_threshold_correction(alphas[tpc], tpc, fit_thresh[tpc])
         return alphas
 
     def correct_recoils(self): #corrects alphas for saturation and threshold
         recoils = self.load_recoils()
         tpcs = recoils.keys()
+        fit_sat = self.perform_saturation_corrections(recoil_species = 'He', poly_deg = 3)[1] #dict w/ tpc names as keys
+        fit_thresh = self.perform_threshold_corrections(recoil_species = 'He', poly_deg = 5)[1] #dict w/ tpc names as keys
         for tpc in tpcs:
-            recoils[tpc] = self.perform_saturation_correction(recoils[tpc], tpc)
-            recoils[tpc] = self.perform_threshold_correction(recoils[tpc], tpc)
+            recoils[tpc] = self.perform_saturation_correction(recoils[tpc], tpc, fit_sat[tpc])
+            recoils[tpc] = self.perform_threshold_correction(recoils[tpc], tpc, fit_thresh[tpc])
         return recoils
 
     def calibrate_alphas(self, corrected_energy = True, corrected_length = 0): #calibrates alphas to a de/dx reference value of 500 keV/cm
@@ -421,7 +477,7 @@ class tpc_calibration(simulation):
             lkey = 'max_corrected_length'
         else:
             lkey = 'rms_corrected_length'
-        alphas, scale_factor = self.calibrate_alphas(corrected_energy, corrected_length)
+        scale_factor = self.calibrate_alphas(corrected_energy, corrected_length)[1]
         tpcs = recoils.keys()
         for tpc in tpcs:
             recoils[tpc]['track_energy'] = scale_factor[tpc]*recoils[tpc]['track_energy']
@@ -528,34 +584,6 @@ class tpc_calibration(simulation):
             i += 1
         plt.clf()
 
-    def apply_recoil_cuts(self, corrected_energy = True, corrected_length = 0): #Cuts to train double Gaussian fit
-        recoils =  self.calibrate_recoils(corrected_energy, corrected_length)
-        for tpc in recoils.keys():
-            if corrected_energy == False:
-                #cut_min = np.array([ 5.51204819e-06, -6.90060241e-03,  1.78012048e+01])
-                #cut_max = np.array([ 4.70883534e-06,  3.64728916e-02, -3.56124498e+01])
-                cut_min = np.array([ 2.46987952e-06,  1.71265060e-02, -1.82530120e+01])
-                cut_max = np.array([ 3.10240964e-06,  4.32198795e-02, -4.24397590e+01])
-                ekey = 'track_energy'
-                #recoils[tpc] = recoils[tpc].loc[recoils[tpc][ekey]>20]
-                recoils[tpc] = recoils[tpc].loc[recoils[tpc][ekey]>8]
-            else:
-                #cut_min = np.array([ 4.26706827e-06,  1.33283133e-02, -9.98995984e+00])
-                #cut_max = np.array([ 5.38152610e-06,  2.73975904e-02, -1.21285141e+01])
-                if tpc == 'humu':
-                    cut_min = np.array([1.62248996e-06, 3.18554217e-03, 5.89558233e+00])
-                else:
-                    cut_min = np.array([4.71887550e-06, 7.68072289e-03, 1.30522088e+00])
-                cut_max = np.array([6.15461847e-06,  3.04006024e-02, -1.94678715e+01])
-                ekey = 'full_corrected_energy'
-                #recoils[tpc] = recoils[tpc].loc[recoils[tpc][ekey]>20]
-                recoils[tpc] = recoils[tpc].loc[recoils[tpc][ekey]>10]
-            index = recoils[tpc].loc[(recoils[tpc][ekey] > (cut_min[0]*recoils[tpc]['length']**2 + cut_min[1]*recoils[tpc]['length']+cut_min[2])) & (recoils[tpc][ekey]<(cut_max[0]*recoils[tpc]['length']**2  +cut_max[1]*recoils[tpc]['length']+cut_max[2]))].index.to_numpy()
-            recoils[tpc] = recoils[tpc].loc[recoils[tpc][ekey] > (cut_min[0]*recoils[tpc]['length']**2 + cut_min[1]*recoils[tpc]['length']+cut_min[2])]
-            recoils[tpc]['He_recoil'] = 0
-            recoils[tpc]['He_recoil'][index] = 1
-        return recoils
-
     def write_to_root_file(self, recoils_only = True, corrected_energy = True, corrected_length = 0, outdir = '~/data/phase3/spring_2020/05-09-20/tpc_root_files/'):
         if recoils_only == False:
             recoils = self.calibrate_recoils(corrected_energy, corrected_length)
@@ -574,7 +602,7 @@ class tpc_calibration(simulation):
             if recoils_only == True:
                 output = ROOT.TFile(outdir + '%s_all_recoils_only_newest.root'%(tpc), 'new')
             else:
-                output = ROOT.TFile(outdir + '%s_all_new.root'%(tpc), 'recreate')
+                output = ROOT.TFile(outdir + '%s_all_newest.root'%(tpc), 'recreate')
             tout = ROOT.TTree('data','data')
             branches = {}
             data={}
@@ -605,8 +633,7 @@ class tpc_calibration(simulation):
             output.Close()
             
          
-#t = tpc_calibration()
-
+t = tpc_calibration()
 
 #Old code below#
 
@@ -761,4 +788,32 @@ def plot_uncalibrated_recoil_distributions(self):
             plt.savefig('calibration_figures/uncorrected_calibrated_EvL_final_cuts_%s.png'%(i))
             i += 1
         plt.clf()
+
+    def apply_recoil_cuts(self, corrected_energy = True, corrected_length = 0): #Cuts to train double Gaussian fit
+        recoils =  self.calibrate_recoils(corrected_energy, corrected_length)
+        for tpc in recoils.keys():
+            if corrected_energy == False:
+                #cut_min = np.array([ 5.51204819e-06, -6.90060241e-03,  1.78012048e+01])
+                #cut_max = np.array([ 4.70883534e-06,  3.64728916e-02, -3.56124498e+01])
+                cut_min = np.array([ 2.46987952e-06,  1.71265060e-02, -1.82530120e+01])
+                cut_max = np.array([ 3.10240964e-06,  4.32198795e-02, -4.24397590e+01])
+                ekey = 'track_energy'
+                #recoils[tpc] = recoils[tpc].loc[recoils[tpc][ekey]>20]
+                recoils[tpc] = recoils[tpc].loc[recoils[tpc][ekey]>8]
+            else:
+                #cut_min = np.array([ 4.26706827e-06,  1.33283133e-02, -9.98995984e+00])
+                #cut_max = np.array([ 5.38152610e-06,  2.73975904e-02, -1.21285141e+01])
+                if tpc == 'humu':
+                    cut_min = np.array([1.62248996e-06, 3.18554217e-03, 5.89558233e+00])
+                else:
+                    cut_min = np.array([4.71887550e-06, 7.68072289e-03, 1.30522088e+00])
+                cut_max = np.array([6.15461847e-06,  3.04006024e-02, -1.94678715e+01])
+                ekey = 'full_corrected_energy'
+                #recoils[tpc] = recoils[tpc].loc[recoils[tpc][ekey]>20]
+                recoils[tpc] = recoils[tpc].loc[recoils[tpc][ekey]>10]
+            index = recoils[tpc].loc[(recoils[tpc][ekey] > (cut_min[0]*recoils[tpc]['length']**2 + cut_min[1]*recoils[tpc]['length']+cut_min[2])) & (recoils[tpc][ekey]<(cut_max[0]*recoils[tpc]['length']**2  +cut_max[1]*recoils[tpc]['length']+cut_max[2]))].index.to_numpy()
+            recoils[tpc] = recoils[tpc].loc[recoils[tpc][ekey] > (cut_min[0]*recoils[tpc]['length']**2 + cut_min[1]*recoils[tpc]['length']+cut_min[2])]
+            recoils[tpc]['He_recoil'] = 0
+            recoils[tpc]['He_recoil'][index] = 1
+        return recoils
 '''
