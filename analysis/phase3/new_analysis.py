@@ -1,4 +1,5 @@
 import pandas as pd
+import uproot as ur
 import root_pandas as rp
 import numpy as np
 import matplotlib.pyplot as plt
@@ -23,14 +24,16 @@ class analysis:
         self.HER_decay_avg = self.compute_means_and_errs("HER", "Decay")
     
     def get_raw_study_data(self, input_file= "~/data/phase3/spring_2020/05-09-20/combined_ntuples/05-09_whole_study_newest.root"):
-        study_data = rp.read_root(input_file)
+        #study_data = rp.read_root(input_file)
+        study_data = ur.open(input_file)[ur.open(input_file).keys()[0]].pandas.df(flatten=False)
         return study_data
 
     def get_tpc_data(self, input_dir = '~/data/phase3/spring_2020/05-09-20/tpc_root_files/'):
         data = {}
         tpcs = ['iiwi', 'humu', 'nene', 'tako', 'palila', 'elepaio']
         for tpc in tpcs:
-            data[tpc] = rp.read_root(input_dir + "%s_all_recoils_only_newest.root"%(tpc))
+            #data[tpc] = rp.read_root(input_dir + "%s_all_recoils_only_newest.root"%(tpc))
+            data[tpc] = ur.open(input_dir + "%s_all_recoils_only_newest.root"%(tpc))[ur.open(input_dir + "%s_all_recoils_only_newest.root"%(tpc)).keys()[0]].pandas.df(flatten=False)
         return data
 
     def select_study(self, study_type, study_period): #LER, HER, Lumi, Cont_inj, Decay

@@ -2,6 +2,7 @@
 
 import numpy as np
 import pandas as pd
+import uproot as ur
 import root_pandas as rp
 import ROOT
 import array
@@ -11,10 +12,15 @@ from matplotlib import rc
 from matplotlib.patches import Patch
 rc('text', usetex=False)
 
+pd.set_option('mode.chained_assignment', None) #suppress error
+
 class simulation:
 
     def __init__(self):
-        #self.make_MC_summary_plots(recoil_species = 'all')
+        #self.make_MC_summary_plots(recoil_species = 'CO', zmin = 0, zmax = 10)
+        #self.make_MC_summary_plots(recoil_species = 'He', zmin = 0, zmax = 10)
+        #self.make_MC_summary_plots(recoil_species = 'CO', zmin = 2, zmax = 8)
+        #self.make_MC_summary_plots(recoil_species = 'He', zmin = 2, zmax = 8)
         pass
     def load_MC(self, base_path = '~/data/phase3/simulation/resolution_paper/tpc_sims/', recoil_species = 'all'):
         after_threshold_C = {}
@@ -28,12 +34,12 @@ class simulation:
 
         tpcs = ['iiwi', 'nene', 'humu', 'palila', 'tako', 'elepaio']
         for tpc in tpcs:
-            after_threshold_C[tpc] = rp.read_root(base_path + "%s_after_threshold_C_all.root"%(tpc))
-            after_threshold_O[tpc] = rp.read_root(base_path + "%s_after_threshold_O_all.root"%(tpc))
-            after_threshold_He[tpc] = rp.read_root(base_path + "%s_after_threshold_He_all.root"%(tpc))
-            after_drift_C[tpc] = rp.read_root(base_path + "%s_after_drift_C_all.root"%(tpc))
-            after_drift_O[tpc] = rp.read_root(base_path + "%s_after_drift_O_all.root"%(tpc))
-            after_drift_He[tpc] = rp.read_root(base_path + "%s_after_drift_He_all.root"%(tpc))
+            after_threshold_C[tpc] = ur.open(base_path + "%s_after_threshold_C_all.root"%(tpc))[ur.open(base_path + "%s_after_threshold_C_all.root"%(tpc)).keys()[0]].pandas.df(flatten=False)
+            after_threshold_O[tpc] = ur.open(base_path + "%s_after_threshold_O_all.root"%(tpc))[ur.open(base_path + "%s_after_threshold_O_all.root"%(tpc)).keys()[0]].pandas.df(flatten=False)
+            after_threshold_He[tpc] = ur.open(base_path + "%s_after_threshold_He_all.root"%(tpc))[ur.open(base_path + "%s_after_threshold_He_all.root"%(tpc)).keys()[0]].pandas.df(flatten=False)
+            after_drift_C[tpc] = ur.open(base_path + "%s_after_drift_C_all.root"%(tpc))[ur.open(base_path + "%s_after_drift_C_all.root"%(tpc)).keys()[0]].pandas.df(flatten=False)
+            after_drift_O[tpc] = ur.open(base_path + "%s_after_drift_O_all.root"%(tpc))[ur.open(base_path + "%s_after_drift_O_all.root"%(tpc)).keys()[0]].pandas.df(flatten=False)
+            after_drift_He[tpc] = ur.open(base_path + "%s_after_drift_He_all.root"%(tpc))[ur.open(base_path + "%s_after_drift_He_all.root"%(tpc)).keys()[0]].pandas.df(flatten=False)
             after_threshold_C[tpc]['recoil_species'] = 'C'
             after_threshold_O[tpc]['recoil_species'] = 'O'
             after_threshold_He[tpc]['recoil_species'] = 'He'
@@ -53,11 +59,16 @@ class simulation:
             elif recoil_species == 'O':
                 after_threshold[tpc] = after_threshold[tpc].loc[after_threshold[tpc]['recoil_species'] == 'O']
                 after_drift[tpc] = after_drift[tpc].loc[after_drift[tpc]['recoil_species'] == 'O']
+            elif recoil_species == 'CO':
+                after_threshold[tpc] = after_threshold[tpc].loc[(after_threshold[tpc]['recoil_species'] == 'O')
+                                                                | (after_threshold[tpc]['recoil_species'] == 'C')]
+                after_drift[tpc] = after_drift[tpc].loc[(after_drift[tpc]['recoil_species'] == 'O')
+                                                        | (after_drift[tpc]['recoil_species'] == 'C')]
             after_threshold[tpc].index = [i for i in range(0,len(after_threshold[tpc]))] #reindex
             after_drift[tpc].index = [i for i in range(0,len(after_drift[tpc]))] #reindex 
         return after_threshold, after_drift
 
-    def apply_energy_calibrations(self, base_path =  '~/data/phase3/simulation/resolution_paper/tpc_sims/', recoil_species = 'all', zmin = 2, zmax = 8):
+    def apply_energy_calibrations(self, base_path =  '~/data/phase3/simulation/resolution_paper/tpc_sims/', recoil_species = 'all', zmin = 0, zmax = 10):
         MC = self.load_MC(base_path, recoil_species)[0]
         MC_drift = self.load_MC(base_path, recoil_species)[1] #only adding fiducial cuts
         tpcs = MC.keys()
@@ -98,17 +109,17 @@ class simulation:
             MC[tpc]['reco_energy'] = MC[tpc]['sumtot']*35.075/gain[tpc]*1e-3
     
             #Add truth z fiducial cuts
-            MC[tpc]['truth_z'] = [MC[tpc]['truth_center'].iloc[i][2] for i in range(0,len(MC[tpc]))]
+            MC[tpc]['truth_z'] = [MC[tpc]['truth_center[2]'].iloc[i] for i in range(0,len(MC[tpc]))]
             MC[tpc] = MC[tpc].loc[(MC[tpc]['truth_z'] > zmin) & (MC[tpc]['truth_z'] < zmax)]
             MC[tpc].index = [i for i in range(0,len(MC[tpc]))]
-            MC_drift[tpc]['truth_z'] = [MC_drift[tpc]['truth_center'].iloc[i][2] for i in range(0,len(MC_drift[tpc]))]
+            MC_drift[tpc]['truth_z'] = [MC_drift[tpc]['truth_center[2]'].iloc[i] for i in range(0,len(MC_drift[tpc]))]
             MC_drift[tpc] = MC_drift[tpc].loc[(MC_drift[tpc]['truth_z'] > zmin) & (MC_drift[tpc]['truth_z'] < zmax)]
             MC_drift[tpc].index = [i for i in range(0,len(MC_drift[tpc]))]
 
 
         return MC, MC_drift
             
-    def add_saturation_fraction_and_mean_tot(self, base_path =  '~/data/phase3/simulation/resolution_paper/tpc_sims/', recoil_species = 'all', zmin = 2, zmax = 8):
+    def add_saturation_fraction_and_mean_tot(self, base_path =  '~/data/phase3/simulation/resolution_paper/tpc_sims/', recoil_species = 'all', zmin = 0, zmax = 10):
         MC = self.apply_energy_calibrations(base_path = base_path, recoil_species = recoil_species, zmin = zmin, zmax = zmax)[0]
         tpcs = MC.keys()
         # mapping functions
@@ -129,17 +140,19 @@ class simulation:
             MC[tpc] = get_mean_tot(MC[tpc])
         return MC
 
-    def perform_saturation_corrections(self, base_path = '~/data/phase3/simulation/resolution_paper/tpc_sims/', recoil_species = 'all', zmin = 2, zmax = 8, poly_deg = 3):
+    def perform_saturation_corrections(self, base_path = '~/data/phase3/simulation/resolution_paper/tpc_sims/', recoil_species = 'all', zmin = 0, zmax = 10, poly_deg = 3):
         MC = self.add_saturation_fraction_and_mean_tot(base_path = base_path, recoil_species = recoil_species, zmin = zmin, zmax = zmax)
-        tpcs = MC.keys()
+        tpcs = ['humu', 'iiwi', 'nene', 'palila', 'tako', 'elepaio']
         sat_frac_group = {} #dictionary of binned saturation fractions
         fit = {} #dictionary of polyfit calibration curve parameters for each TPC
         means = {} #dictionary of means in the saturation_frac group used to filter out NaNs
         sems = {} #dictionary of std errors in the saturation_frac group used to filter out NaNs
         for tpc in tpcs:
-            sat_frac_group[tpc] = MC[tpc].groupby(pd.cut(MC[tpc]['saturation_fraction'], bins = np.linspace(0,0.5,21)))
+            #sat_frac_group[tpc] = MC[tpc].groupby(pd.cut(MC[tpc]['saturation_fraction'], bins = np.linspace(0.05,0.5,23)))
+            sat_frac_group[tpc] = MC[tpc].groupby(pd.cut(MC[tpc]['saturation_fraction'], bins = np.linspace(0.0,0.45,46)))
             means[tpc] = sat_frac_group[tpc].mean().loc[sat_frac_group[tpc].sem()['reco_energy'].isna() == False]
             sems[tpc] = sat_frac_group[tpc].sem().loc[sat_frac_group[tpc].sem()['reco_energy'].isna() == False]
+            #fit[tpc] = np.polyfit(means['humu']['saturation_fraction'], (means['humu']['reco_energy']/means['humu']['truth_energy']), poly_deg)
             fit[tpc] = np.polyfit(means[tpc]['saturation_fraction'], (means[tpc]['reco_energy']/means[tpc]['truth_energy']), poly_deg)
         #function for using fit calibration curve to correct for charge loss due to saturation
         def perform_saturation_correction(dataframe, fit):
@@ -155,7 +168,7 @@ class simulation:
             MC[tpc] = perform_saturation_correction(MC[tpc], fit[tpc])
         return MC, fit #param [1] can be used with data
 
-    def perform_threshold_corrections(self, base_path = '~/data/phase3/simulation/resolution_paper/tpc_sims/', recoil_species = 'all', zmin = 2, zmax = 8, poly_deg = 5):
+    def perform_threshold_corrections(self, base_path = '~/data/phase3/simulation/resolution_paper/tpc_sims/', recoil_species = 'all', zmin = 0, zmax = 10, poly_deg = 5):
         MC = self.perform_saturation_corrections(base_path, recoil_species, zmin, zmax, 3)[0]
         tpcs = MC.keys()
         mean_tot_group = {} #dictionary of binned mean_tots
@@ -183,7 +196,7 @@ class simulation:
             MC[tpc] = perform_threshold_correction(MC[tpc], fit[tpc])
         return MC, fit #param[1] can be used with data
 
-    def get_grouped_MC(self, base_path = '~/data/phase3/simulation/resolution_paper/tpc_sims/', recoil_species = 'all', zmin = 2, zmax = 8):
+    def get_grouped_MC(self, base_path = '~/data/phase3/simulation/resolution_paper/tpc_sims/', recoil_species = 'all', zmin = 0, zmax = 10):
         after_threshold_data = self.apply_energy_calibrations(base_path = base_path, recoil_species = recoil_species, zmin = zmin, zmax = zmax)[0]
         IQF_data = self.apply_energy_calibrations(base_path = base_path, recoil_species = recoil_species, zmin = zmin, zmax = zmax)[1]
         tpcs = IQF_data.keys()
@@ -194,46 +207,68 @@ class simulation:
             after_threshold_group[tpc] = after_threshold_data[tpc].groupby(['truth_energy'])
         return IQF_group, after_threshold_group
 
-    def make_MC_summary_plots(self, base_path = '~/data/phase3/simulation/resolution_paper/tpc_sims/', recoil_species = 'all', zmin = 2, zmax = 8):
+    def make_MC_summary_plots(self, base_path = '~/data/phase3/simulation/resolution_paper/tpc_sims/', recoil_species = 'all', zmin = 0, zmax = 10):
         MC, fit_thresh = self.perform_threshold_corrections(base_path, recoil_species, zmin, zmax, 5)
+        #fit_sat2 = self.perform_saturation_corrections(base_path, recoil_species, zmin, zmax, 2)[1]
         fit_sat = self.perform_saturation_corrections(base_path, recoil_species, zmin, zmax, 3)[1]
+        #fit_sat4 = self.perform_saturation_corrections(base_path, recoil_species, zmin, zmax, 4)[1]
+        #fit_sat5 = self.perform_saturation_corrections(base_path, recoil_species, zmin, zmax, 5)[1]
         tpcs = MC.keys()
         
         def plot_fit(x, fit): #plots polyfit
             func = 0
             for i in range(0,len(fit)):
                 func += fit[i]*x**(len(fit)-i-1)
-            plt.plot(x,func)
+            plt.plot(x,func, label='polyfit order %s'%(len(fit)-1))
 
         #Bin data for visualization of correction curves
         sat_frac_group = {}
         mean_tot_group = {}
         for tpc in tpcs:
-            sat_frac_group[tpc] = MC[tpc].groupby(pd.cut(MC[tpc]['saturation_fraction'], bins = np.linspace(0.0,0.5,11)))
+            #sat_frac_group[tpc] = MC[tpc].groupby(pd.cut(MC[tpc]['saturation_fraction'], bins = np.linspace(0.05,0.5,23)))
+            sat_frac_group[tpc] = MC[tpc].groupby(pd.cut(MC[tpc]['saturation_fraction'], bins = np.linspace(0.0,0.5,46)))
             mean_tot_group[tpc] = MC[tpc].groupby(pd.cut(MC[tpc]['mean_tot'], bins = np.linspace(0,8,26)))
 
+        #Get grouped data for plotting ratio of ionization to truth energies vs truth energy
+        after_thresh_group = {}
+        IQF_group = self.get_grouped_MC(base_path = base_path, recoil_species = recoil_species, zmin = zmin, zmax = zmax)[0]
+        for tpc in tpcs:
+            after_thresh_group[tpc] = MC[tpc].groupby(['truth_energy'])
         #fig 1
         plt.figure(1, figsize = (10,10))
         i = 1
+        x = np.linspace(0,1,101)
         for tpc in tpcs:
             plt.subplot(3,2,i)
             plt.plot(MC[tpc]['saturation_fraction'], MC[tpc]['reco_energy']/MC[tpc]['truth_energy'],'o', markersize = 1)
+            #fit_df = MC[tpc].loc[MC[tpc]['saturation_fraction']>0.01]
+            #fit2 = np.polyfit(fit_df['saturation_fraction'], fit_df['reco_energy']/fit_df['truth_energy'], 2)
+            #fit3 = np.polyfit(fit_df['saturation_fraction'], fit_df['reco_energy']/fit_df['truth_energy'], 3)
+            #fit4 = np.polyfit(fit_df['saturation_fraction'], fit_df['reco_energy']/fit_df['truth_energy'], 4)
+            #fit5 = np.polyfit(fit_df['saturation_fraction'], fit_df['reco_energy']/fit_df['truth_energy'], 5)
+            #fit6 = np.polyfit(fit_df['saturation_fraction'], fit_df['reco_energy']/fit_df['truth_energy'], 6)
+            #plot_fit(x,fit2)
+            #plot_fit(x,fit3)
+            #plot_fit(x,fit4)
+            #plot_fit(x,fit5)
+            #plot_fit(x,fit6)
             plt.xlabel('Fraction of saturated pixels')
             plt.ylabel(r'$E_{reco}/E_{truth}$')
             plt.title(tpc)
-            plt.xlim(0.0,1)
+            plt.xlim(0.0,1.1)
             plt.ylim(0,1)
             plt.grid()
             i += 1
         plt.tight_layout()
-        plt.show()
+        plt.savefig('fig1.png')
+        plt.clf()
 
         #fig 2
         means = {}
         sems = {}
         plt.figure(2, figsize = (10,10))
         i = 1
-        x = np.linspace(0,1,101)
+        gr = {}
         for tpc in tpcs:
             plt.subplot(3,2,i)
             means[tpc] = sat_frac_group[tpc].mean().loc[sat_frac_group[tpc].sem()['reco_energy'].isna() == False]
@@ -249,9 +284,11 @@ class simulation:
             plt.ylim(0,1)
             plt.xlim(-0.01,1.1)
             plt.grid()
+            plt.legend()
             i += 1
         plt.tight_layout()
-        plt.show()
+        plt.savefig('fig2.png')
+        plt.clf()
 
         #fig 3
         plt.figure(3, figsize = (10,10))
@@ -261,13 +298,14 @@ class simulation:
             plt.plot(MC[tpc]['mean_tot'], MC[tpc]['saturation_corrected_energy']/MC[tpc]['truth_energy'],'o',markersize = 1)
             plt.xlabel('Mean ToT per event')
             plt.ylabel(r'$E_{reco,sat cor}/E_{truth}$')
-            plt.xlim(0,9)
+            plt.xlim(0,10)
             plt.ylim(0,1.5)
             plt.title(tpc)
             plt.grid()
             i += 1
         plt.tight_layout()
-        plt.show()
+        plt.savefig('fig3.png')
+        plt.clf()
 
         #fig 4
         plt.figure(4, figsize = (10,10))
@@ -287,12 +325,13 @@ class simulation:
             plt.xlabel('Mean tot')
             plt.ylabel(r'$E_{reco}/E_{truth}$')
             plt.title(tpc)
-            plt.ylim(-1,2)
-            plt.xlim(-0.01,8.2)
+            plt.ylim(-.5,1.5)
+            plt.xlim(-0.01,8)
             plt.grid()
             i += 1
         plt.tight_layout()
-        plt.show()
+        plt.savefig('fig4.png')
+        plt.clf()
 
         #fig 5
         plt.figure(5, figsize = (10,10))
@@ -308,7 +347,7 @@ class simulation:
             plt.grid()
             i += 1
         plt.tight_layout()
-        plt.show()
+        plt.clf()
 
         #fig 6
         plt.figure(6, figsize = (10,10))
@@ -324,8 +363,165 @@ class simulation:
             plt.grid()
             i += 1
         plt.tight_layout()
-        plt.show()
+        plt.clf()
 
+        #fig 7
+        gain = {'iiwi': 1502, 'nene': 899, 'humu': 878, 'palila': 1033, 'tako': 807, 'elepaio': 797}
+        W = 35.075
+        
+        plt.rc('legend', fontsize=8)
+        plt.rc('xtick', labelsize=12)
+        plt.rc('ytick', labelsize=12)
+        plt.rc('axes', labelsize=14)
+        plt.rc('axes', titlesize=14)
+        plt.figure(figsize = (12,12))
+        i = 1
+        for tpc in tpcs:
+            plt.subplot(3,2,i)
+            plt.errorbar(IQF_group[tpc].mean().index,
+                 IQF_group[tpc].mean()['truth_charge']*W*1e-03/IQF_group[tpc].mean().index,
+                 IQF_group[tpc].sem()['truth_charge']*W*1e-03/IQF_group[tpc].mean().index,
+                 [0 for i in range(0,len(IQF_group[tpc].mean()))],
+                 'o',markersize = 3, label = r'After quenching', color = 'red')
+
+            plt.errorbar(after_thresh_group[tpc].mean().index,
+                 (after_thresh_group[tpc].mean()['qsum']*W*1e-03/gain[tpc])/after_thresh_group[tpc].mean().index,
+                 (after_thresh_group[tpc].sem()['qsum']*W*1e-03/gain[tpc])/after_thresh_group[tpc].mean().index,
+                 [0 for i in range(0,len(after_thresh_group[tpc].mean()))],
+                 'o',markersize = 3, label = r'After threshold loss', color = 'magenta')
+
+            plt.errorbar(after_thresh_group[tpc].mean().index,
+                 (after_thresh_group[tpc].mean()['sumtot']*W*1e-03/gain[tpc])/after_thresh_group[tpc].mean().index,
+                 (after_thresh_group[tpc].sem()['sumtot']*W*1e-03/gain[tpc])/after_thresh_group[tpc].mean().index,
+                 [0 for i in range(0,len(after_thresh_group[tpc].mean()))],
+                 'o',markersize = 3, label = r'After saturation loss', color = 'blue')
+
+            
+            plt.errorbar(after_thresh_group[tpc].mean().index,
+                 (after_thresh_group[tpc].mean()['saturation_corrected_energy'])/after_thresh_group[tpc].mean().index,
+                 (after_thresh_group[tpc].sem()['saturation_corrected_energy'])/after_thresh_group[tpc].mean().index,
+                 [0 for i in range(0,len(after_thresh_group[tpc].mean()))],
+                 'o',markersize = 3, label = r'Saturation correction', color = 'indigo')
+
+            plt.errorbar(after_thresh_group[tpc].mean().index,
+                 (after_thresh_group[tpc].mean()['full_corrected_energy'])/after_thresh_group[tpc].mean().index,
+                 (after_thresh_group[tpc].sem()['full_corrected_energy'])/after_thresh_group[tpc].mean().index,
+                 [0 for i in range(0,len(after_thresh_group[tpc].mean()))],
+                 'o',markersize = 3, label = r'Threshold and saturation correction', color = 'green')
+
+            plt.ylabel(r'$E_{ion}/E_{truth}$')
+            plt.xlabel(r'$E_{truth}$ [keV]')
+            plt.ylim(0,1.2)
+            plt.xlim(0,1050)
+            plt.legend(loc ='lower right')
+            plt.grid()
+            plt.title(tpc)
+            i += 1
+        plt.tight_layout()
+        plt.savefig("/home/jeef/Pictures/truth_frac_%s_zmin-%s_zmax_%s.png"%(recoil_species, zmin, zmax))
+        plt.clf()
+
+        # fig 8: Resolutions
+        h_thresh_sat = {}
+        h_thresh = {}
+        h_quench = {}
+        h_full_cor = {}
+        h_sat_cor = {}
+        vals_thresh_sat = {}
+        vals_thresh = {}
+        vals_quench = {}
+        vals_full_cor = {}
+        vals_sat_cor = {}
+        rms_errors_quench = {}
+        rms_errors_thresh = {}
+        rms_errors_thresh_sat = {}
+        rms_errors_full_cor = {}
+        rms_errors_sat_cor = {}
+        reso_errors_thresh_sat = {}
+        reso_errors_thresh = {}
+        reso_errors_quench = {}
+        reso_errors_full_cor = {}
+        reso_errors_sat_cor = {}
+        
+        IQF_data = self.apply_energy_calibrations(base_path = base_path, recoil_species = recoil_species, zmin = zmin, zmax = zmax)[1]
+
+        for tpc in tpcs:
+            rms_errors_sat_cor[tpc] = []
+            for energy in MC[tpc]['truth_energy'].unique(): #sat_cor loop
+                h_sat_cor[tpc+'_'+str(energy)] = ROOT.TH1F('%s_%s'%(tpc,energy), '%s_%s'%(tpc,energy), 21, 0, 100)
+                vals_sat_cor[tpc+'_'+str(energy)] = array.array('d', after_thresh_group[tpc].mean().loc[MC[tpc]['truth_energy'] == energy]['saturation_corrected_energy'])
+                for i in range(0,len(vals_sat_cor[tpc+'_'+str(energy)])):
+                    h_sat_cor[tpc+'_'+str(energy)].Fill(vals_sat_cor[tpc+'_'+str(energy)][i])
+                rms_errors_sat_cor[tpc].append(h_sat_cor[tpc+'_'+str(energy)].GetRMSError())
+            rms_errors_sat_cor[tpc] = np.array(rms_errors_sat_cor[tpc])
+            reso_errors_sat_cor[tpc] = after_thresh_group[tpc].std()['saturation_corrected_energy']/after_thresh_group[tpc].mean()['saturation_corrected_energy'] * np.sqrt((rms_errors_sat_cor[tpc]/(after_thresh_group[tpc].std()['saturation_corrected_energy']))**2 + (after_thresh_group[tpc].std()['saturation_corrected_energy']/(after_thresh_group[tpc].mean()['saturation_corrected_energy']))**2)
+            
+        for tpc in tpcs:
+            rms_errors_full_cor[tpc] = []
+            for energy in MC[tpc]['truth_energy'].unique(): #full_cor loop
+                h_full_cor[tpc+'_'+str(energy)] = ROOT.TH1F('%s_%s'%(tpc,energy), '%s_%s'%(tpc,energy), 21, 0, 100)
+                vals_full_cor[tpc+'_'+str(energy)] = array.array('d', after_thresh_group[tpc].mean().loc[MC[tpc]['truth_energy'] == energy]['full_corrected_energy'])
+                for i in range(0,len(vals_full_cor[tpc+'_'+str(energy)])):
+                    h_full_cor[tpc+'_'+str(energy)].Fill(vals_full_cor[tpc+'_'+str(energy)][i])
+                rms_errors_full_cor[tpc].append(h_full_cor[tpc+'_'+str(energy)].GetRMSError())
+            rms_errors_full_cor[tpc] = np.array(rms_errors_full_cor[tpc])
+            reso_errors_full_cor[tpc] = after_thresh_group[tpc].std()['full_corrected_energy']/after_thresh_group[tpc].mean()['full_corrected_energy'] * np.sqrt((rms_errors_sat_cor[tpc]/(after_thresh_group[tpc].std()['full_corrected_energy']))**2 + (after_thresh_group[tpc].std()['full_corrected_energy']/(after_thresh_group[tpc].mean()['full_corrected_energy']))**2)
+            
+        for tpc in tpcs:
+            rms_errors_quench[tpc] = []
+            rms_errors_thresh[tpc] = []
+            rms_errors_thresh_sat[tpc] = []
+            for energy in IQF_data[tpc]['truth_energy'].unique(): #quenching loop
+                h_quench[tpc+'_'+str(energy)] = ROOT.TH1F('%s_%s'%(tpc,energy), '%s_%s'%(tpc,energy), 21, 0, 100)
+                vals_quench[tpc+'_'+str(energy)] = array.array('d', after_thresh_group[tpc].mean().loc[MC[tpc]['truth_energy'] == energy]['truth_charge']*W*1e-03)
+                for i in range(0,len(vals_quench[tpc+'_'+str(energy)])):
+                    h_quench[tpc+'_'+str(energy)].Fill(vals_quench[tpc+'_'+str(energy)][i])
+                rms_errors_quench[tpc].append(h_quench[tpc+'_'+str(energy)].GetRMSError())
+            for energy in MC[tpc]['truth_energy'].unique(): #thresh and saturation
+                h_thresh_sat[tpc+'_'+str(energy)] = ROOT.TH1F('%s_%s'%(tpc,energy), '%s_%s'%(tpc,energy), 21, 0, 100)
+                h_thresh[tpc+'_'+str(energy)] = ROOT.TH1F('%s_%s'%(tpc,energy), '%s_%s'%(tpc,energy), 21, 0, 100)
+                vals_thresh_sat[tpc+'_'+str(energy)] = array.array('d', after_thresh_group[tpc].mean().loc[MC[tpc]['truth_energy'] == energy]['sumtot']*W*1e-03/gain[tpc])
+                vals_thresh[tpc+'_'+str(energy)] = array.array('d', after_thresh_group[tpc].mean().loc[MC[tpc]['truth_energy'] == energy]['qsum']*W*1e-03/gain[tpc])
+                for i in range(0,len(vals_thresh_sat[tpc+'_'+str(energy)])):
+                    h_thresh_sat[tpc+'_'+str(energy)].Fill(vals_thresh_sat[tpc+'_'+str(energy)][i])
+                for i in range(0,len(vals_thresh[tpc+'_'+str(energy)])):
+                    h_thresh[tpc+'_'+str(energy)].Fill(vals_thresh[tpc+'_'+str(energy)][i])
+                rms_errors_thresh_sat[tpc].append(h_thresh_sat[tpc+'_'+str(energy)].GetRMSError())
+                rms_errors_thresh[tpc].append(h_thresh[tpc+'_'+str(energy)].GetRMSError())
+            rms_errors_thresh_sat[tpc] = np.array(rms_errors_thresh_sat[tpc])
+            rms_errors_thresh[tpc] = np.array(rms_errors_thresh[tpc])
+            rms_errors_quench[tpc] = np.array(rms_errors_quench[tpc])
+            reso_errors_quench[tpc] = IQF_group[tpc].std()['truth_charge']*W*1e-03/IQF_group[tpc].mean()['truth_charge']*W*1e-03 * np.sqrt((rms_errors_quench[tpc]/IQF_group[tpc].std()['truth_charge']*W*1e-03)**2 + (IQF_group[tpc].std()['truth_charge']*W*1e-03/IQF_group[tpc].mean()['truth_charge']*W*1e-03)**2)
+            reso_errors_thresh[tpc] = (after_thresh_group[tpc].std()['qsum']*W*1e-03/gain[tpc])/(after_thresh_group[tpc].mean()['qsum']*W*1e-03/gain[tpc]) * np.sqrt((rms_errors_thresh[tpc]/(after_thresh_group[tpc].std()['qsum']*W*1e-03)/gain[tpc])**2 + ((after_thresh_group[tpc].std()['qsum']*W*1e-03/gain[tpc])/(after_thresh_group[tpc].mean()['qsum']*W*1e-03/gain[tpc]))**2)
+            reso_errors_thresh_sat[tpc] = (after_thresh_group[tpc].std()['sumtot']*W*1e-03/gain[tpc])/(after_thresh_group[tpc].mean()['sumtot']*W*1e-03/gain[tpc]) * np.sqrt((rms_errors_thresh_sat[tpc]/(after_thresh_group[tpc].std()['sumtot']*W*1e-03)/gain[tpc])**2 + ((after_thresh_group[tpc].std()['sumtot']*W*1e-03/gain[tpc])/(after_thresh_group[tpc].mean()['sumtot']*W*1e-03/gain[tpc]))**2)
+
+        # Make plots
+        plt.rc('legend', fontsize=8)
+        plt.rc('xtick', labelsize=12)
+        plt.rc('ytick', labelsize=12)
+        plt.rc('axes', labelsize=14)
+        plt.rc('axes', titlesize=14)
+        plt.figure(figsize = (12,12))
+
+        i = 1
+        for tpc in tpcs:
+            plt.subplot(3,2,i)
+            plt.errorbar(IQF_group[tpc].mean().index, IQF_group[tpc].std()['truth_charge']*35.075*1e-03/IQF_group[tpc].mean()['truth_charge']*35.075*1e-03, reso_errors_quench[tpc], [0 for i in range(0,len(reso_errors_quench[tpc]))], 'o',markersize = 3, label = r'After quenching', color = 'red', lw = 1)
+            plt.errorbar(after_thresh_group[tpc].mean().index, (after_thresh_group[tpc].std()['qsum']*35.075*1e-03/gain[tpc])/(after_thresh_group[tpc].mean()['qsum']*35.075*1e-03/gain[tpc]), reso_errors_thresh[tpc], [0 for i in range(0,len(reso_errors_thresh[tpc]))], 'o',markersize = 3, label = r'After threshold loss', color = 'magenta', lw = 1)
+            plt.errorbar(after_thresh_group[tpc].mean().index, (after_thresh_group[tpc].std()['sumtot']*35.075*1e-03/gain[tpc])/(after_thresh_group[tpc].mean()['sumtot']*35.075*1e-03/gain[tpc]), reso_errors_thresh_sat[tpc], [0 for i in range(0,len(reso_errors_thresh_sat[tpc]))], 'o',markersize = 3, label = r'After saturation loss', color = 'blue', lw = 1)
+            plt.errorbar(after_thresh_group[tpc].mean().index, (after_thresh_group[tpc].std()['saturation_corrected_energy'])/(after_thresh_group[tpc].mean()['saturation_corrected_energy']), reso_errors_sat_cor[tpc], [0 for i in range(0,len(reso_errors_sat_cor[tpc]))], 's',markersize = 3, label = r'Sat. loss correction', color = 'indigo', lw = 1)
+            plt.errorbar(after_thresh_group[tpc].mean().index, (after_thresh_group[tpc].std()['full_corrected_energy'])/(after_thresh_group[tpc].mean()['full_corrected_energy']), reso_errors_full_cor[tpc], [0 for i in range(0,len(reso_errors_full_cor[tpc]))], 's',markersize = 3, label = r'Sat + thresh correction', color = 'green', lw = 1)
+            plt.xlabel(r'$E_{truth}$ [keV]')
+            plt.ylabel(r'$\sigma_E/E$')
+            plt.xlim(0,1020)
+            plt.ylim(0,0.5)
+            plt.title(tpc)
+            plt.grid()
+            plt.legend()
+            i += 1
+        plt.tight_layout()
+        plt.savefig("/home/jeef/Pictures/resolution_%s_zmin-%s_zmax_%s.png"%(recoil_species, zmin, zmax))
+        plt.clf()
         
             
 class tpc_calibration(simulation):
@@ -361,7 +557,7 @@ class tpc_calibration(simulation):
         tpcs = self.get_tpc_list()
         df = {}
         for tpc in tpcs:
-            df[tpc] = rp.read_root('~/data/phase3/spring_2020/maintenance_day_test/%s_alphas_all.root'%(tpc))
+            df[tpc] = ur.open('~/data/phase3/spring_2020/maintenance_day_test/%s_alphas_all.root'%(tpc))[ur.open('~/data/phase3/spring_2020/maintenance_day_test/%s_alphas_all.root'%(tpc)).keys()[0]].pandas.df(flatten=False)
             df[tpc]['BCID_range'] = [df[tpc]['BCID'][i].max()-df[tpc]['BCID'][i].min() for i in range (0,len(df[tpc]))]
             df[tpc] = df[tpc].loc[(df[tpc]['track_energy'] > 400) & (df[tpc]['BCID_range'] < 90)] #selection for alphas
             df[tpc] = df[tpc].loc[(np.abs(df[tpc]['phi']) < 5) | (np.abs(df[tpc]['phi']-180) < 5) | (np.abs(-180 - df[tpc]['phi']) < 5)]
@@ -374,7 +570,7 @@ class tpc_calibration(simulation):
         tpcs = self.get_tpc_list()
         df = {}
         for tpc in tpcs:
-            df[tpc] = rp.read_root('~/data/phase3/spring_2020/05-09-20/tpc_root_files/%s_all_new.root'%(tpc))
+            df[tpc] = ur.open('~/data/phase3/spring_2020/05-09-20/tpc_root_files/%s_all_new.root'%(tpc))[ur.open('~/data/phase3/spring_2020/05-09-20/tpc_root_files/%s_all_new.root'%(tpc)).keys()[0]].pandas.df(flatten=False)
             df[tpc]['track_energy'] = df[tpc]['track_charge']*35.075/2000*1e-3 # "uncalibrates" energy to start fresh
             df[tpc]['pixel_energy'] = df[tpc]['pixel_charge']*35.075/2000*1e-3 # "uncalibrates" energy to start fresh
         return df
