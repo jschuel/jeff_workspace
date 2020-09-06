@@ -373,6 +373,7 @@ class analysis:
             fit_dict['%s_HER_T'%(tpc)] = HER_fit_params[tpc+'_T']
             LER_bg = fit_dict['%s_LER_B0'%(tpc)]*700 + fit_dict['%s_LER_B1'%(tpc)]*700**2
             LER_T = fit_dict['%s_LER_T'%(tpc)]*700**2/(50*783)
+            print("%s: %s"%(tpc, (LER_bg + LER_T)))
             HER_bg = fit_dict['%s_HER_B0'%(tpc)]*700 + fit_dict['%s_HER_B1'%(tpc)]*700**2
             HER_T = fit_dict['%s_HER_T'%(tpc)]*700**2/(50*783)
             Lumi = fit_dict['%s_lumi_int'%(tpc)]+fit_dict['%s_lumi_slope'%(tpc)]*2.0
