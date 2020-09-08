@@ -547,7 +547,7 @@ class tpc_calibration(simulation):
         #plt.show()
 
         super().__init__() # inherit simulation classes methods
-
+        self.write_to_root_file()
         pass
         
     def get_tpc_list(self, tpc_list = ['iiwi', 'humu', 'nene', 'tako', 'palila', 'elepaio']):
@@ -780,6 +780,27 @@ class tpc_calibration(simulation):
             i += 1
         plt.clf()
 
+    def apply_recoil_cuts(self, corrected_energy = True, corrected_length = 0): #Cuts to train double Gaussian fit
+        recoils =  self.calibrate_recoils(corrected_energy, corrected_length)
+        y = np.array([6,20,800])
+        for tpc in recoils.keys():
+            recoils[tpc] = recoils[tpc].loc[recoils[tpc]['track_energy']>8]
+            if tpc == 'iiwi':
+                x = np.array([1200, 1900, 15000])
+            elif tpc == 'humu':
+                x = np.array([1950, 3000, 20000])
+            elif tpc == 'nene':
+                x = np.array([950, 1900, 15000])
+            elif tpc == 'tako':
+                x = np.array([1000, 1900, 15000])
+            elif tpc == 'palila':
+                x = np.array([1000, 1750, 15000])
+            else:
+                x = np.array([1050, 2000, 15000])
+            cut = np.polyfit(x,y,2)
+            recoils[tpc] = recoils[tpc].loc[recoils[tpc]['track_energy'] > cut[0]*recoils[tpc]['length']**2+cut[1]*recoils[tpc]['length']+cut[2]] #after this cut, only recoil bands remain
+        return recoils
+
     def write_to_root_file(self, recoils_only = True, corrected_energy = True, corrected_length = 0, outdir = '~/data/phase3/spring_2020/05-09-20/tpc_root_files/'):
         if recoils_only == False:
             recoils = self.calibrate_recoils(corrected_energy, corrected_length)
@@ -796,7 +817,7 @@ class tpc_calibration(simulation):
             recoils[tpc]['event_number'] = recoils[tpc].index
             keys = [val for val in recoils[tpc].columns]
             if recoils_only == True:
-                output = ROOT.TFile(outdir + '%s_all_recoils_only_newest.root'%(tpc), 'new')
+                output = ROOT.TFile(outdir + '%s_all_recoils_only_even_newester.root'%(tpc), 'new')
             else:
                 output = ROOT.TFile(outdir + '%s_all_newest.root'%(tpc), 'recreate')
             tout = ROOT.TTree('data','data')

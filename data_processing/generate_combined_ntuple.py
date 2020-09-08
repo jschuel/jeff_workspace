@@ -16,9 +16,9 @@ SKB_input = "~/data/phase3/spring_2020/05-09-20/SKB+LUMI_archiver_with_flag.root
 module_id = ["tako", "palila", "elepaio", "iiwi", "nene", "humu"]
 tpc_input = {}
 for module in module_id:
-    tpc_input[module] = "~/data/phase3/spring_2020/05-09-20/tpc_root_files/%s_all_new.root"%(module)
+    tpc_input[module] = "~/data/phase3/spring_2020/05-09-20/tpc_root_files/%s_all_newest.root"%(module)
 study_indices = [i for i in range(0,34000)]
-output_f = '~/data/phase3/spring_2020/05-09-20/combined_ntuples/05-09_whole_study_newest.root'
+output_f = '~/data/phase3/spring_2020/05-09-20/combined_ntuples/05-09_whole_study_even_newerest.root'
 make_ntuple(SKB_input, tpc_input, study_indices, output_f)
 '''
 month = sys.argv[1] #month of study

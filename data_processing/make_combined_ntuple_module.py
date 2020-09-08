@@ -1,4 +1,5 @@
 from root_pandas import read_root
+import uproot as ur
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -67,23 +68,43 @@ def merge_TPC_rates_with_SKB(df_TPC, ts_range):
 
 ##Make TPC dataframe
 def make_TPC_dataframe(tpc_input, module_id): #tpc_input is a dictionary of files with module_id's as keys
-    df_TPC = read_root(tpc_input[module_id], "data")
+    #df_TPC = read_root(tpc_input[module_id], "data")
     #df_TPC['recoil_energy'] = df_TPC['recoil_energy']/1000
-    if module_id == 'humu':
-        cut_min = np.array([1.62248996e-06, 3.18554217e-03, 5.89558233e+00])
+    df_TPC = ur.open(tpc_input[module_id])['data'].pandas.df(flatten = False)
+    ekey = 'track_energy'
+    df_TPC = df_TPC.loc[df_TPC[ekey]>8] #initial xray veto
+    df_TPC.index = [i for i in range(0,len(df_TPC))]
+    y = np.array([6,20,800])
+    if module_id == 'iiwi':
+        x = np.array([1200, 1900, 15000])
+    elif module_id == 'humu':
+        x = np.array([1950, 3000, 20000])
+    elif module_id == 'nene':
+        x = np.array([950, 1900, 15000])
+    elif module_id == 'tako':
+        x = np.array([1000, 1900, 15000])
+    elif module_id == 'palila':
+        x = np.array([1000, 1750, 15000])
     else:
-        cut_min = np.array([4.71887550e-06, 7.68072289e-03, 1.30522088e+00])
-    cut_max = np.array([6.15461847e-06,  3.04006024e-02, -1.94678715e+01])
-    ekey = 'full_corrected_energy'
-    df_TPC = df_TPC.loc[df_TPC[ekey]>10]
-    df_TPC_neutron = df_TPC.loc[df_TPC[ekey] > (cut_min[0]*df_TPC['length']**2 + cut_min[1]*df_TPC['length']+cut_min[2])]
+        x = np.array([1050, 2000, 15000])
+    cut = np.polyfit(x,y,2)
+    df_TPC_neutron = df_TPC.loc[df_TPC[ekey] > (cut[0]*df_TPC['length']**2 + cut[1]*df_TPC['length']+cut[2])] 
+    #if module_id == 'humu':
+    #    cut_min = np.array([1.62248996e-06, 3.18554217e-03, 5.89558233e+00])
+    #else:
+    #    cut_min = np.array([4.71887550e-06, 7.68072289e-03, 1.30522088e+00])
+    #cut_max = np.array([6.15461847e-06,  3.04006024e-02, -1.94678715e+01])
+    #ekey = 'full_corrected_energy'
+    #df_TPC = df_TPC.loc[df_TPC[ekey]>10]
+    #df_TPC_neutron = df_TPC.loc[df_TPC[ekey] > (cut_min[0]*df_TPC['length']**2 + cut_min[1]*df_TPC['length']+cut_min[2])]
     #df_TPC_neutron = df_TPC.iloc[df_TPC.loc[(df_TPC.track_energy < (0.7*df_TPC.length-75)) & (df_TPC.track_energy > (0.015*df_TPC.length-65)) & (df_TPC.track_energy > 20) & (df_TPC.hitside_col_min == 0) & (df_TPC.hitside_row_min == 0) & (df_TPC.hitside_col_max == 0) & (df_TPC.hitside_row_max == 0)].index] #dataframe for TPC nuclear recoils
     return df_TPC_neutron
 
 ##Make dataframe of SKB variables relevant for study
 def make_SKB_dataframe(SKB_input):
-    df_SKB = read_root(SKB_input)
+    #df_SKB = read_root(SKB_input)
     #df_SKB = df_SKB.drop(columns=['HE3', 'TPC'])
+    df_SKB = ur.open(SKB_input)[ur.open(SKB_input).keys()[0]].pandas.df(flatten = False)
     df_SKB = df_SKB.sort_values(by = ['ts']) #order by ascending timestamp
     df_SKB.index = [i for i in range(0,len(df_SKB))]
     return df_SKB

@@ -41,10 +41,10 @@ class analysis:
         df.index = tpcs
         return df
 
-    def get_MC_data(self, bgType):
+    def get_MC_data(self, bgtype):
         tpcs = ['iiwi', 'palila', 'tako', 'elepaio']
         #bgtype = ['Coulomb_HER_base', 'Coulomb_LER_base', 'Coulomb_HER_dynamic', 'Coulomb_LER_dynamic', 'Brems_HER_base', 'Brems_LER_base', 'Brems_HER_dynamic', 'Brems_LER_dynamic', 'Touschek_HER_all', 'Touschek_LER_all']
-        #bgtype = ['twoPhoton_Lumi']
+        #bgtype = 'RBB_Lumi'
         truth = {}
         for tpc in tpcs:
             dir = '/home/jeef/data/phase3/spring_2020/05-09-20/geant4_simulation/truth_neutrons_only/%s/'%(tpc)
@@ -70,8 +70,8 @@ class analysis:
         plt.rc('axes', labelsize=18)
         plt.rc('axes', titlesize=18)
 
-        cm = matplotlib.cm.viridis
-        norm = matplotlib.colors.LogNorm(vmin = 1e1, vmax = 1e5)
+        cm = matplotlib.cm.plasma
+        norm = matplotlib.colors.LogNorm(vmin = 1e0, vmax = 1e4)
         #norm = matplotlib.colors.Normalize(vmin = 0)
         sm = matplotlib.cm.ScalarMappable(cmap=cm, norm=norm)
 
@@ -81,31 +81,42 @@ class analysis:
         ###Make Consistent Color Scale###
         df = pd.DataFrame()
         for key in data.keys():
+            #data[key] = data[key].loc[(data[key]['truthNeutronVtx_z_belle_frame']>-870) & #Line is for RBB hotspot
+               #(data[key]['truthNeutronVtx_z_belle_frame']<-750) & (data[key]['truthNeutronVtx_x_belle_frame']>20) & 
+               #(data[key]['truthNeutronVtx_x_belle_frame']<60) & (np.abs(data[key]['truthNeutronVtx_y_belle_frame'])<20)]
             df = df.append(data[key])
         df.index = [i for i in range(0,len(df))]
         color = cm(norm(df['truthNeutronEnergy']))
         ###
         
-        img = plt.imread("/home/jeef/Pictures/farbeamline.png")
+        #img = plt.imread("/home/jeef/Pictures/farbeamline_update.png")
+        img = plt.imread("/home/jeef/Pictures/farbeamline_nocolor.png")
         fig, ax = plt.subplots(2,1,figsize = (12,10))
         fig.suptitle('%s neutron SimHits and vertices'%(bgtype), fontsize=16)
         ax[0].set_xticks([])
         ax[0].set_yticks([])
         ax[1].set_xticks([])
         ax[1].set_yticks([])
-        ax[0].imshow(np.flipud(img), origin = 'lower', extent = [-3300,3170, -267,233], aspect = 'auto')
-        ax[1].imshow(np.flipud(img), origin = 'lower', extent = [-3300,3170, -267,233], aspect = 'auto')
+        ax[0].set_xlabel('z [cm]')
+        ax[0].set_ylabel('x [cm]')
+        ax[1].set_xlabel('z [cm]')
+        ax[1].set_ylabel('x [cm]')
+        #ax[0].imshow(np.flipud(img), origin = 'lower', extent = [-3400,3190, -440,421], aspect = 'auto')
+        #ax[1].imshow(np.flipud(img), origin = 'lower', extent = [-3400,3190, -440,421], aspect = 'auto')
+        ax[0].imshow(np.flipud(img), origin = 'lower', extent = [-3333,3142, -438,414], aspect = 'auto')
+        ax[1].imshow(np.flipud(img), origin = 'lower', extent = [-3333,3142, -438,414], aspect = 'auto')
         j = 0
         for key in data.keys():
             for i in range(0,len(data[key])):
                 ax[0].scatter(data[key]['truthNeutronVtx_z_belle_frame'].iloc[i], data[key]['truthNeutronVtx_x_belle_frame'].iloc[i], c = color[j], s=0.8)
                 zs = [data[key]['truthNeutronVtx_z_belle_frame'].iloc[i], data[key]['chipz'].iloc[i]]
                 xs = [data[key]['truthNeutronVtx_x_belle_frame'].iloc[i], data[key]['chipx'].iloc[i]]
-                ax[1].plot(zs, xs, color = color[j], lw = 0.5, alpha = 0.5)
+                ax[1].plot(zs, xs, color = color[j], lw = 0.2, alpha = 0.5)
                 j+=1
-            ax[0].plot(data[key]['chipz'].mean(), data[key]['chipx'].mean(), 's', color = 'tab:red', markersize = 20, alpha = 0.5)
-            ax[1].plot(data[key]['chipz'].mean(), data[key]['chipx'].mean(), 's', color = 'tab:red', markersize = 20, alpha = 0.5)
-        
+            ax[0].plot(data[key]['chipz'].mean(), data[key]['chipx'].mean(), 's', color = 'green', markersize = 12, alpha = 0.5)
+            ax[0].plot([1400, 1600], [201,201], 's', color = 'green', markersize = 12, alpha = 0.5)
+            ax[1].plot(data[key]['chipz'].mean(), data[key]['chipx'].mean(), 's', color = 'green', markersize = 12, alpha = 0.5)
+            ax[1].plot([1400, 1600], [201,201], 's', color = 'green', markersize = 12, alpha = 0.5)
         plt.colorbar(sm, ax=ax[0]).set_label('Neutron Energy [keV]', rotation = 270, labelpad = 20)
         plt.colorbar(sm, ax=ax[1]).set_label('Neutron Energy [keV]', rotation = 270, labelpad = 20)
         #plt.colorbar(sm, ax=ax[0]).set_label(r'$E_{recoil}/E_{neutron}$', rotation = 270, labelpad = 20)
@@ -115,17 +126,13 @@ class analysis:
         #plt.savefig("neutron_production_points_ratio.png")
         plt.clf()
 
-    def visualize_3D(self):
+    def visualize_3D(self, bgtype):
         cm = matplotlib.cm.viridis
-        norm = matplotlib.colors.LogNorm(vmin = 100)
+        norm = matplotlib.colors.LogNorm(vmin = 1e1, vmax = 1e5)
         #norm = matplotlib.colors.Normalize(vmin = 0)
         sm = matplotlib.cm.ScalarMappable(cmap=cm, norm=norm)
 
-        data = self.get_MC_data()[0]
-        
-        for key in data.keys():
-            data[key] = data[key].loc[(data[key]['truth_energy']>0) & (data[key]['truth_energy'].duplicated() == False)]
-            data[key].index = [i for i in range(0,len(data[key]))]
+        data = self.get_MC_data(bgtype)
 
         ###Make Consistent Color Scale###
         df = pd.DataFrame()
@@ -140,23 +147,120 @@ class analysis:
 
         j=0
         for key in data.keys():
-            ax.plot(data[key]['chipz'].mean(), data[key]['chipx'].mean(), data[key]['chipy'].mean(),'s', color = 'tab:red', markersize = 20)
+            ax.plot(data[key]['chipz'].mean(), data[key]['chipx'].mean(), data[key]['chipy'].mean(),'s', color = 'tab:red', markersize = 20, alpha = 0.5)
             for i in range(0,len(data[key])):
                 zs = [data[key]['truthNeutronVtx_z_belle_frame'].iloc[i], data[key]['chipz'].iloc[i]]
                 xs = [data[key]['truthNeutronVtx_x_belle_frame'].iloc[i], data[key]['chipx'].iloc[i]]
                 ys = [data[key]['truthNeutronVtx_y_belle_frame'].iloc[i], data[key]['chipy'].iloc[i]]
-                ax.plot(zs, xs, ys, color = color[j])
+                ax.plot(zs, xs, ys, 'o', color = color[j], markersize = 0.8)
                 j+=1
         #ax.scatter(df['truthNeutronVtx_z_belle_frame'], df['truthNeutronVtx_x_belle_frame'], df['truthNeutronVtx_y_belle_frame'], c = color)
         ax.set_xlabel('z')
         ax.set_ylabel('x')
         ax.set_zlabel('y')
         plt.colorbar(sm).set_label('Neutron Energy [keV]')
+        fig.suptitle('%s 3D neutron SimHits and vertices'%(bgtype), fontsize=16)
+        plt.savefig("/home/jeef/Pictures/3D_all_SimHits_%s.png"%(bgtype))
+        plt.show()
+
+    def get_all_MC_data(self):
+        tpcs = ['iiwi', 'palila', 'tako', 'elepaio']
+        bgtype = ['Coulomb_LER_dynamic', 'Coulomb_LER_base', 'Coulomb_HER_dynamic', 'Coulomb_HER_base', 'Brems_LER_dynamic', 'Brems_HER_dynamic', 'Brems_LER_base', 'twoPhoton_Lumi', 'RBB_Lumi', 'Touschek_LER', 'Touschek_HER']
+        truth = {}
+        for tpc in tpcs:
+            dir = '/home/jeef/data/phase3/spring_2020/05-09-20/geant4_simulation/truth_neutrons_only/%s/'%(tpc)
+            for bg in bgtype:
+                try:
+                    try:
+                        truth[tpc+'_'+bg] = ur.open(dir+bg+'_'+tpc+'_all.root')['recoils'].pandas.df(flatten=False)
+                    except KeyError:
+                        truth[tpc+'_'+bg] = ur.open(dir+bg+'_'+tpc+'_all.root')['my_ttree'].pandas.df(flatten=False)
+                    try:
+                        truth[tpc+'_'+bg]['chipx'] = truth[tpc+'_'+bg]['chipx'].apply(lambda x: x[0])
+                        truth[tpc+'_'+bg]['chipy'] = truth[tpc+'_'+bg]['chipy'].apply(lambda x: x[0])
+                        truth[tpc+'_'+bg]['chipz'] = truth[tpc+'_'+bg]['chipz'].apply(lambda x: x[0])
+                    except TypeError:
+                        pass
+                except FileNotFoundError:
+                    truth[tpc+'_'+bg] = pd.DataFrame()
+        return truth
+
+    def visualize_all_with_geometry(self):
+        plt.rc('legend', fontsize=12)
+        plt.rc('xtick', labelsize=16)
+        plt.rc('ytick', labelsize=16)
+        plt.rc('axes', labelsize=18)
+        plt.rc('axes', titlesize=18)
+
+        bgtypes = ['Coulomb_LER_dynamic', 'Coulomb_LER_base', 'Coulomb_HER_dynamic', 'Coulomb_HER_base', 'Brems_LER_dynamic', 'Brems_HER_dynamic', 'Brems_LER_base', 'twoPhoton_Lumi', 'RBB_Lumi', 'Touschek_LER', 'Touschek_HER']
+        data = self.get_all_MC_data()
+        df = pd.DataFrame()
+        for key in data.keys():
+            df = df.append(data[key])
+        df.index = [i for i in range(0,len(df))]
+        df_iiwi = df.loc[df['detNb'] == 2]
+        df_palila = df.loc[df['detNb'] == 3]
+        df_tako = df.loc[df['detNb'] == 4]
+        df_elepaio = df.loc[df['detNb'] == 5]
+        #img = plt.imread("/home/jeef/Pictures/farbeamline_update.png")
+        img = plt.imread("/home/jeef/Pictures/farbeamline_nocolor.png")
+        fig, ax = plt.subplots(1,1,figsize = (20,10))
+        ax.set_xticks([])
+        ax.set_yticks([])
+        ax.set_xlabel('z [cm]')
+        ax.set_ylabel('x [cm]')
+        #ax.imshow(np.flipud(img), origin = 'lower', extent = [-3400,3190, -440,421], aspect = 'auto')
+        ax.imshow(np.flipud(img), origin = 'lower', extent = [-3333,3142, -438,414], aspect = 'auto')
+        p = ax.scatter(df['truthNeutronVtx_z_belle_frame'],df['truthNeutronVtx_x_belle_frame'],c=df['truthNeutronEnergy'],s=0.8,norm = matplotlib.colors.LogNorm(vmin = 1e1, vmax = 1e5),cmap = 'plasma')
+        ax.plot(df_iiwi['chipz'].mean(), df_iiwi['chipx'].mean() ,'s', color = 'green', markersize = 20, alpha = 0.5)
+        ax.plot(df_palila['chipz'].mean(), df_palila['chipx'].mean(), 's', color = 'green', markersize = 20, alpha = 0.5)
+        ax.plot(df_tako['chipz'].mean(), df_tako['chipx'].mean(),'s', color = 'green', markersize = 20, alpha = 0.5)
+        ax.plot(df_elepaio['chipz'].mean(), df_elepaio['chipx'].mean(),'s', color = 'green', markersize = 20, alpha = 0.5)
+        plt.colorbar(p).set_label('Neutron Energy [keV]')
+        fig.suptitle('All neutron SimHits and vertices', fontsize=16)
+        #plt.savefig("/home/jeef/Pictures/3D_all_SimHits_%s.png"%(bgtype))
+        plt.show()
+
+    def visualize_all_3D(self):
+        bgtypes = ['Coulomb_LER_dynamic', 'Coulomb_LER_base', 'Coulomb_HER_dynamic', 'Coulomb_HER_base', 'Brems_LER_dynamic', 'Brems_HER_dynamic', 'Brems_LER_base', 'twoPhoton_Lumi', 'RBB_Lumi', 'Touschek_LER', 'Touschek_HER']
+        data = self.get_all_MC_data()
+        df = pd.DataFrame()
+        for key in data.keys():
+            df = df.append(data[key])
+        df.index = [i for i in range(0,len(df))]
+        df_iiwi = df.loc[df['detNb'] == 2]
+        df_palila = df.loc[df['detNb'] == 3]
+        df_tako = df.loc[df['detNb'] == 4]
+        df_elepaio = df.loc[df['detNb'] == 5]
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+        #j=0
+        
+        #for i in range(0,len(df)):
+        #    zs = [df['truthNeutronVtx_z_belle_frame'].iloc[i], df['chipz'].iloc[i]]
+        #    xs = [df['truthNeutronVtx_x_belle_frame'].iloc[i], df['chipx'].iloc[i]]
+        #    ys = [df['truthNeutronVtx_y_belle_frame'].iloc[i], df['chipy'].iloc[i]]
+        #    ax.plot(zs, xs, ys, 'o', color = color[j], markersize = 0.8)
+        #    j+=1
+        p = ax.scatter(df['truthNeutronVtx_z_belle_frame'],df['truthNeutronVtx_x_belle_frame'],df['truthNeutronVtx_y_belle_frame'],c=df['truthNeutronEnergy'],s=0.8,norm = matplotlib.colors.LogNorm(vmin = 1e1, vmax = 1e5), cmap = 'plasma')
+        ax.plot(df_iiwi['chipz'].mean(), df_iiwi['chipx'].mean(), df_iiwi['chipy'].mean(),'s', color = 'green', markersize = 20, alpha = 0.5)
+        ax.plot(df_palila['chipz'].mean(), df_palila['chipx'].mean(), df_palila['chipy'].mean(),'s', color = 'green', markersize = 20, alpha = 0.5)
+        ax.plot(df_tako['chipz'].mean(), df_tako['chipx'].mean(), df_tako['chipy'].mean(),'s', color = 'green', markersize = 20, alpha = 0.5)
+        ax.plot(df_elepaio['chipz'].mean(), df_elepaio['chipx'].mean(), df_elepaio['chipy'].mean(),'s', color = 'green', markersize = 20, alpha = 0.5)
+        ax.set_xlabel('z')
+        ax.set_ylabel('x')
+        ax.set_zlabel('y')
+        plt.colorbar(p).set_label('Neutron Energy [keV]')
+        fig.suptitle('All neutron SimHits and vertices', fontsize=16)
+        #plt.savefig("/home/jeef/Pictures/3D_all_SimHits_%s.png"%(bgtype))
         plt.show()
         
+    
 a = analysis()
 #data, truth = a.get_MC_data()
-for bgtype in ['Coulomb_LER_dynamic', 'Coulomb_HER_dynamic', 'Brems_LER_dynamic', 'twoPhoton_Lumi', 'RBB_Lumi', 'Touschek_LER', 'Touschek_HER']:
+for bgtype in ['RBB_Lumi']: #['Coulomb_LER_dynamic', 'Coulomb_LER_base', 'Coulomb_HER_dynamic', 'Coulomb_HER_base', 'Brems_LER_dynamic', 'Brems_HER_dynamic', 'Brems_LER_base', 'twoPhoton_Lumi', 'RBB_Lumi', 'Touschek_LER', 'Touschek_HER']:
     a.visualize_MC_with_geometry(bgtype)
-#a.visualize_3D()
+    #a.visualize_3D(bgtype)
 #df = a.get_simulated_rates()
+#a.visualize_all_3D()
+#a.visualize_all_with_geometry()
