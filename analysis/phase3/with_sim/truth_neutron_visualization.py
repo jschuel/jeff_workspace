@@ -216,6 +216,7 @@ class analysis:
         ax.plot(df_palila['chipz'].mean(), df_palila['chipx'].mean(), 's', color = 'green', markersize = 20, alpha = 0.5)
         ax.plot(df_tako['chipz'].mean(), df_tako['chipx'].mean(),'s', color = 'green', markersize = 20, alpha = 0.5)
         ax.plot(df_elepaio['chipz'].mean(), df_elepaio['chipx'].mean(),'s', color = 'green', markersize = 20, alpha = 0.5)
+        ax.plot([1400, 1600], [181,181], 's', color = 'green', markersize = 20, alpha = 0.5)
         plt.colorbar(p).set_label('Neutron Energy [keV]')
         fig.suptitle('All neutron SimHits and vertices', fontsize=16)
         #plt.savefig("/home/jeef/Pictures/3D_all_SimHits_%s.png"%(bgtype))
@@ -247,6 +248,7 @@ class analysis:
         ax.plot(df_palila['chipz'].mean(), df_palila['chipx'].mean(), df_palila['chipy'].mean(),'s', color = 'green', markersize = 20, alpha = 0.5)
         ax.plot(df_tako['chipz'].mean(), df_tako['chipx'].mean(), df_tako['chipy'].mean(),'s', color = 'green', markersize = 20, alpha = 0.5)
         ax.plot(df_elepaio['chipz'].mean(), df_elepaio['chipx'].mean(), df_elepaio['chipy'].mean(),'s', color = 'green', markersize = 20, alpha = 0.5)
+        ax.plot([1400, 1600], [201,201], [16, 16], 's', color = 'green', markersize = 20, alpha = 0.5)
         ax.set_xlabel('z')
         ax.set_ylabel('x')
         ax.set_zlabel('y')
@@ -258,9 +260,9 @@ class analysis:
     
 a = analysis()
 #data, truth = a.get_MC_data()
-for bgtype in ['RBB_Lumi']: #['Coulomb_LER_dynamic', 'Coulomb_LER_base', 'Coulomb_HER_dynamic', 'Coulomb_HER_base', 'Brems_LER_dynamic', 'Brems_HER_dynamic', 'Brems_LER_base', 'twoPhoton_Lumi', 'RBB_Lumi', 'Touschek_LER', 'Touschek_HER']:
-    a.visualize_MC_with_geometry(bgtype)
+#for bgtype in ['RBB_Lumi']: #['Coulomb_LER_dynamic', 'Coulomb_LER_base', 'Coulomb_HER_dynamic', 'Coulomb_HER_base', 'Brems_LER_dynamic', 'Brems_HER_dynamic', 'Brems_LER_base', 'twoPhoton_Lumi', 'RBB_Lumi', 'Touschek_LER', 'Touschek_HER']:
+    #a.visualize_MC_with_geometry(bgtype)
     #a.visualize_3D(bgtype)
 #df = a.get_simulated_rates()
 #a.visualize_all_3D()
-#a.visualize_all_with_geometry()
+a.visualize_all_with_geometry()
