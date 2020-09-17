@@ -3,6 +3,7 @@ import ROOT
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
 import matplotlib
 
 class analysis:
@@ -42,7 +43,7 @@ class analysis:
         return df
 
     def get_MC_data(self, bgtype):
-        tpcs = ['iiwi', 'palila', 'tako', 'elepaio']
+        tpcs = ['iiwi', 'nene', 'humu', 'palila', 'tako', 'elepaio']
         #bgtype = ['Coulomb_HER_base', 'Coulomb_LER_base', 'Coulomb_HER_dynamic', 'Coulomb_LER_dynamic', 'Brems_HER_base', 'Brems_LER_base', 'Brems_HER_dynamic', 'Brems_LER_dynamic', 'Touschek_HER_all', 'Touschek_LER_all']
         #bgtype = 'RBB_Lumi'
         truth = {}
@@ -71,7 +72,7 @@ class analysis:
         plt.rc('axes', titlesize=18)
 
         cm = matplotlib.cm.plasma
-        norm = matplotlib.colors.LogNorm(vmin = 1e0, vmax = 1e4)
+        norm = matplotlib.colors.LogNorm(vmin = 1e0, vmax = 1e5)
         #norm = matplotlib.colors.Normalize(vmin = 0)
         sm = matplotlib.cm.ScalarMappable(cmap=cm, norm=norm)
 
@@ -86,7 +87,7 @@ class analysis:
                #(data[key]['truthNeutronVtx_x_belle_frame']<60) & (np.abs(data[key]['truthNeutronVtx_y_belle_frame'])<20)]
             df = df.append(data[key])
         df.index = [i for i in range(0,len(df))]
-        color = cm(norm(df['truthNeutronEnergy']))
+        color = cm(norm(df.dropna()['truthNeutronEnergy']))
         ###
         
         #img = plt.imread("/home/jeef/Pictures/farbeamline_update.png")
@@ -105,23 +106,24 @@ class analysis:
         #ax[1].imshow(np.flipud(img), origin = 'lower', extent = [-3400,3190, -440,421], aspect = 'auto')
         ax[0].imshow(np.flipud(img), origin = 'lower', extent = [-3333,3142, -438,414], aspect = 'auto')
         ax[1].imshow(np.flipud(img), origin = 'lower', extent = [-3333,3142, -438,414], aspect = 'auto')
-        j = 0
-        for key in data.keys():
-            for i in range(0,len(data[key])):
-                ax[0].scatter(data[key]['truthNeutronVtx_z_belle_frame'].iloc[i], data[key]['truthNeutronVtx_x_belle_frame'].iloc[i], c = color[j], s=0.8)
-                zs = [data[key]['truthNeutronVtx_z_belle_frame'].iloc[i], data[key]['chipz'].iloc[i]]
-                xs = [data[key]['truthNeutronVtx_x_belle_frame'].iloc[i], data[key]['chipx'].iloc[i]]
-                ax[1].plot(zs, xs, color = color[j], lw = 0.2, alpha = 0.5)
-                j+=1
-            ax[0].plot(data[key]['chipz'].mean(), data[key]['chipx'].mean(), 's', color = 'green', markersize = 12, alpha = 0.5)
-            ax[0].plot([1400, 1600], [201,201], 's', color = 'green', markersize = 12, alpha = 0.5)
-            ax[1].plot(data[key]['chipz'].mean(), data[key]['chipx'].mean(), 's', color = 'green', markersize = 12, alpha = 0.5)
-            ax[1].plot([1400, 1600], [201,201], 's', color = 'green', markersize = 12, alpha = 0.5)
-        plt.colorbar(sm, ax=ax[0]).set_label('Neutron Energy [keV]', rotation = 270, labelpad = 20)
-        plt.colorbar(sm, ax=ax[1]).set_label('Neutron Energy [keV]', rotation = 270, labelpad = 20)
-        #plt.colorbar(sm, ax=ax[0]).set_label(r'$E_{recoil}/E_{neutron}$', rotation = 270, labelpad = 20)
-        #plt.colorbar(sm, ax=ax[1]).set_label(r'$E_{recoil}/E_{neutron}$', rotation = 270, labelpad = 20)
-        
+        ax[0].add_patch(Rectangle((-1415.5,196), 31, 10, color = 'green', alpha = 0.5)) #elepaio
+        ax[0].add_patch(Rectangle((-815.5,191), 31, 10, color = 'green', alpha = 0.5)) #tako
+        ax[0].add_patch(Rectangle((-578,-189), 31, 10, color = 'green', alpha = 0.5)) #palila
+        ax[0].add_patch(Rectangle((641,-199.4), 31, 10, color = 'green', alpha = 0.5)) #iiwi
+        ax[0].add_patch(Rectangle((1385,172), 31, 10, color = 'green', alpha = 0.5)) #nene
+        ax[0].add_patch(Rectangle((1585,170), 31, 10, color = 'green', alpha = 0.5)) #humu
+        ax[1].add_patch(Rectangle((-1415.5,196), 31, 10, color = 'green', alpha = 0.5)) #elepaio
+        ax[1].add_patch(Rectangle((-815.5,191), 31, 10, color = 'green', alpha = 0.5)) #tako
+        ax[1].add_patch(Rectangle((-578,-189), 31, 10, color = 'green', alpha = 0.5)) #palila
+        ax[1].add_patch(Rectangle((641,-199.4), 31, 10, color = 'green', alpha = 0.5)) #iiwi
+        ax[1].add_patch(Rectangle((1385,172), 31, 10, color = 'green', alpha = 0.5)) #nene
+        ax[1].add_patch(Rectangle((1585,170), 31, 10, color = 'green', alpha = 0.5)) #humu
+        p = ax[0].scatter(df['truthNeutronVtx_z_belle_frame'], df['truthNeutronVtx_x_belle_frame'], c= df['truthNeutronEnergy'], cmap = 'plasma', s=0.4, norm = matplotlib.colors.LogNorm(vmin = 1e0, vmax = 1e5))
+        ax[1].set_prop_cycle('color', color)
+        ax[1].plot(df.dropna()[['truthNeutronVtx_z_belle_frame','chipz']].T, df.dropna()[['truthNeutronVtx_x_belle_frame','chipx']].T, lw=0.3, alpha = 0.15)
+        plt.colorbar(p,ax=ax[0]).set_label(r'$E_{neutron}$', rotation = 270, labelpad = 20)
+        plt.colorbar(sm,ax=ax[1]).set_label(r'E_{neutron}$', rotation = 270, labelpad = 20)
+                
         plt.savefig("/home/jeef/Pictures/all_SimHits_%s.png"%(bgtype))
         #plt.savefig("neutron_production_points_ratio.png")
         plt.clf()
@@ -164,7 +166,7 @@ class analysis:
         plt.show()
 
     def get_all_MC_data(self):
-        tpcs = ['iiwi', 'palila', 'tako', 'elepaio']
+        tpcs = ['iiwi', 'nene', 'humu', 'palila', 'tako', 'elepaio']
         bgtype = ['Coulomb_LER_dynamic', 'Coulomb_LER_base', 'Coulomb_HER_dynamic', 'Coulomb_HER_base', 'Brems_LER_dynamic', 'Brems_HER_dynamic', 'Brems_LER_base', 'twoPhoton_Lumi', 'RBB_Lumi', 'Touschek_LER', 'Touschek_HER']
         truth = {}
         for tpc in tpcs:
@@ -204,22 +206,38 @@ class analysis:
         df_elepaio = df.loc[df['detNb'] == 5]
         #img = plt.imread("/home/jeef/Pictures/farbeamline_update.png")
         img = plt.imread("/home/jeef/Pictures/farbeamline_nocolor.png")
-        fig, ax = plt.subplots(1,1,figsize = (20,10))
+        fig, ax = plt.subplots(1,1,figsize = (25,10))
         ax.set_xticks([])
         ax.set_yticks([])
         ax.set_xlabel('z [cm]')
         ax.set_ylabel('x [cm]')
         #ax.imshow(np.flipud(img), origin = 'lower', extent = [-3400,3190, -440,421], aspect = 'auto')
         ax.imshow(np.flipud(img), origin = 'lower', extent = [-3333,3142, -438,414], aspect = 'auto')
-        p = ax.scatter(df['truthNeutronVtx_z_belle_frame'],df['truthNeutronVtx_x_belle_frame'],c=df['truthNeutronEnergy'],s=0.8,norm = matplotlib.colors.LogNorm(vmin = 1e1, vmax = 1e5),cmap = 'plasma')
-        ax.plot(df_iiwi['chipz'].mean(), df_iiwi['chipx'].mean() ,'s', color = 'green', markersize = 20, alpha = 0.5)
-        ax.plot(df_palila['chipz'].mean(), df_palila['chipx'].mean(), 's', color = 'green', markersize = 20, alpha = 0.5)
-        ax.plot(df_tako['chipz'].mean(), df_tako['chipx'].mean(),'s', color = 'green', markersize = 20, alpha = 0.5)
-        ax.plot(df_elepaio['chipz'].mean(), df_elepaio['chipx'].mean(),'s', color = 'green', markersize = 20, alpha = 0.5)
-        ax.plot([1400, 1600], [181,181], 's', color = 'green', markersize = 20, alpha = 0.5)
-        plt.colorbar(p).set_label('Neutron Energy [keV]')
-        fig.suptitle('All neutron SimHits and vertices', fontsize=16)
+        #p = ax.scatter(df['truthNeutronVtx_z_belle_frame'],df['truthNeutronVtx_x_belle_frame'],c=df['truthNeutronEnergy'],s=0.8,norm = matplotlib.colors.LogNorm(vmin = 1e1, vmax = 1e5),cmap = 'plasma')
+        #ax.plot(df_iiwi['chipz'].mean(), df_iiwi['chipx'].mean() ,'s', color = 'green', markersize = 8, alpha = 0.5)
+        #ax.plot(df_palila['chipz'].mean(), df_palila['chipx'].mean(), 's', color = 'green', markersize = 8, alpha = 0.5)
+        #ax.plot(df_tako['chipz'].mean(), df_tako['chipx'].mean(),'s', color = 'green', markersize = 8, alpha = 0.5)
+        #ax.plot(df_elepaio['chipz'].mean(), df_elepaio['chipx'].mean()-5,'s', color = 'green', markersize = 8, alpha = 0.5)
+
+        ax.add_patch(Rectangle((-1415.5,196), 31, 10, color = 'green', alpha = 0.5)) #elepaio
+        ax.add_patch(Rectangle((-815.5,191), 31, 10, color = 'green', alpha = 0.5)) #tako
+        ax.add_patch(Rectangle((-578,-189), 31, 10, color = 'green', alpha = 0.5)) #palila
+        ax.add_patch(Rectangle((641,-199.4), 31, 10, color = 'green', alpha = 0.5)) #iiwi
+        ax.add_patch(Rectangle((1385,172), 31, 10, color = 'green', alpha = 0.5)) #nene
+        ax.add_patch(Rectangle((1585,170), 31, 10, color = 'green', alpha = 0.5)) #humu
+
+        ### Old
+        #ax.plot([-1400,-800,-562.5], [204, 204,-181.4],'s', color = 'green', markersize = 6, alpha = 0.5)
+        #ax.plot([656.5, 1400, 1600], [-182.9, 201,201], 's', color = 'green', markersize = 6, alpha = 0.5)
+        #ax.plot([-1400,-800,-562.5], [201,196,-184.0],'s', color = 'green', markersize = 6, alpha = 0.5)
+        #ax.plot([656.5, 1400, 1600], [-194.4, 177,175], 's', color = 'green', markersize = 6, alpha = 0.5)
+        ### End old
+        
+        #plt.colorbar(p).set_label('Neutron Energy [keV]')
+        #fig.suptitle('All neutron SimHits and vertices', fontsize=16)
         #plt.savefig("/home/jeef/Pictures/3D_all_SimHits_%s.png"%(bgtype))
+        #plt.savefig("/home/jeef/Pictures/old.png")
+        plt.savefig("/home/jeef/Pictures/new.png")
         plt.show()
 
     def visualize_all_3D(self):
@@ -260,9 +278,9 @@ class analysis:
     
 a = analysis()
 #data, truth = a.get_MC_data()
-#for bgtype in ['RBB_Lumi']: #['Coulomb_LER_dynamic', 'Coulomb_LER_base', 'Coulomb_HER_dynamic', 'Coulomb_HER_base', 'Brems_LER_dynamic', 'Brems_HER_dynamic', 'Brems_LER_base', 'twoPhoton_Lumi', 'RBB_Lumi', 'Touschek_LER', 'Touschek_HER']:
-    #a.visualize_MC_with_geometry(bgtype)
+for bgtype in ['Touschek_LER']: #['Coulomb_LER_dynamic', 'Coulomb_LER_base', 'Coulomb_HER_dynamic', 'Coulomb_HER_base', 'Brems_LER_dynamic', 'Brems_HER_dynamic', 'Brems_LER_base', 'twoPhoton_Lumi', 'RBB_Lumi', 'Touschek_LER', 'Touschek_HER']:
+    a.visualize_MC_with_geometry(bgtype)
     #a.visualize_3D(bgtype)
 #df = a.get_simulated_rates()
 #a.visualize_all_3D()
-a.visualize_all_with_geometry()
+#a.visualize_all_with_geometry()

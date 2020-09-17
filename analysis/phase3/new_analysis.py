@@ -37,7 +37,7 @@ class analysis:
         return data
 
     def get_MC_data(self):
-        tpcs = ['iiwi', 'palila', 'tako', 'elepaio']
+        tpcs = ['iiwi', 'nene', 'humu', 'palila', 'tako', 'elepaio']
         bgtype = ['Coulomb_HER_base', 'Coulomb_LER_base', 'Coulomb_HER_dynamic', 'Coulomb_LER_dynamic', 'Brems_HER_base', 'Brems_LER_base', 'Brems_HER_dynamic', 'Brems_LER_dynamic', 'Touschek_HER_all', 'Touschek_LER_all', 'RBB_Lumi', 'twoPhoton_Lumi']
         tree = 'tree_fe4_after_threshold'
         data = {}
@@ -84,7 +84,7 @@ class analysis:
     def apply_energy_calibrations_to_MC(self):
         MC = self.get_MC_data()
         tpcs = MC.keys()
-        gain = {'iiwi': 1502, 'palila': 1033, 'tako': 807, 'elepaio': 797}
+        gain = {'iiwi': 1502, 'nene': 899, 'humu': 878, 'palila': 1033, 'tako': 807, 'elepaio': 797}
         W = 35.075
         tot_to_q = {}
         for tpc in tpcs:
@@ -94,6 +94,14 @@ class analysis:
         tot_to_q['iiwi']['conversion'] = np.array([1833.00, 2345.17, 3017.33, 6001.54, 8891.71,
                                   11497.43, 14335.32, 18081.33, 22526.06, 27236.90,
                                   32056.16, 36955.09, 41874.75, 46794.40])
+
+        tot_to_q['nene']['conversion'] = np.array([2083.56, 2482.24, 4126.52, 5621.03, 7920.43,
+                                                   11667.35, 15117.97, 19489.23, 23211.63, 27483.98,
+                                                   32272.73, 37262.83, 42283.59, 47304.34])
+
+        tot_to_q['humu']['conversion'] = np.array([2083.47, 2324.41, 3679.37, 5433.43, 6862.72,
+                                                   10000.83, 13701.08, 17258.86, 21438.70, 25821.34,
+                                                   30153.82, 34460.74, 39042.80, 43624.85])
 
         tot_to_q['palila']['conversion'] = np.array([1768.71, 2202.75, 2670.76, 4049.25, 6586.25,
                                     8954.45, 11551.60, 14428.46, 17618.81, 21140.34,
@@ -120,7 +128,7 @@ class analysis:
         return MC
 
     def get_MC_rates(self):
-        tpcs = ['palila', 'tako', 'elepaio', 'iiwi']
+        tpcs = ['palila', 'tako', 'elepaio', 'iiwi', 'nene', 'humu']
         bgtype = ['Coulomb_HER_base', 'Coulomb_LER_base', 'Coulomb_HER_dynamic', 'Coulomb_LER_dynamic', 'Brems_HER_base', 'Brems_LER_base', 'Brems_HER_dynamic', 'Brems_LER_dynamic', 'Touschek_HER_all', 'Touschek_LER_all', 'RBB_Lumi', 'twoPhoton_Lumi']
         tree = 'tree_fe4_after_threshold'
         MC = self.apply_energy_calibrations_to_MC()
@@ -134,7 +142,7 @@ class analysis:
                 if (bg == 'Brems_HER_dynamic'):
                     t = 400.
                 elif (bg == 'Brems_HER_base'):
-                    t = 100.
+                    t = 400.
                 elif (bg == 'Coulomb_HER_base') or (bg == 'Coulomb_HER_dynamic'):
                     t = 40.
                 elif (bg == 'Brems_LER_base') or (bg == 'Brems_LER_dynamic'):
@@ -144,7 +152,7 @@ class analysis:
                 elif (bg == 'Touschek_HER_all'):
                     t = 0.8
                 elif (bg == 'Touschek_LER_all'):
-                    t = 0.1
+                    t = 0.4
                 elif (bg == 'RBB_Lumi'):
                     if tpc == 'tako':
                         t = 6e-5*(10) # *10 is to accoiunt for reducing the luminosity to levels seen in data
@@ -239,9 +247,9 @@ class analysis:
             y_root = array.array('d', y)
             y_root_err = array.array('d', yerr)
             f2 = ROOT.TF2("f2","[0] + [1]*x + [2]*y", 0, X['I_'+study_type].max(), 0, X['heuristic_x'].max())
-            f2.SetParLimits(0,1e-13,1e-5)
-            f2.SetParLimits(1,1e-8,1e-3)
-            f2.SetParLimits(2,0,1)
+            f2.SetParLimits(0,2e-12,2e-4)
+            f2.SetParLimits(1,2e-9,2e-2)
+            f2.SetParLimits(2,1e-12,1)
             #f2.SetParLimits(0,1e-6,5e-2)
             #f2.SetParLimits(1,1e-15,1)
             #f2.SetParLimits(2,1e-6,1)
@@ -356,21 +364,21 @@ class analysis:
         plt.rc('ytick', labelsize=16)
         plt.rc('axes', labelsize=16)
         plt.rc('axes', titlesize=16)
-        #plt.subplot(3,1,1)
+        plt.subplot(3,1,1)
         self.plot_fit("iiwi", study_type, bins, ymax=1, legend = True)
         plt.title("Iiwi (z = +6.6 m)")
         plt.xticks([])
-        #plt.subplot(3,1,2)
-        #self.plot_fit("nene", study_type, bins, ymax)
-        #plt.title("Nene (z = +14 m)")
-        #plt.xticks([])
-        #plt.subplot(3,1,3)
-        #self.plot_fit("humu", study_type, bins, ymax)
-        #plt.title("Humu (z = +16 m)")
-        #plt.xticks([])
-        #plt.tight_layout()
-        #plt.subplots_adjust(hspace = 0.2)
-        #plt.subplots_adjust(wspace = 0.5)
+        plt.subplot(3,1,2)
+        self.plot_fit("nene", study_type, bins, ymax)
+        plt.title("Nene (z = +14 m)")
+        plt.xticks([])
+        plt.subplot(3,1,3)
+        self.plot_fit("humu", study_type, bins, ymax)
+        plt.title("Humu (z = +16 m)")
+        plt.xticks([])
+        plt.tight_layout()
+        plt.subplots_adjust(hspace = 0.2)
+        plt.subplots_adjust(wspace = 0.5)
         plt.show()
 
     def make_bwd_plots(self, study_type, bins=10):
@@ -534,7 +542,7 @@ class analysis:
             df = df.apply(lambda x: x*100)
             df = df.drop(columns = ['total'])
         else:
-            tpcs = ['palila', 'tako', 'elepaio', 'iiwi']
+            tpcs = ['palila', 'tako', 'elepaio', 'iiwi', 'nene', 'humu']
             LER_fit_params = self.get_fit_parameters("LER", study_period, bins)
             HER_fit_params = self.get_fit_parameters("HER", study_period, bins)
             fit_dict = {}
@@ -547,7 +555,7 @@ class analysis:
                 nb_LER = 1576
                 nb_HER = 1576
                 L = 2.5 #luminoisty in 1e34 cm-2s-1
-                lumi_fits = self.measure_and_fit_lumi_bgs(tpc, study_period ,bins=10)
+                lumi_fits = self.measure_and_fit_lumi_bgs(tpc, study_period ,bins=20)
                 fit_dict['%s_lumi_int'%(tpc)]=lumi_fits['%s_int'%(tpc)]
                 fit_dict['%s_lumi_slope'%(tpc)]=lumi_fits['%s_slope'%(tpc)]
                 fit_dict['%s_LER_B0'%(tpc)] = LER_fit_params[tpc+'_B0']
@@ -604,7 +612,7 @@ class analysis:
 
         MC = self.get_MC_rates()
 
-        tpcs = ['palila', 'tako', 'elepaio', 'iiwi']
+        tpcs = ['palila', 'tako', 'elepaio', 'iiwi', 'nene', 'humu']
         LER_fit_params = self.get_fit_parameters("LER", study_period, bins)
         HER_fit_params = self.get_fit_parameters("HER", study_period, bins)
         fit_dict = {}
@@ -617,7 +625,7 @@ class analysis:
             nb_LER = 1576
             nb_HER = 1576
             L = 2.5 #luminoisty in 1e34 cm-2s-1
-            lumi_fits = self.measure_and_fit_lumi_bgs(tpc, study_period ,bins=10)
+            lumi_fits = self.measure_and_fit_lumi_bgs(tpc, study_period ,bins=20)
             fit_dict['%s_lumi_int'%(tpc)]=lumi_fits['%s_int'%(tpc)]
             fit_dict['%s_lumi_int_err'%(tpc)]=lumi_fits['%s_int_err'%(tpc)]
             fit_dict['%s_lumi_slope'%(tpc)]=lumi_fits['%s_slope'%(tpc)]
