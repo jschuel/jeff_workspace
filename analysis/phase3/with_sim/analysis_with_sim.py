@@ -12,7 +12,7 @@ class analysis:
         #self.rates = self.get_simulated_rates()
         pass
     def get_simulated_rates(self):
-        tpcs = ['iiwi', 'palila', 'tako', 'elepaio']
+        tpcs = ['iiwi', 'palila', 'tako', 'elepaio', 'nene', 'humu']
         bgtype = ['Coulomb_HER_base', 'Coulomb_LER_base', 'Coulomb_HER_dynamic', 'Coulomb_LER_dynamic', 'Brems_HER_base', 'Brems_LER_base', 'Brems_HER_dynamic', 'Brems_LER_dynamic', 'Touschek_HER_all', 'Touschek_LER_all', 'RBB_Lumi', 'twoPhoton_Lumi']
         tree = 'tree_fe4_after_threshold'
         rates = {}
@@ -48,9 +48,10 @@ class analysis:
         return df
 
     def get_MC_data(self):
-        tpcs = ['iiwi', 'palila', 'tako', 'elepaio']
-        #bgtype = ['RBB_Lumi', 'twoPhoton_Lumi']
-        bgtype = ['Coulomb_HER_base', 'Coulomb_LER_base', 'Coulomb_HER_dynamic', 'Coulomb_LER_dynamic', 'Brems_HER_base', 'Brems_LER_base', 'Brems_HER_dynamic', 'Brems_LER_dynamic', 'Touschek_HER_all', 'Touschek_LER_all', 'RBB_Lumi', 'twoPhoton_Lumi']
+        #tpcs = ['iiwi', 'palila', 'tako', 'elepaio', 'nene', 'humu']
+        tpcs = ['palila']
+        bgtype = ['RBB_Lumi']
+        #bgtype = ['Coulomb_HER_base', 'Coulomb_LER_base', 'Coulomb_HER_dynamic', 'Coulomb_LER_dynamic', 'Brems_HER_base', 'Brems_LER_base', 'Brems_HER_dynamic', 'Brems_LER_dynamic', 'Touschek_HER_all', 'Touschek_LER_all', 'RBB_Lumi', 'twoPhoton_Lumi']
         tree = 'tree_fe4_after_threshold'
         data = {}
         truth = {}
@@ -192,6 +193,6 @@ class analysis:
         
 a = analysis()
 #data, truth = a.get_MC_data()
-#a.visualize_MC_with_geometry()
+a.visualize_MC_with_geometry()
 #a.visualize_3D()
 df = a.get_simulated_rates()
