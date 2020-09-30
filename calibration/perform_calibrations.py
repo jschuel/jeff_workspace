@@ -546,8 +546,8 @@ class tpc_calibration(simulation):
         #plt.savefig('calibrated_alphas.png')
         #plt.show()
 
-        super().__init__() # inherit simulation classes methods
-        self.write_to_root_file()
+        #super().__init__() # inherit simulation classes methods
+        #self.write_to_root_file()
         pass
         
     def get_tpc_list(self, tpc_list = ['iiwi', 'humu', 'nene', 'tako', 'palila', 'elepaio']):

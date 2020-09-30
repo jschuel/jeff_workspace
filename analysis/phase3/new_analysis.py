@@ -324,7 +324,7 @@ class analysis:
             fit[tpc+'_T_err'] = f2.GetParError(2)
         return fit
 
-    def plot_fit(self, tpc, study_type,  bins=12, ymax = 2, legend = False):
+    def plot_fit(self, tpc, study_type,  bins=12, ymax = 2, legend = False, log = False):
         study_periods = ["Cont_inj", "Decay"]
         fit_params = {}
         data = {}
@@ -378,12 +378,15 @@ class analysis:
         plt.ylim(0,620)
         plt.ylabel('Beam Current [mA]')
         plt.twinx()
+        colors = ['black', 'lightgray', 'cyan', 'indigo', 'magenta']
+        #elif study_type == 'HER':
+        #    colors = ['black', 'tab:gray', 'cyan', 'tab:blue', 'magenta']
         for study_period in study_periods:
-            p1 = plt.errorbar(data_avg[study_period]['ts'], data_avg[study_period][tpc+'_neutrons'], data_avg[study_period][tpc+'_neutrons_err'], data_avg[study_period]['ts_err'], 'o', markersize = 2, color = 'black', label = 'data')
-            p2 = plt.errorbar(data_avg[study_period]['ts'], fit_avg[study_period], fit_avg_err[study_period], data_avg[study_period]['ts_err'], 's', markersize = 2, color = 'cyan', label = 'total fit', alpha = 0.6)
-            p3 = plt.errorbar(data_avg[study_period]['ts'], fit_bg_base_avg[study_period], fit_bg_base_avg_err[study_period], data_avg[study_period]['ts_err'], 's', markersize = 2, color = 'purple', label = 'beam gas base', alpha = 0.6)
-            p4 = plt.errorbar(data_avg[study_period]['ts'], fit_bg_dynamic_avg[study_period], fit_bg_dynamic_avg_err[study_period], data_avg[study_period]['ts_err'], 's', markersize = 2, color = 'gray', label = 'beam gas dyn.', alpha = 0.6)
-            p5 = plt.errorbar(data_avg[study_period]['ts'], fit_t_avg[study_period], fit_t_avg_err[study_period], data_avg[study_period]['ts_err'], 's', markersize = 2, color = 'green', label = 'Touschek', alpha = 0.6)
+            p1 = plt.errorbar(data_avg[study_period]['ts'], data_avg[study_period][tpc+'_neutrons'], data_avg[study_period][tpc+'_neutrons_err'], data_avg[study_period]['ts_err'], 'o', markersize = 2, color = colors[0], label = 'data')
+            p2 = plt.errorbar(data_avg[study_period]['ts'], fit_avg[study_period], fit_avg_err[study_period], data_avg[study_period]['ts_err'], 's', markersize = 2, color = colors[1], label = 'total fit', alpha = 0.6)
+            p3 = plt.errorbar(data_avg[study_period]['ts'], fit_bg_base_avg[study_period], fit_bg_base_avg_err[study_period], data_avg[study_period]['ts_err'], 's', markersize = 2, color = colors[2], label = 'beam gas base', alpha = 0.6)
+            p4 = plt.errorbar(data_avg[study_period]['ts'], fit_bg_dynamic_avg[study_period], fit_bg_dynamic_avg_err[study_period], data_avg[study_period]['ts_err'], 's', markersize = 2, color = colors[3], label = 'beam gas dyn.', alpha = 0.6)
+            p5 = plt.errorbar(data_avg[study_period]['ts'], fit_t_avg[study_period], fit_t_avg_err[study_period], data_avg[study_period]['ts_err'], 's', markersize = 2, color = colors[4], label = 'Touschek', alpha = 0.6)
 
             #p1 = plt.errorbar(data_avg[study_period]['ts'], data_avg[study_period][tpc+'_neutrons'], data_avg[study_period][tpc+'_neutrons_err'], data_avg[study_period]['ts_err'], 'o', markersize = 2, color = 'black', label = 'data')
             #p2 = plt.errorbar(data[study_period]['ts'], fit[study_period], fit_err[study_period], [0 for i in range(0,len(data[study_period]))], 's', markersize = 2, color = 'cyan', label = 'total fit', alpha = 0.3)
@@ -414,6 +417,50 @@ class analysis:
             #    custom_lines = [Line2D([0], [0], color='blue', lw=4, label = '%s Current [mA]'%(study_type)), Line2D([0], [0], color='magenta', lw=4, label = 'TPC predicted rate'), Line2D([0], [0], color='limegreen', lw=4, label = 'TPC predicted Touschek rate'), Line2D([0], [0], color='cyan', lw=4, label = 'TPC predicted beam-gas rate'), Line2D([0], [0], marker='o', color='w', markersize=6, lw=0, markerfacecolor = 'black', label = 'Data')]
             #plt.legend(handles = custom_lines, loc = 'upper right')
             plt.legend([p1,p2,p3,p4,p5],['Data', 'Total Fit', 'Beam Gas Base', 'Beam Gas Dyn.', 'Touschek'])
+        if log == True:
+            plt.yscale("log")
+
+    def plot_all_single_beam(self, bins=12):
+
+        plt.figure(figsize = (12,8))
+        plt.rc('legend', fontsize=10)
+        plt.rc('xtick', labelsize=16)
+        plt.rc('ytick', labelsize=16)
+        plt.rc('axes', labelsize=16)
+        plt.rc('axes', titlesize=16)
+        plt.subplot(3,2,1)
+        self.plot_fit("palila", "LER", bins, legend = True, log = True)
+        self.plot_fit("palila", "HER", bins, legend = True, log = True)
+        plt.title("z = -5.6m")
+        plt.ylim(1e-4, 2)
+        plt.subplot(3,2,2)
+        self.plot_fit("iiwi", "LER", bins, legend = True, log = True)
+        self.plot_fit("iiwi", "HER", bins, legend = True, log = True)
+        plt.title("z = +6.6m")
+        plt.ylim(1e-4, 2)
+        plt.subplot(3,2,3)
+        self.plot_fit("tako", "LER", bins, legend = True, log = True)
+        self.plot_fit("tako", "HER", bins, legend = True, log = True)
+        plt.title("z = -8.0m")
+        plt.ylim(1e-4, 2)
+        plt.subplot(3,2,4)
+        self.plot_fit("nene", "LER", bins, legend = True, log = True)
+        self.plot_fit("nene", "HER", bins, legend = True, log = True)
+        plt.title("z = +14m")
+        plt.ylim(1e-4, 2)
+        plt.subplot(3,2,5)
+        self.plot_fit("elepaio", "LER", bins, legend = True, log = True)
+        self.plot_fit("elepaio", "HER", bins, legend = True, log = True)
+        plt.title("z = -14m")
+        plt.ylim(1e-4, 2)
+        plt.subplot(3,2,6)
+        self.plot_fit("humu", "LER", bins, legend = True, log = True)
+        self.plot_fit("humu", "HER", bins, legend = True, log = True)
+        plt.title("z = +16m")
+        plt.ylim(1e-4, 2)
+        plt.tight_layout()
+        plt.show()
+        
     def make_fwd_plots(self, study_type, bins=12):
         if study_type == "LER":
             ymax = 2
@@ -427,6 +474,7 @@ class analysis:
         plt.rc('axes', titlesize=16)
         plt.subplot(3,1,1)
         self.plot_fit("iiwi", study_type, bins, ymax=1, legend = True)
+        self.plot_fit("iiwi", "HER", bins, ymax=1, legend = True)
         plt.title("Iiwi (z = +6.6 m)")
         plt.xticks([])
         plt.subplot(3,1,2)
@@ -502,42 +550,6 @@ class analysis:
         plt.legend(loc = 'best')
         return fits
 
-    def plot_all_luminosity(self, study_period = "Cont_inj", bins=12):
-        plt.figure(figsize = (15,10))
-        plt.rc('legend', fontsize=12)
-        plt.rc('xtick', labelsize=16)
-        plt.rc('ytick', labelsize=16)
-        plt.rc('axes', labelsize=16)
-        plt.rc('axes', titlesize=16)
-        plt.subplot(3,2,1)
-        self.measure_and_fit_lumi_bgs("palila", study_period, bins)
-        plt.title("Palila (z = -5.6 m)")
-        plt.grid()
-        plt.subplot(3,2,2)
-        self.measure_and_fit_lumi_bgs("iiwi", study_period, bins)
-        plt.title("Iiwi (z = +6.6 m)")
-        plt.grid()
-        plt.subplot(3,2,3)
-        self.measure_and_fit_lumi_bgs("tako", study_period, bins)
-        plt.title("Tako (z = -8.0 m)")
-        plt.grid()
-        plt.subplot(3,2,4)
-        self.measure_and_fit_lumi_bgs("nene", study_period, bins)
-        plt.title("Nene (z = 14 m)")
-        plt.grid()
-        plt.subplot(3,2,5)
-        self.measure_and_fit_lumi_bgs("elepaio", study_period, bins)
-        plt.title("Elepaio (z = -14 m)")
-        plt.grid()
-        plt.subplot(3,2,6)
-        self.measure_and_fit_lumi_bgs("humu", study_period, bins)
-        plt.title("Humu (z = +16 m)")
-        plt.subplots_adjust(hspace=0.5)
-        plt.subplots_adjust(wspace=0.5)
-        plt.grid()
-        #plt.savefig('lumi_fits.png', bbox_inches='tight')
-        plt.show()
-
     def plot_bwd_luminosity(self, bins=12):
         plt.figure(figsize = (16,8))
         plt.rc('legend', fontsize=12)
@@ -602,6 +614,7 @@ class analysis:
             df = df.apply(lambda x: x/df['total'])
             df = df.apply(lambda x: x*100)
             df = df.drop(columns = ['total'])
+            df.columns = ['LER Beam Gas Base', 'LER Beam Gas Dyn.', 'LER Touschek', 'HER Beam Gas Base', 'HER Beam Gas Dyn.', 'HER Touschek', 'Luminosity']
         else:
             tpcs = ['elepaio', 'tako', 'palila', 'iiwi', 'nene', 'humu']
             LER_fit_params = self.get_fit_parameters("LER", study_period, bins)
@@ -615,7 +628,7 @@ class analysis:
                 sy_HER = 36
                 nb_LER = 1576
                 nb_HER = 1576
-                L = 25 #luminoisty in 1e34 cm-2s-1
+                L = 2.5 #luminoisty in 1e34 cm-2s-1
                 lumi_fits = self.measure_and_fit_lumi_bgs(tpc, study_period ,bins=20)
                 fit_dict['%s_lumi_int'%(tpc)]=lumi_fits['%s_int'%(tpc)]
                 fit_dict['%s_lumi_slope'%(tpc)]=lumi_fits['%s_slope'%(tpc)]
@@ -653,19 +666,23 @@ class analysis:
         plt.rc('ytick', labelsize=16)
         plt.rc('axes', labelsize=16)
         plt.rc('axes', titlesize=16)
+        fig, ax = plt.subplots(figsize = (10.45,7))
         colors = ['cyan', 'dodgerblue', 'magenta', 'yellow', 'gold', 'purple', 'limegreen']
-        df.plot(kind='bar', stacked=True, color = colors, legend = False)
+        df.plot(kind='bar', stacked=True, color = colors, legend = False, ax=ax)
         #if study_period == "Cont_inj":
         #    plt.title("Background breakdown continuous injection fits")
         #else:
         #    plt.title("Background breakdown decay fits")
         #plt.xlabel("TPC")
-        plt.ylabel('Background Fraction [%]')
-        plt.ylim(0,120)
+        ax.set_ylabel('Background Fraction [%]')
+        ax.set_ylim(0,120)
         plt.xticks(rotation=45, ha="right")
         plt.legend(framealpha = 1, ncol = 4)
-        #plt.tight_layout()
-        #plt.savefig("bg_breakdown.png")
+        plt.tight_layout()
+        if MC == False:
+            plt.savefig("bg_breakdown.png")
+        else:
+            plt.savefig("bg_breakdown_MC.png")
         plt.show()
         return df
 

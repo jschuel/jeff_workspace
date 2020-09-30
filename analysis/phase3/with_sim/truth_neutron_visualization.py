@@ -8,6 +8,8 @@ import matplotlib
 from matplotlib.patches import Patch
 from matplotlib.lines import Line2D
 from scipy.stats import ks_2samp
+from scipy.stats import chi2_contingency
+from scipy.stats import epps_singleton_2samp
 import new_analysis
 
 class analysis:
@@ -86,19 +88,19 @@ class analysis:
         ###Make Consistent Color Scale###
         df = pd.DataFrame()
         for key in data.keys():
-            data[key] = data[key].loc[((data[key]['truthNeutronVtx_z_belle_frame']>-870) & #Line is for RBB hotspot
-               (data[key]['truthNeutronVtx_z_belle_frame']<-750) & (data[key]['truthNeutronVtx_x_belle_frame']>20) &
-                                       (data[key]['truthNeutronVtx_x_belle_frame']<60) &
-                                       (np.abs(data[key]['truthNeutronVtx_y_belle_frame'])<20))]
+            #data[key] = data[key].loc[((data[key]['truthNeutronVtx_z_belle_frame']>-870) & #Line is for RBB hotspot
+            #   (data[key]['truthNeutronVtx_z_belle_frame']<-750) & (data[key]['truthNeutronVtx_x_belle_frame']>20) &
+            #                           (data[key]['truthNeutronVtx_x_belle_frame']<60) &
+            #                           (np.abs(data[key]['truthNeutronVtx_y_belle_frame'])<20))
             #                          |
                                       #((((data[key]['truthNeutronVtx_z_belle_frame']>1550) & (data[key]['truthNeutronVtx_z_belle_frame']<1700)) | ((data[key]['truthNeutronVtx_z_belle_frame']>1400) & (data[key]['truthNeutronVtx_z_belle_frame']<1500))) & (data[key]['truthNeutronVtx_x_belle_frame']<80) & (data[key]['truthNeutronVtx_x_belle_frame']>30) & (np.abs(data[key]['truthNeutronVtx_y_belle_frame'])<20))]
 
 
-            #                          (data[key]['truthNeutronVtx_z_belle_frame']>1390) &
-            #                          (data[key]['truthNeutronVtx_z_belle_frame']<1680) &
-            #                          (data[key]['truthNeutronVtx_x_belle_frame']<80) &
-            #                          (data[key]['truthNeutronVtx_x_belle_frame']>30) &
-            #                          (np.abs(data[key]['truthNeutronVtx_y_belle_frame'])<20)] #FWD and BWD hotspots
+             #                         (data[key]['truthNeutronVtx_z_belle_frame']>1390) &
+             #                         (data[key]['truthNeutronVtx_z_belle_frame']<1680) &
+             #                         (data[key]['truthNeutronVtx_x_belle_frame']<80) &
+             #                         (data[key]['truthNeutronVtx_x_belle_frame']>30) &
+             #                         (np.abs(data[key]['truthNeutronVtx_y_belle_frame'])<20)] #FWD and BWD hotspots
             #print(data[key])
             #data[key] = data[key].loc[(data[key]['truthNeutronVtx_z_belle_frame']>1400) & (data[key]['truthNeutronVtx_z_belle_frame']<1840) & (data[key]['truthNeutronVtx_x_belle_frame']<80) & (data[key]['truthNeutronVtx_x_belle_frame']>50) & (np.abs(data[key]['truthNeutronVtx_y_belle_frame'])<20)] #loose FWD Lumi
             #data[key] = data[key].loc[(data[key]['truthNeutronVtx_z_belle_frame']>1390) & (data[key]['truthNeutronVtx_z_belle_frame']<1680) & (data[key]['truthNeutronVtx_x_belle_frame']<80) & (data[key]['truthNeutronVtx_x_belle_frame']>30) & (np.abs(data[key]['truthNeutronVtx_y_belle_frame'])<20)]
@@ -120,10 +122,10 @@ class analysis:
         ax[0].set_ylabel('x [cm]')
         ax[1].set_xlabel('z [cm]')
         ax[1].set_ylabel('x [cm]')
-        ax[0].set_ylim(-250,250)
-        ax[0].set_xlim(-1500,-500)
-        ax[1].set_ylim(-250,250)
-        ax[1].set_xlim(-1500,-500)
+        ax[0].set_ylim(-300,300)
+        ax[0].set_xlim(-200,2800)
+        ax[1].set_ylim(-300,300)
+        ax[1].set_xlim(-200,2800)
         #ax[0].imshow(np.flipud(img), origin = 'lower', extent = [-3400,3190, -440,421], aspect = 'auto')
         #ax[1].imshow(np.flipud(img), origin = 'lower', extent = [-3400,3190, -440,421], aspect = 'auto')
         ax[0].imshow(np.flipud(img), origin = 'lower', extent = [-3333,3142, -438,414], aspect = 'auto')
@@ -148,6 +150,7 @@ class analysis:
                 
         #plt.savefig("/home/jeef/Pictures/all_SimHits_%s.png"%(bgtype))
         #plt.savefig("/home/jeef/Pictures/all_RBB_hotspots.png")
+        plt.savefig("/home/jeef/Pictures/all_LER_Touschek_hotspots.png")
         plt.show()
 
     def plot_cos_theta_dist(self, bgtype):
@@ -159,16 +162,67 @@ class analysis:
         print(self.get_MC_data(bgtype))
 
         a = new_analysis.analysis() #call analysis class to import exp. data
+        MC = a.apply_energy_calibrations_to_MC() #all MC recoils
+        MC_Lumi = {} #only MC lumi
         Lumi_cont_inj = a.get_tpc_data_during_study_period("Lumi", "Cont_inj")
         Lumi_decay = a.get_tpc_data_during_study_period("Lumi", "Decay")
         Lumi = {}
-        for tpc in ['palila', 'tako', 'elepaio']:
+        for tpc in ['tako']:
             Lumi[tpc] = Lumi_cont_inj[tpc].append(Lumi_decay[tpc])
             Lumi[tpc].index = [i for i in range(0,len(Lumi[tpc]))]
             Lumi[tpc]['phi_fold'] = Lumi[tpc]['phi'].apply(lambda x: x if x <= 90 else 180-x) #fold phi
             Lumi[tpc]['phi_fold'] = Lumi[tpc]['phi_fold'].apply(lambda x: x if x >= -90 else -180-x)
-            Lumi[tpc] = Lumi[tpc].loc[Lumi[tpc]['track_energy']>80]
-            Lumi[tpc] = Lumi[tpc].loc[(Lumi[tpc]['phi_fold']>-30) & (Lumi[tpc]['phi_fold']<30)]
+            MC[tpc]['phi_fold'] = (MC[tpc]['fit_phi']*180/np.pi).apply(lambda x: x if x <= 90 else 180-x)
+            MC[tpc]['phi_fold'] = MC[tpc]['phi_fold'].apply(lambda x: x if x >= -90 else -180-x)
+            MC_Lumi[tpc] = MC[tpc].loc[(MC[tpc]['bgType'] == 'RBB_Lumi') | (MC[tpc]['bgType'] == 'twoPhoton_Lumi')]
+            MC_Lumi[tpc] = MC_Lumi[tpc].loc[((MC_Lumi[tpc]['truth_mother_Z']>-870) & #Line is for RBB hotspot
+               (MC_Lumi[tpc]['truth_mother_Z']<-750) & (MC_Lumi[tpc]['truth_mother_X']>20) &
+                                       (MC_Lumi[tpc]['truth_mother_X']<60) &
+                                       (np.abs(MC_Lumi[tpc]['truth_mother_Y'])<20))]
+            #MC_Lumi[tpc] = MC_Lumi[tpc].loc[MC_Lumi[tpc]['reco_energy']>250]
+            #Lumi[tpc] = Lumi[tpc].loc[Lumi[tpc]['track_energy']>250]
+            #Lumi[tpc] = Lumi[tpc].loc[(Lumi[tpc]['phi_fold']>-3) & (Lumi[tpc]['phi_fold']<13)]
+        truth = {tpc: self.get_MC_data(bgtype)[tpc+'_'+bgtype] for tpc in ['palila', 'tako', 'elepaio']} #convenient naming
+
+        plt.figure(figsize = (6,9))
+        i = 1
+        for key in ['tako']:
+            plt.subplot(3,1,i)
+            #truth[key] = truth[key].loc[((truth[key]['truthNeutronVtx_z_belle_frame']>-870) & #Line is for RBB hotspot
+            #   (truth[key]['truthNeutronVtx_z_belle_frame']<-750) & (truth[key]['truthNeutronVtx_x_belle_frame']>20) &
+            #                           (truth[key]['truthNeutronVtx_x_belle_frame']<60) &
+            #                           (np.abs(truth[key]['truthNeutronVtx_y_belle_frame'])<20))]
+            #dy = truth[key]['truthNeutronVtx_x_belle_frame']-truth[key]['chipx']
+            #dx = truth[key]['truthNeutronVtx_z_belle_frame']-truth[key]['chipz']
+            #theta_truth = np.arctan(dy/dx)
+            #(counts_truth, bins_truth) = np.histogram(np.abs(np.cos(theta_truth)), bins=201, range = (0,1))
+            #factor_truth = 1/(30*len(theta_truth))
+            #plt.hist(bins_truth[:-1], bins_truth, weights=factor_truth*counts_truth, label = 'truth', histtype = 'step')
+            (counts_MC, bins_MC) = np.histogram(np.abs(np.cos(MC_Lumi[key]['fit_theta'])), bins=21, range = (0,1))
+            factor_MC = 1/len(MC_Lumi[key]['fit_theta'])
+            plt.hist(bins_MC[:-1], bins_MC, weights=factor_MC*counts_MC, label = 'MC', histtype = 'step')
+            (counts, bins) = np.histogram(np.abs(np.cos(Lumi[key]['theta']*np.pi/180)), bins=21, range = (0,1))
+            factor = 1/len(Lumi[key]['theta'])
+            plt.hist(bins[:-1], bins, weights=factor*counts, label = 'data', histtype = 'step')
+            #plt.hist(np.abs(np.cos(theta_truth)), range = (0,1), bins = 101)
+            #plt.hist(np.abs(np.cos(Lumi[key]['theta']*np.pi/180)), label = 'data', histtype = 'step', bins = 51, range = (0,1))
+            plt.xlabel(r'|cos($\theta$)|')
+            plt.title(key.upper())
+            plt.legend(loc = 'best')
+            result = ks_2samp(np.abs(np.cos(MC_Lumi[key]['fit_theta'])), np.abs(np.cos(Lumi[key]['theta']*np.pi/180)))
+            #result = epps_singleton_2samp(np.abs(np.cos(theta_truth)), np.abs(np.cos(Lumi[key]['theta']*np.pi/180)))
+            print(result)
+            i+=1
+        plt.tight_layout()
+        plt.show()
+
+    def plot_phi_dist(self, bgtype):
+        plt.rc('legend', fontsize=12)
+        plt.rc('xtick', labelsize=16)
+        plt.rc('ytick', labelsize=16)
+        plt.rc('axes', labelsize=18)
+        plt.rc('axes', titlesize=18)
+        
         truth = {tpc: self.get_MC_data(bgtype)[tpc+'_'+bgtype] for tpc in ['palila', 'tako', 'elepaio']} #convenient naming
 
         plt.figure(figsize = (6,9))
@@ -179,19 +233,15 @@ class analysis:
                (truth[key]['truthNeutronVtx_z_belle_frame']<-750) & (truth[key]['truthNeutronVtx_x_belle_frame']>20) &
                                        (truth[key]['truthNeutronVtx_x_belle_frame']<60) &
                                        (np.abs(truth[key]['truthNeutronVtx_y_belle_frame'])<20))]
-            dy = truth[key]['truthNeutronVtx_x_belle_frame']-truth[key]['chipx']
-            dx = truth[key]['truthNeutronVtx_z_belle_frame']-truth[key]['chipz']
-            theta_truth = np.arctan(dy/dx)
-            (counts, bins) = np.histogram(np.abs(np.cos(theta_truth)), bins=51, range = (0,1))
-            factor = 0.1
-            plt.hist(bins[:-1], bins, weights=factor*counts, label = 'truth', histtype = 'step')
-            #plt.hist(np.abs(np.cos(theta_truth)), range = (0,1), bins = 101)
-            plt.hist(np.abs(np.cos(Lumi[key]['theta']*np.pi/180)), label = 'data', histtype = 'step', bins = 51, range = (0,1))
-            plt.xlabel(r'|cos($\theta$)|')
+            dy = truth[key]['chipy']-truth[key]['truthNeutronVtx_y_belle_frame']
+            dx = np.abs(truth[key]['truthNeutronVtx_x_belle_frame']-truth[key]['chipx'])
+            phi_truth = np.arctan(dy/dx)
+            plt.hist(phi_truth*180/np.pi, range = (-90,90), bins = 101)
+            plt.xlabel(r'$\phi$')
             plt.title(key.upper())
-            plt.legend()
-            result = ks_2samp(np.abs(np.cos(theta_truth)), np.abs(np.cos(Lumi[key]['theta']*np.pi/180)))
-            print(result)
+            #plt.legend()
+            #result = ks_2samp(np.abs(np.cos(theta_truth)), np.abs(np.cos(Lumi[key]['theta']*np.pi/180)))
+            #print(result)
             i+=1
         plt.tight_layout()
         plt.show()
@@ -356,10 +406,11 @@ class analysis:
     
 a = analysis()
 #data, truth = a.get_MC_data()
-#for bgtype in ['RBB_Lumi']: #['Coulomb_LER_dynamic', 'Coulomb_LER_base', 'Coulomb_HER_dynamic', 'Coulomb_HER_base', 'Brems_LER_dynamic', 'Brems_HER_dynamic', 'Brems_LER_base', 'twoPhoton_Lumi', 'RBB_Lumi', 'Touschek_LER', 'Touschek_HER']:
-    #a.visualize_MC_with_geometry(bgtype)
+for bgtype in ['Touschek_LER']: #['Coulomb_LER_dynamic', 'Coulomb_LER_base', 'Coulomb_HER_dynamic', 'Coulomb_HER_base', 'Brems_LER_dynamic', 'Brems_HER_dynamic', 'Brems_LER_base', 'twoPhoton_Lumi', 'RBB_Lumi', 'Touschek_LER', 'Touschek_HER']:
+    a.visualize_MC_with_geometry(bgtype)
     #a.visualize_3D(bgtype)
 #df = a.get_simulated_rates()
 #a.visualize_all_3D()
 #a.visualize_all_with_geometry()
-a.plot_cos_theta_dist('RBB_Lumi')
+#a.plot_cos_theta_dist('RBB_Lumi')
+#a.plot_phi_dist('RBB_Lumi')
