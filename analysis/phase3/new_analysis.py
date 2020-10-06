@@ -622,13 +622,20 @@ class analysis:
             fit_dict = {}
             df = pd.DataFrame() #order is LER_bg, LER_T, HER_bg, HER_T, Lumi 
             for tpc in tpcs:
-                I_HER = 1000
-                I_LER = 1200
-                sy_LER = 37
-                sy_HER = 36
-                nb_LER = 1576
-                nb_HER = 1576
-                L = 2.5 #luminoisty in 1e34 cm-2s-1
+                #I_HER = 1000
+                #I_LER = 1200
+                #sy_LER = 37
+                #sy_HER = 36
+                #nb_LER = 1576
+                #nb_HER = 1576
+                #L = 25 #luminoisty in 1e34 cm-2s-1
+                I_HER = 600
+                I_LER = 600
+                sy_LER = 60
+                sy_HER = 60
+                nb_LER = 783
+                nb_HER = 783
+                L = 1.5 #luminoisty in 1e34 cm-2s-1
                 lumi_fits = self.measure_and_fit_lumi_bgs(tpc, study_period ,bins=20)
                 fit_dict['%s_lumi_int'%(tpc)]=lumi_fits['%s_int'%(tpc)]
                 fit_dict['%s_lumi_slope'%(tpc)]=lumi_fits['%s_slope'%(tpc)]
@@ -661,12 +668,12 @@ class analysis:
             df.columns = ['LER Beam Gas Base', 'LER Beam Gas Dyn.', 'LER Touschek', 'HER Beam Gas Base', 'HER Beam Gas Dyn.', 'HER Touschek', 'Luminosity']
             plt.close()
         rc('text', usetex=False)
-        plt.rc('legend', fontsize=12)
-        plt.rc('xtick', labelsize=16)
-        plt.rc('ytick', labelsize=16)
-        plt.rc('axes', labelsize=16)
-        plt.rc('axes', titlesize=16)
-        fig, ax = plt.subplots(figsize = (10.45,7))
+        plt.rc('legend', fontsize=16)
+        plt.rc('xtick', labelsize=20)
+        plt.rc('ytick', labelsize=20)
+        plt.rc('axes', labelsize=22)
+        plt.rc('axes', titlesize=22)
+        fig, ax = plt.subplots(figsize = (13.9,10))
         colors = ['cyan', 'dodgerblue', 'magenta', 'yellow', 'gold', 'purple', 'limegreen']
         df.plot(kind='bar', stacked=True, color = colors, legend = False, ax=ax)
         #if study_period == "Cont_inj":
@@ -675,13 +682,19 @@ class analysis:
         #    plt.title("Background breakdown decay fits")
         #plt.xlabel("TPC")
         ax.set_ylabel('Background Fraction [%]')
-        ax.set_ylim(0,120)
-        plt.xticks(rotation=45, ha="right")
-        plt.legend(framealpha = 1, ncol = 4)
+        ax.set_ylim(0,115)
+        #plt.xticks(rotation=90, ha="right")
+        #plt.legend(framealpha = 1, ncol = 4)
         plt.tight_layout()
         if MC == False:
+            plt.xticks([])
+            plt.legend(framealpha = 1, ncol = 4)
             plt.savefig("bg_breakdown.png")
         else:
+            ax.set_xticklabels(['-14','-8.0','-5.6','+6.6','+14','+16'])
+            plt.xticks(rotation = 0)
+            ax.set_ylim(0,105)
+            plt.xlabel('TPC z position [m]')
             plt.savefig("bg_breakdown_MC.png")
         plt.show()
         return df

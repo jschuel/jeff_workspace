@@ -1,4 +1,4 @@
-import uproot as ur
+a.maimport uproot as ur
 import ROOT
 import numpy as np
 import pandas as pd
@@ -500,7 +500,7 @@ class analysis:
         plt.show()
         
     
-a = analysis()
+#a = analysis()
 #data, truth = a.get_MC_data()
 #for bgtype in ['Touschek_LER']: #['Coulomb_LER_dynamic', 'Coulomb_LER_base', 'Coulomb_HER_dynamic', 'Coulomb_HER_base', 'Brems_LER_dynamic', 'Brems_HER_dynamic', 'Brems_LER_base', 'twoPhoton_Lumi', 'RBB_Lumi', 'Touschek_LER', 'Touschek_HER']:
 #    a.visualize_MC_with_geometry(bgtype)
