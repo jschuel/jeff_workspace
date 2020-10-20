@@ -189,13 +189,14 @@ class analysis:
             
         
 
-    def get_MC_rates(self):
+    def get_MC_rates(self, I_HER = 1000, I_LER = 1200, sy_LER=37, sy_HER=36, nb_LER=1576, nb_HER=1576, lumi=25): #Scale to luminosity of interest. Units: 1e34cm-2s-1
         tpcs = ['elepaio', 'tako', 'palila', 'iiwi', 'nene', 'humu']
         bgtype = ['Coulomb_HER_base', 'Coulomb_LER_base', 'Coulomb_HER_dynamic', 'Coulomb_LER_dynamic', 'Brems_HER_base', 'Brems_LER_base', 'Brems_HER_dynamic', 'Brems_LER_dynamic', 'Touschek_HER_all', 'Touschek_LER_all', 'RBB_Lumi', 'twoPhoton_Lumi']
         tree = 'tree_fe4_after_threshold'
         MC = self.apply_energy_calibrations_to_MC()
         rates = {}
         df = pd.DataFrame()
+        lumi_frac = 25/lumi
         for tpc in tpcs:
             rates[tpc] = {}
             MC[tpc] = MC[tpc].loc[MC[tpc]['reco_energy']>8]
@@ -212,25 +213,25 @@ class analysis:
                 elif (bg == 'Coulomb_LER_base') or (bg == 'Coulomb_LER_dynamic'):
                     t = 4.0
                 elif (bg == 'Touschek_HER_all'):
-                    t = 0.8
+                    t = 1.6
                 elif (bg == 'Touschek_LER_all'):
                     t = 0.4
                 elif (bg == 'RBB_Lumi'):
-                    t = 1e-3                    
+                    t = 1e-3*lumi_frac                    
                 elif (bg == 'twoPhoton_Lumi'):
-                    t = 1e-2
+                    t = 1e-2*lumi_frac
                 try:
-                    rates[tpc][bg] = len(MC[tpc].loc[MC[tpc]['bgType']==bg])/(t*100)
+                    rates[tpc][bg] = len(MC[tpc].loc[MC[tpc]['bgType']==bg])/(t*100) #100 is from dialin up cross section
                 except FileNotFoundError:
                     rates[tpc][bg] = 0
             df = df.append(pd.DataFrame.from_dict(rates[tpc], 'index').T)
         df.index = tpcs
-        df['LER_bg_base'] = df['Brems_LER_base'] + df['Coulomb_LER_base']
-        df['HER_bg_base'] = df['Brems_HER_base'] + df['Coulomb_HER_base']
-        df['LER_bg_dynamic'] = df['Brems_LER_dynamic'] + df['Coulomb_LER_dynamic']
-        df['HER_bg_dynamic'] = df['Brems_HER_dynamic'] + df['Coulomb_HER_dynamic']
-        df['LER_T'] = df['Touschek_LER_all']
-        df['HER_T'] = df['Touschek_HER_all']
+        df['LER_bg_base'] = (df['Brems_LER_base'] + df['Coulomb_LER_base'])/1200*I_LER #scale by input I/I_ref
+        df['HER_bg_base'] = (df['Brems_HER_base'] + df['Coulomb_HER_base'])/1000*I_HER
+        df['LER_bg_dynamic'] = (df['Brems_LER_dynamic'] + df['Coulomb_LER_dynamic'])/1200**2*I_LER**2
+        df['HER_bg_dynamic'] = (df['Brems_HER_dynamic'] + df['Coulomb_HER_dynamic'])/1000**2*I_HER**2
+        df['LER_T'] = df['Touschek_LER_all']/(1200/(37*1576))*(I_LER/(sy_LER*nb_LER))
+        df['HER_T'] = df['Touschek_HER_all']/(1000/(36*1576))*(I_HER/(sy_HER*nb_HER))
         df['Lumi'] = df['RBB_Lumi'] + df['twoPhoton_Lumi']
         df = df[['LER_bg_base', 'LER_bg_dynamic', 'LER_T', 'HER_bg_base', 'HER_bg_dynamic', 'HER_T', 'Lumi']]
         return df
@@ -594,10 +595,10 @@ class analysis:
         plt.tight_layout()
         plt.show()
 
-    def plot_bg_summary(self, study_period, bins=12, MC = False):
+    def plot_bg_summary(self, study_period, bins=12, MC = False, I_HER = 1000, I_LER = 1200, sy_LER=37, sy_HER=36, nb_LER=1576, nb_HER=1576, L=25):
         #tpcs = ['iiwi', 'nene', 'humu', 'palila', 'tako', 'elepaio']
         if MC == True:
-            df = self.get_MC_rates()
+            df = self.get_MC_rates(I_HER = I_HER, I_LER = I_LER, sy_LER=sy_LER, sy_HER=sy_HER, nb_LER=nb_LER, nb_HER=nb_HER, lumi=L)
             df['total']=df.sum(axis = 1)
             df = df.apply(lambda x: x/df['total'])
             df = df.apply(lambda x: x*100)
@@ -609,13 +610,13 @@ class analysis:
             fit_dict = {}
             df = pd.DataFrame() #order is LER_bg, LER_T, HER_bg, HER_T, Lumi 
             for tpc in tpcs:
-                I_HER = 1000
-                I_LER = 1200
-                sy_LER = 37
-                sy_HER = 36
-                nb_LER = 1576
-                nb_HER = 1576
-                L = 25 #luminoisty in 1e34 cm-2s-1
+                #I_HER = 1000
+                #I_LER = 1200
+                #sy_LER = 37
+                #sy_HER = 36
+                #nb_LER = 1576
+                #nb_HER = 1576
+                #L = 25 #luminoisty in 1e34 cm-2s-1
                 lumi_fits = self.measure_and_fit_lumi_bgs(tpc, study_period ,bins=20)
                 fit_dict['%s_lumi_int'%(tpc)]=lumi_fits['%s_int'%(tpc)]
                 fit_dict['%s_lumi_slope'%(tpc)]=lumi_fits['%s_slope'%(tpc)]
@@ -669,23 +670,23 @@ class analysis:
         plt.show()
         return df
 
-    def compute_data_MC_ratios(self, study_period, bins=12):
+    def compute_data_MC_ratios(self, study_period, bins=12, I_HER = 1000, I_LER = 1200, sy_LER=37, sy_HER=36, nb_LER=1576, nb_HER=1576, L=25):
 
-        MC = self.get_MC_rates()
-
+        MC = self.get_MC_rates(I_HER = I_HER, I_LER = I_LER, sy_LER=sy_LER, sy_HER=sy_HER, nb_LER=nb_LER, nb_HER=nb_HER, lumi=L)
+        
         tpcs = ['palila', 'tako', 'elepaio', 'iiwi', 'nene', 'humu']
         LER_fit_params = self.get_fit_parameters("LER", study_period, bins)
         HER_fit_params = self.get_fit_parameters("HER", study_period, bins)
         fit_dict = {}
         df = pd.DataFrame() #order is LER_bg, LER_T, HER_bg, HER_T, Lumi 
         for tpc in tpcs:
-            I_HER = 1000
-            I_LER = 1200
-            sy_LER = 37
-            sy_HER = 36
-            nb_LER = 1576
-            nb_HER = 1576
-            L = 25 #luminoisty in 1e34 cm-2s-1
+            #I_HER = 1000
+            #I_LER = 1200
+            #sy_LER = 37
+            #sy_HER = 36
+            #nb_LER = 1576
+            #nb_HER = 1576
+            #L = 25 #luminoisty in 1e34 cm-2s-1
             lumi_fits = self.measure_and_fit_lumi_bgs(tpc, study_period ,bins=20)
             fit_dict['%s_lumi_int'%(tpc)]=lumi_fits['%s_int'%(tpc)]
             fit_dict['%s_lumi_int_err'%(tpc)]=lumi_fits['%s_int_err'%(tpc)]
