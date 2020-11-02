@@ -20,24 +20,38 @@ rc('text', usetex=False)
 
 class analysis:
 
-    def __init__(self, input_file= "~/data/phase3/spring_2020/05-09-20/combined_ntuples/05-09_whole_study_even_newerest.root"):
-        self.LER_inj_avg = self.compute_means_and_errs("LER", "Cont_inj")
-        self.HER_inj_avg = self.compute_means_and_errs("HER", "Cont_inj")
-        self.LER_decay_avg = self.compute_means_and_errs("LER", "Decay")
-        self.HER_decay_avg = self.compute_means_and_errs("HER", "Decay")
-    
-    def get_raw_study_data(self, input_file= "~/data/phase3/spring_2020/05-09-20/combined_ntuples/05-09_whole_study_even_newerest.root"):
-        #study_data = rp.read_root(input_file)
-        study_data = ur.open(input_file)[ur.open(input_file).keys()[0]].pandas.df(flatten=False)
-        return study_data
-
+    def __init__(self, E_cut = 8, E_cut_err = 0, input_file= "~/data/phase3/spring_2020/05-09-20/combined_ntuples/05-09_whole_study_even_newerest.root"): #enter negative value for E_Cut_err to get low systematic
+        #self.LER_inj_avg = self.compute_means_and_errs("LER", "Cont_inj")
+        #self.HER_inj_avg = self.compute_means_and_errs("HER", "Cont_inj")
+        #self.LER_decay_avg = self.compute_means_and_errs("LER", "Decay")
+        #self.HER_decay_avg = self.compute_means_and_errs("HER", "Decay")
+        self.study_data = self.get_raw_study_data(E_cut = E_cut, E_cut_err = E_cut_err)
+        self.MC_rates = self.get_MC_rates(E_cut = E_cut)
+        
     def get_tpc_data(self, input_dir = '~/data/phase3/spring_2020/05-09-20/tpc_root_files/'):
         data = {}
         tpcs = ['iiwi', 'humu', 'nene', 'tako', 'palila', 'elepaio']
         for tpc in tpcs:
             #data[tpc] = rp.read_root(input_dir + "%s_all_recoils_only_newest.root"%(tpc))
-            data[tpc] = ur.open(input_dir + "%s_all_recoils_only_even_newester.root"%(tpc))[ur.open(input_dir + "%s_all_recoils_only_even_newester.root"%(tpc)).keys()[0]].pandas.df(flatten=False)
+            data[tpc] = ur.open(input_dir + "%s_all_recoils_only_even_newester2.root"%(tpc))[ur.open(input_dir + "%s_all_recoils_only_even_newester2.root"%(tpc)).keys()[0]].pandas.df(flatten=False)
         return data
+    
+    def get_raw_study_data(self, input_file= "~/data/phase3/spring_2020/05-09-20/combined_ntuples/05-09_whole_study_even_newerest.root", E_cut = 8, E_cut_err = 0):
+        study_data = ur.open(input_file)[ur.open(input_file).keys()[0]].pandas.df(flatten=False)
+        dfs = self.get_tpc_data()
+        tpcs = dfs.keys()
+        for tpc in tpcs:
+            dfs[tpc]['ts'] = dfs[tpc]['timestamp_start'].astype('int')
+            dfs[tpc] = dfs[tpc].loc[dfs[tpc]['track_energy']>(E_cut+E_cut_err)]
+            study_data[tpc+'_neutrons'] = 0
+            pv = dfs[tpc].pivot_table(index=['ts'],aggfunc='size')
+            pv = pv.loc[pv.index.isin(study_data['ts'])]
+            counts = pd.DataFrame()
+            counts['ts'] = pv.index
+            counts['rate'] = pv.array
+            index = study_data.loc[study_data['ts'].astype('int').isin(counts['ts'])].index.to_numpy()
+            study_data[tpc+'_neutrons'][index] = counts['rate'].to_numpy()
+        return study_data
 
     def get_MC_data(self):
         tpcs = ['iiwi', 'nene', 'humu', 'palila', 'tako', 'elepaio']
@@ -189,17 +203,20 @@ class analysis:
             
         
 
-    def get_MC_rates(self, I_HER = 1000, I_LER = 1200, sy_LER=37, sy_HER=36, nb_LER=1576, nb_HER=1576, lumi=25): #Scale to luminosity of interest. Units: 1e34cm-2s-1
+    def get_MC_rates(self, E_cut = 8, I_HER = 1000, I_LER = 1200, sy_LER=37, sy_HER=36, nb_LER=1576, nb_HER=1576, lumi=25): #Scale to luminosity of interest. Units: 1e34cm-2s-1
         tpcs = ['elepaio', 'tako', 'palila', 'iiwi', 'nene', 'humu']
         bgtype = ['Coulomb_HER_base', 'Coulomb_LER_base', 'Coulomb_HER_dynamic', 'Coulomb_LER_dynamic', 'Brems_HER_base', 'Brems_LER_base', 'Brems_HER_dynamic', 'Brems_LER_dynamic', 'Touschek_HER_all', 'Touschek_LER_all', 'RBB_Lumi', 'twoPhoton_Lumi']
         tree = 'tree_fe4_after_threshold'
         MC = self.apply_energy_calibrations_to_MC()
         rates = {}
+        rates_err = {}
         df = pd.DataFrame()
+        df_err = pd.DataFrame()
         lumi_frac = 25/lumi
         for tpc in tpcs:
             rates[tpc] = {}
-            MC[tpc] = MC[tpc].loc[MC[tpc]['reco_energy']>8]
+            rates_err[tpc] = {}
+            MC[tpc] = MC[tpc].loc[MC[tpc]['reco_energy']>E_cut]
             MC[tpc].index = [i for i in range(0,len(MC[tpc]))]
             for bg in bgtype:
                 if (bg == 'Brems_HER_dynamic'):
@@ -221,10 +238,13 @@ class analysis:
                 elif (bg == 'twoPhoton_Lumi'):
                     t = 1e-2*lumi_frac
                 try:
-                    rates[tpc][bg] = len(MC[tpc].loc[MC[tpc]['bgType']==bg])/(t*100) #100 is from dialin up cross section
+                    rates[tpc][bg] = len(MC[tpc].loc[MC[tpc]['bgType']==bg])/(t*100) #100 is from dialing up cross section
+                    rates_err[tpc][bg] = np.sqrt(len(MC[tpc].loc[MC[tpc]['bgType']==bg]))/(t*100)
                 except FileNotFoundError:
                     rates[tpc][bg] = 0
+                    rates_err[tpc][bg] = 0
             df = df.append(pd.DataFrame.from_dict(rates[tpc], 'index').T)
+            df_err = df_err.append(pd.DataFrame.from_dict(rates_err[tpc], 'index').T)
         df.index = tpcs
         df['LER_bg_base'] = (df['Brems_LER_base'] + df['Coulomb_LER_base'])/1200*I_LER #scale by input I/I_ref
         df['HER_bg_base'] = (df['Brems_HER_base'] + df['Coulomb_HER_base'])/1000*I_HER
@@ -234,10 +254,22 @@ class analysis:
         df['HER_T'] = df['Touschek_HER_all']/(1000/(36*1576))*(I_HER/(sy_HER*nb_HER))
         df['Lumi'] = df['RBB_Lumi'] + df['twoPhoton_Lumi']
         df = df[['LER_bg_base', 'LER_bg_dynamic', 'LER_T', 'HER_bg_base', 'HER_bg_dynamic', 'HER_T', 'Lumi']]
-        return df
+        df_err.index = tpcs
+        df_err['LER_bg_base'] = (df_err['Brems_LER_base'] + df_err['Coulomb_LER_base'])/1200*I_LER #scale by input I/I_ref
+        df_err['HER_bg_base'] = (df_err['Brems_HER_base'] + df_err['Coulomb_HER_base'])/1000*I_HER
+        df_err['LER_bg_dynamic'] = (df_err['Brems_LER_dynamic'] + df_err['Coulomb_LER_dynamic'])/1200**2*I_LER**2
+        df_err['HER_bg_dynamic'] = (df_err['Brems_HER_dynamic'] + df_err['Coulomb_HER_dynamic'])/1000**2*I_HER**2
+        df_err['LER_T'] = df_err['Touschek_LER_all']/(1200/(37*1576))*(I_LER/(sy_LER*nb_LER))
+        df_err['HER_T'] = df_err['Touschek_HER_all']/(1000/(36*1576))*(I_HER/(sy_HER*nb_HER))
+        df_err['Lumi'] = np.sqrt(df_err['RBB_Lumi']**2 + df_err['twoPhoton_Lumi']**2)
+        df_err = df_err[['LER_bg_base', 'LER_bg_dynamic', 'LER_T', 'HER_bg_base', 'HER_bg_dynamic', 'HER_T', 'Lumi']]
+        df_err.columns = ['LER_bg_base_err', 'LER_bg_dynamic_err', 'LER_T_err', 'HER_bg_base_err', 'HER_bg_dynamic_err', 'HER_T_err', 'Lumi_err']
+        df_combined = pd.concat([df,df_err], axis=1)
+        return df_combined
 
     def select_study(self, study_type, study_period): #LER, HER, Lumi, Cont_inj, Decay
-        raw_data = self.get_raw_study_data()
+        #raw_data = self.get_raw_study_data()
+        raw_data = self.study_data
         study_data = raw_data.loc[(raw_data['%s_study_flag'%(study_type)]==1) & (raw_data['%s_flag'%(study_period)] == 1)]
         return study_data
 
@@ -598,7 +630,9 @@ class analysis:
     def plot_bg_summary(self, study_period, bins=12, MC = False, I_HER = 1000, I_LER = 1200, sy_LER=37, sy_HER=36, nb_LER=1576, nb_HER=1576, L=25):
         #tpcs = ['iiwi', 'nene', 'humu', 'palila', 'tako', 'elepaio']
         if MC == True:
-            df = self.get_MC_rates(I_HER = I_HER, I_LER = I_LER, sy_LER=sy_LER, sy_HER=sy_HER, nb_LER=nb_LER, nb_HER=nb_HER, lumi=L)
+            #df = self.get_MC_rates(E_cut = 8, I_HER = I_HER, I_LER = I_LER, sy_LER=sy_LER, sy_HER=sy_HER, nb_LER=nb_LER, nb_HER=nb_HER, lumi=L)
+            df = self.MC_rates
+            df = df[['LER_bg_base', 'LER_bg_dynamic', 'LER_T', 'HER_bg_base', 'HER_bg_dynamic', 'HER_T', 'Lumi']]
             df['total']=df.sum(axis = 1)
             df = df.apply(lambda x: x/df['total'])
             df = df.apply(lambda x: x*100)
@@ -670,10 +704,10 @@ class analysis:
         plt.show()
         return df
 
-    def compute_data_MC_ratios(self, study_period, bins=12, I_HER = 1000, I_LER = 1200, sy_LER=37, sy_HER=36, nb_LER=1576, nb_HER=1576, L=25):
+    def compute_data_MC_ratios(self, study_period, bins=12, E_cut = 8, I_HER = 1000, I_LER = 1200, sy_LER=37, sy_HER=36, nb_LER=1576, nb_HER=1576, L=25):
 
-        MC = self.get_MC_rates(I_HER = I_HER, I_LER = I_LER, sy_LER=sy_LER, sy_HER=sy_HER, nb_LER=nb_LER, nb_HER=nb_HER, lumi=L)
-        
+        #MC = self.get_MC_rates(E_cut = E_cut, I_HER = I_HER, I_LER = I_LER, sy_LER=sy_LER, sy_HER=sy_HER, nb_LER=nb_LER, nb_HER=nb_HER, lumi=L)
+        MC = self.MC_rates
         tpcs = ['palila', 'tako', 'elepaio', 'iiwi', 'nene', 'humu']
         LER_fit_params = self.get_fit_parameters("LER", study_period, bins)
         HER_fit_params = self.get_fit_parameters("HER", study_period, bins)
@@ -729,7 +763,18 @@ class analysis:
         df = df.T
         df.columns = ['LER_bg_base',  'LER_bg_base_err', 'LER_bg_dynamic', 'LER_bg_dynamic_err', 'LER_T', 'LER_T_err', 'HER_bg_base', 'HER_bg_base_err', 'HER_bg_dynamic', 'HER_bg_dynamic_err', 'HER_T', 'HER_T_err', 'Lumi', 'Lumi_err']
         plt.close()
-        return df, MC
+        data = df[['LER_bg_base', 'LER_bg_dynamic', 'LER_T', 'HER_bg_base', 'HER_bg_dynamic', 'HER_T', 'Lumi']]
+        data_err = df[['LER_bg_base_err', 'LER_bg_dynamic_err', 'LER_T_err', 'HER_bg_base_err', 'HER_bg_dynamic_err', 'HER_T_err', 'Lumi_err']]
+        sim = MC[['LER_bg_base', 'LER_bg_dynamic', 'LER_T', 'HER_bg_base', 'HER_bg_dynamic', 'HER_T', 'Lumi']]
+        sim_err = MC[['LER_bg_base_err', 'LER_bg_dynamic_err', 'LER_T_err', 'HER_bg_base_err', 'HER_bg_dynamic_err', 'HER_T_err', 'Lumi_err']]
+        data_MC = data/sim
+        data_MC_err = pd.DataFrame()
+        for col in data_MC.columns:
+            err = data_MC[col]*np.sqrt((data_err[col+'_err']/data[col])**2+(sim_err[col+'_err']/sim[col])**2)
+            data_MC_err[col+'_err'] = err
+        data_MC_ratio = pd.concat([data_MC,data_MC_err],axis = 1)
+        data_MC_ratio = data_MC_ratio[['LER_bg_base',  'LER_bg_base_err', 'LER_bg_dynamic', 'LER_bg_dynamic_err', 'LER_T', 'LER_T_err', 'HER_bg_base', 'HER_bg_base_err', 'HER_bg_dynamic', 'HER_bg_dynamic_err', 'HER_T', 'HER_T_err', 'Lumi', 'Lumi_err']]
+        return df, MC, data_MC_ratio
         
     '''
     def get_fit_parameters(self, study_type, study_period, bins=n):

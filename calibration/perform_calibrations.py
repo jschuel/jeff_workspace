@@ -547,7 +547,8 @@ class tpc_calibration(simulation):
         #plt.show()
 
         #super().__init__() # inherit simulation classes methods
-        #self.write_to_root_file()
+        self.write_to_root_file()
+        #self.calibrate_recoils()
         pass
         
     def get_tpc_list(self, tpc_list = ['iiwi', 'humu', 'nene', 'tako', 'palila', 'elepaio']):
@@ -654,11 +655,16 @@ class tpc_calibration(simulation):
             lkey = 'rms_corrected_length'
         tpcs = alphas.keys()
         scale_factor = {}
+        scale_factor_err = {}
         for tpc in tpcs:
             #alphas[tpc]['dedx'] = alphas[tpc][ekey]/alphas[tpc][lkey]
             scale_factor[tpc] = 1430/((alphas[tpc][ekey]*np.sin(alphas[tpc]['theta']*np.pi/180)).mean())
+            scale_factor_err[tpc] = scale_factor[tpc]*(alphas[tpc][ekey]*np.sin(alphas[tpc]['theta']*np.pi/180)).sem()/((alphas[tpc][ekey]*np.sin(alphas[tpc]['theta']*np.pi/180)).mean())
+            #print((alphas[tpc][ekey]*np.sin(alphas[tpc]['theta']*np.pi/180)).sem())
             alphas[tpc][ekey] = scale_factor[tpc]*alphas[tpc][ekey]
-        return alphas, scale_factor
+            alphas[tpc][ekey+'_err'] = scale_factor[tpc]*alphas[tpc][ekey]*(alphas[tpc][ekey]*np.sin(alphas[tpc]['theta']*np.pi/180)).sem()/((alphas[tpc][ekey]*np.sin(alphas[tpc]['theta']*np.pi/180)).mean())
+            #print(scale_factor[tpc], scale_factor_err[tpc])
+        return alphas, scale_factor, scale_factor_err
 
     def calibrate_recoils(self, corrected_energy = True, corrected_length = 0): #calibrates recoils to a de/dx reference value of 500 keV/cm
         if corrected_energy == True:
@@ -673,10 +679,12 @@ class tpc_calibration(simulation):
             lkey = 'max_corrected_length'
         else:
             lkey = 'rms_corrected_length'
-        scale_factor = self.calibrate_alphas(corrected_energy, corrected_length)[1]
+        scale_factor, scale_factor_err = self.calibrate_alphas(corrected_energy, corrected_length)[1], self.calibrate_alphas(corrected_energy, corrected_length)[2]
         tpcs = recoils.keys()
         for tpc in tpcs:
             recoils[tpc]['track_energy'] = scale_factor[tpc]*recoils[tpc]['track_energy']
+            recoils[tpc]['track_energy_err'] = scale_factor_err[tpc]*recoils[tpc]['track_energy']/scale_factor[tpc]
+            #print(recoils[tpc]['track_energy']/recoils[tpc]['track_energy_err'])
             if corrected_energy == True:
                 recoils[tpc]['saturation_corrected_energy'] = scale_factor[tpc]*recoils[tpc]['saturation_corrected_energy']
                 recoils[tpc]['full_corrected_energy'] = scale_factor[tpc]*recoils[tpc]['full_corrected_energy']
@@ -689,7 +697,7 @@ class tpc_calibration(simulation):
 
     def plot_alpha_distributions(self, corrected_energy = True, calibrated = True, corrected_length = 0, gain = False):
         if calibrated == True:
-            alphas, scale_factor = self.calibrate_alphas(corrected_energy, corrected_length)
+            alphas, scale_factor, scale_factor_err = self.calibrate_alphas(corrected_energy, corrected_length)
         else:
             alphas = self.correct_alphas()
         if corrected_energy == True:
@@ -720,16 +728,18 @@ class tpc_calibration(simulation):
         elif corrected_energy == False and corrected_length == 2:
             title = 'Uncorrected energy with RMS length correction'
             fig = 'calibration_figures/uncorrected_energy_rms_length_alphas.png'
-        tpcs = alphas.keys()
+        tpcs = ['elepaio', 'tako', 'palila', 'iiwi', 'nene', 'humu']
+        locations = ['z=-14m', 'z=-8.0m', 'z=-5.6m', 'z=+6.6m', 'z=+14m', 'z=+16m']
         color_codes = self.load_colors()
-        colors = [color_codes[i] for i in range(0,len(tpcs))]
+        #colors = [color_codes[i] for i in range(0,len(tpcs))]
+        colors = ['tab:blue' for i in range(0,len(tpcs))]
         i = 0
         for tpc in tpcs:
             #plt.hist(alphas[tpc][ekey]/alphas[tpc][lkey]*1e4, bins = 30, range = (200, 800), linewidth = 2, edgecolor = matplotlib.colors.colorConverter.to_rgba(colors[i], alpha=1), color = matplotlib.colors.colorConverter.to_rgba(colors[i], alpha=0.2), label = tpc)
             if gain == True:
                 alphas[tpc][ekey] = alphas[tpc]['track_charge']*35.075/alphas[tpc][ekey]*1e-3
-                print(tpc, alphas[tpc][ekey].mean())
-                plt.bar(tpc, alphas[tpc][ekey].unique(),linewidth = 2, edgecolor = matplotlib.colors.colorConverter.to_rgba(colors[i], alpha=1), color = matplotlib.colors.colorConverter.to_rgba(colors[i], alpha=0.2))
+                print(tpc, alphas[tpc][ekey].unique(), alphas[tpc][ekey+'_err'].unique())
+                plt.bar(locations[i], alphas[tpc][ekey].mean(), yerr = scale_factor_err[tpc]*alphas[tpc][ekey].mean(), linewidth = 2, edgecolor = matplotlib.colors.colorConverter.to_rgba(colors[i], alpha=1), color = matplotlib.colors.colorConverter.to_rgba(colors[i], alpha=0.2))
             elif calibrated == True:
                 plt.hist(alphas[tpc][ekey], bins = 60, range = (0, 2000), linewidth = 2, edgecolor = matplotlib.colors.colorConverter.to_rgba(colors[i], alpha=1), color = matplotlib.colors.colorConverter.to_rgba(colors[i], alpha=0.2), label = '%s'%(tpc)) #hatch = '/\\'
             elif calibrated == False:
@@ -784,7 +794,7 @@ class tpc_calibration(simulation):
         recoils =  self.calibrate_recoils(corrected_energy, corrected_length)
         y = np.array([6,20,800])
         for tpc in recoils.keys():
-            recoils[tpc] = recoils[tpc].loc[recoils[tpc]['track_energy']>8]
+            #recoils[tpc] = recoils[tpc].loc[recoils[tpc]['track_energy']>8]
             if tpc == 'iiwi':
                 x = np.array([1200, 1900, 15000])
             elif tpc == 'humu':
@@ -817,7 +827,7 @@ class tpc_calibration(simulation):
             recoils[tpc]['event_number'] = recoils[tpc].index
             keys = [val for val in recoils[tpc].columns]
             if recoils_only == True:
-                output = ROOT.TFile(outdir + '%s_all_recoils_only_even_newester.root'%(tpc), 'new')
+                output = ROOT.TFile(outdir + '%s_all_recoils_only_even_newester2.root'%(tpc), 'new')
             else:
                 output = ROOT.TFile(outdir + '%s_all_newest.root'%(tpc), 'recreate')
             tout = ROOT.TTree('data','data')

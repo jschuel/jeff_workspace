@@ -123,9 +123,9 @@ class analysis:
         ax[1].set_xlabel('z [cm]')
         ax[1].set_ylabel('x [cm]')
         ax[0].set_ylim(-300,300)
-        ax[0].set_xlim(-200,2800)
+        ax[0].set_xlim(-2800,2800)
         ax[1].set_ylim(-300,300)
-        ax[1].set_xlim(-200,2800)
+        ax[1].set_xlim(-2800,2800)
         #ax[0].imshow(np.flipud(img), origin = 'lower', extent = [-3400,3190, -440,421], aspect = 'auto')
         #ax[1].imshow(np.flipud(img), origin = 'lower', extent = [-3400,3190, -440,421], aspect = 'auto')
         ax[0].imshow(np.flipud(img), origin = 'lower', extent = [-3333,3142, -438,414], aspect = 'auto')
@@ -150,7 +150,7 @@ class analysis:
                 
         #plt.savefig("/home/jeef/Pictures/all_SimHits_%s.png"%(bgtype))
         #plt.savefig("/home/jeef/Pictures/all_RBB_hotspots.png")
-        plt.savefig("/home/jeef/Pictures/all_LER_Touschek_hotspots.png")
+        #plt.savefig("/home/jeef/Pictures/all_LER_Touschek_hotspots.png")
         plt.show()
 
     def plot_cos_theta_dist(self, bgtype):
@@ -442,7 +442,7 @@ class analysis:
         ax.set_xlabel('z [cm]')
         ax.set_ylabel('x [cm]')
         ax.set_ylim(-300,300)
-        ax.set_xlim(-2600,2600)
+        ax.set_xlim(-2800,2800)
         ax.imshow(np.flipud(img), origin = 'lower', extent = [-3333,3142, -438,414], aspect = 'auto')
 
         ax.plot(df_SB[['truthNeutronVtx_z_belle_frame','chipz']].T, df_SB[['truthNeutronVtx_x_belle_frame','chipx']].T, lw=0.15, alpha = 0.15, color = 'magenta')
@@ -455,7 +455,9 @@ class analysis:
         ax.add_patch(Rectangle((641,-199.4), 31, 10, facecolor = 'gold', alpha = 1.0, edgecolor = 'black', zorder=1e6+3)) #iiwi
         ax.add_patch(Rectangle((1385,172), 31, 10, facecolor = 'gold', alpha = 1.0, edgecolor = 'black', zorder=1e6+4)) #nene
         ax.add_patch(Rectangle((1585,170), 31, 10, facecolor = 'gold', alpha = 1.0, edgecolor = 'black', zorder=1e6+5)) #humu
-        
+
+        ax.add_patch(Rectangle((-870,20), 120, 40, facecolor = 'lime', alpha = 0.5, edgecolor = 'black', zorder=1e6+6)) #hotspot
+        ax.add_patch(Rectangle((1390,30), 290, 50, facecolor = 'lime', alpha = 0.5, edgecolor = 'black', zorder=1e6+7)) #hotspot
 
         handle = [Line2D([0], [0], marker='s', color='black', label='TPC',
                           markerfacecolor='gold', alpha = 1.0, markersize=15, lw=0),
@@ -464,7 +466,8 @@ class analysis:
     
         plt.legend(handles=handle, bbox_to_anchor=(0.84, 0.8), framealpha=1)
         plt.savefig("/home/jeef/Pictures/MC_tracks.png")
-        plt.clf()
+        #plt.savefig("/home/jeef/Pictures/just_tpcs.png")
+        plt.show()
     
     def visualize_all_3D(self):
         bgtypes = ['Coulomb_LER_dynamic', 'Coulomb_LER_base', 'Coulomb_HER_dynamic', 'Coulomb_HER_base', 'Brems_LER_dynamic', 'Brems_HER_dynamic', 'Brems_LER_base', 'RBB_Lumi', 'Touschek_LER', 'Touschek_HER']
@@ -510,4 +513,4 @@ a = analysis()
 #a.visualize_all_with_geometry()
 #a.plot_cos_theta_dist('RBB_Lumi')
 #a.plot_phi_dist('RBB_Lumi')
-#a.make_paper_figure()
+a.make_paper_figure()
