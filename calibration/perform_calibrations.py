@@ -526,30 +526,12 @@ class simulation:
             
 class tpc_calibration(simulation):
 
-    def __init__(self):
-        #Use for plotting before and after alpha calibration
-        #plt.subplot(2,1,1)
-        #self.plot_alpha_distributions(corrected_energy = False, calibrated = False, corrected_length = 0, gain = False)
-        #self.plot_alpha_distributions(corrected_energy = False, calibrated = True, corrected_length = 0, gain = True)
-        #self.plot_alpha_distributions(corrected_energy = True, calibrated = True, corrected_length = 0, gain = True)
-        #plt.ylim(0,1600)
-        #plt.ylabel(r'$G_{eff}$')
-        #colors = self.load_colors()
-        #legend_elements = [Patch(facecolor=matplotlib.colors.colorConverter.to_rgba(colors[0], alpha=0.2), edgecolor=matplotlib.colors.colorConverter.to_rgba(colors[0], alpha=1), label = 'iiwi'), Patch(facecolor=matplotlib.colors.colorConverter.to_rgba(colors[1], alpha=0.2), edgecolor=matplotlib.colors.colorConverter.to_rgba(colors[1], alpha=1), label = 'humu'), Patch(facecolor=matplotlib.colors.colorConverter.to_rgba(colors[2], alpha=0.2), edgecolor=matplotlib.colors.colorConverter.to_rgba(colors[2], alpha=1), label = 'nene'), Patch(facecolor=matplotlib.colors.colorConverter.to_rgba(colors[3], alpha=0.2), edgecolor=matplotlib.colors.colorConverter.to_rgba(colors[3], alpha=1), label = 'tako'), Patch(facecolor=matplotlib.colors.colorConverter.to_rgba(colors[4], alpha=0.2), edgecolor=matplotlib.colors.colorConverter.to_rgba(colors[4], alpha=1), label = 'palila'), Patch(facecolor=matplotlib.colors.colorConverter.to_rgba(colors[5], alpha=0.2), edgecolor=matplotlib.colors.colorConverter.to_rgba(colors[5], alpha=1), label = 'elepaio'), Patch(facecolor=matplotlib.colors.colorConverter.to_rgba(colors[0], alpha=0.2), edgecolor=matplotlib.colors.colorConverter.to_rgba(colors[0], alpha=1), hatch = '//\\\\', label = 'iiwi'), Patch(facecolor=matplotlib.colors.colorConverter.to_rgba(colors[1], alpha=0.2), edgecolor=matplotlib.colors.colorConverter.to_rgba(colors[1], alpha=1), hatch = '//\\\\', label = 'humu'), Patch(facecolor=matplotlib.colors.colorConverter.to_rgba(colors[2], alpha=0.2), edgecolor=matplotlib.colors.colorConverter.to_rgba(colors[2], alpha=1), hatch = '//\\\\', label = 'nene'), Patch(facecolor=matplotlib.colors.colorConverter.to_rgba(colors[3], alpha=0.2), edgecolor=matplotlib.colors.colorConverter.to_rgba(colors[3], alpha=1), hatch = '//\\\\', label = 'tako'), Patch(facecolor=matplotlib.colors.colorConverter.to_rgba(colors[4], alpha=0.2), edgecolor=matplotlib.colors.colorConverter.to_rgba(colors[4], alpha=1), hatch = '//\\\\', label = 'palila'), Patch(facecolor=matplotlib.colors.colorConverter.to_rgba(colors[5], alpha=0.2), edgecolor=matplotlib.colors.colorConverter.to_rgba(colors[5], alpha=1), hatch = '//\\\\', label = 'elepaio')]
-        #plt.legend(handles = legend_elements, ncol = 2, title = r'Uncalibrated $\qquad\quad$ Calibrated')
-        #plt.subplot(2,1,2)
-        #self.plot_alpha_distributions(corrected_energy = True, calibrated = False, corrected_length = 0)
-        #self.plot_alpha_distributions(corrected_energy = True, calibrated = True, corrected_length = 0, gain = False)
-        #plt.legend(ncol = 2)
-        #plt.xlim(1000,2000)
-        #plt.ylim(0,10)
-        #plt.savefig('calibrated_alphas.png')
-        #plt.show()
-
+    def __init__(self, corrected_energy = False, recoils_only = False):
         #super().__init__() # inherit simulation classes methods
-        self.write_to_root_file()
-        #self.calibrate_recoils()
-        pass
+        self.alphas, self.scale_factor, self.scale_factor_err = self.calibrate_alphas(corrected_energy = corrected_energy)
+        self.recoils = self.calibrate_recoils(corrected_energy = corrected_energy)
+        self.write_to_root_file(recoils_only = recoils_only)
+        #pass
         
     def get_tpc_list(self, tpc_list = ['iiwi', 'humu', 'nene', 'tako', 'palila', 'elepaio']):
         return tpc_list
@@ -640,19 +622,13 @@ class tpc_calibration(simulation):
             recoils[tpc] = self.perform_threshold_correction(recoils[tpc], tpc, fit_thresh[tpc])
         return recoils
 
-    def calibrate_alphas(self, corrected_energy = True, corrected_length = 0): #calibrates alphas to a de/dx reference value of 500 keV/cm
+    def calibrate_alphas(self, corrected_energy): #calibrates alphas to a de/dx reference value of 500 keV/cm
         if corrected_energy == True:
             alphas = self.correct_alphas()
             ekey = 'full_corrected_energy'
         else:
             alphas = self.load_alphas()
             ekey = 'track_energy'
-        if corrected_length == 0:
-            lkey = 'length'
-        elif corrected_length == 1:
-            lkey = 'max_corrected_length'
-        else:
-            lkey = 'rms_corrected_length'
         tpcs = alphas.keys()
         scale_factor = {}
         scale_factor_err = {}
@@ -666,20 +642,14 @@ class tpc_calibration(simulation):
             #print(scale_factor[tpc], scale_factor_err[tpc])
         return alphas, scale_factor, scale_factor_err
 
-    def calibrate_recoils(self, corrected_energy = True, corrected_length = 0): #calibrates recoils to a de/dx reference value of 500 keV/cm
+    def calibrate_recoils(self, corrected_energy): #calibrates recoils to a de/dx reference value of 500 keV/cm
         if corrected_energy == True:
             recoils = self.correct_recoils()
             ekey = 'full_corrected_energy'
         else:
             recoils = self.load_recoils()
             ekey = 'track_energy'
-        if corrected_length == 0:
-            lkey = 'length'
-        elif corrected_length == 1:
-            lkey = 'max_corrected_length'
-        else:
-            lkey = 'rms_corrected_length'
-        scale_factor, scale_factor_err = self.calibrate_alphas(corrected_energy, corrected_length)[1], self.calibrate_alphas(corrected_energy, corrected_length)[2]
+        scale_factor, scale_factor_err = self.scale_factor, self.scale_factor_err
         tpcs = recoils.keys()
         for tpc in tpcs:
             recoils[tpc]['track_energy'] = scale_factor[tpc]*recoils[tpc]['track_energy']
@@ -695,39 +665,15 @@ class tpc_calibration(simulation):
         #color_codes = ['#FFD700', '#4B0082', '#FF00FF', '#00FFFF', '#FF0000', '#808080']
         return color_codes
 
-    def plot_alpha_distributions(self, corrected_energy = True, calibrated = True, corrected_length = 0, gain = False):
+    def plot_alpha_distributions(self, corrected_energy = True, calibrated = True, gain = False):
         if calibrated == True:
-            alphas, scale_factor, scale_factor_err = self.calibrate_alphas(corrected_energy, corrected_length)
+            alphas, scale_factor, scale_factor_err = self.calibrate_alphas(corrected_energy)
         else:
             alphas = self.correct_alphas()
         if corrected_energy == True:
             ekey = 'full_corrected_energy'
         else:
             ekey = 'track_energy'
-        if corrected_length == 0:
-            lkey = 'length'
-        elif corrected_length == 1:
-            lkey = 'max_corrected_length'
-        else:
-            lkey = 'rms_corrected_length'
-        if corrected_energy == True and corrected_length == 0:
-            title = 'Corrected energy'
-            fig = 'calibration_figures/corrected_energy_raw_length_alphas.png'
-        elif corrected_energy == True and corrected_length == 1:
-            title = 'Corrected energy with max length correction'
-            fig = 'calibration_figures/corrected_energy_max_length_alphas.png'
-        elif corrected_energy == True and corrected_length == 2:
-            title = 'Corrected energy with RMS length correction'
-            fig = 'calibration_figures/corrected_energy_rms_length_alphas.png'
-        elif corrected_energy == False and corrected_length == 0:
-            title = 'Uncorrected energy'
-            fig = 'calibration_figures/uncorrected_energy_raw_length_alphas.png'
-        elif corrected_energy == False and corrected_length == 1:
-            title = 'Uncorrected energy with max length correction'
-            fig = 'calibration_figures/uncorrected_energy_max_length_alphas.png'
-        elif corrected_energy == False and corrected_length == 2:
-            title = 'Uncorrected energy with RMS length correction'
-            fig = 'calibration_figures/uncorrected_energy_rms_length_alphas.png'
         tpcs = ['elepaio', 'tako', 'palila', 'iiwi', 'nene', 'humu']
         locations = ['z=-14m', 'z=-8.0m', 'z=-5.6m', 'z=+6.6m', 'z=+14m', 'z=+16m']
         color_codes = self.load_colors()
@@ -750,31 +696,13 @@ class tpc_calibration(simulation):
         #plt.title(title)
         #plt.savefig(fig)
         #plt.clf()
-
-    def plot_calibrated_recoil_distributions(self, corrected_energy = True, corrected_length = 0):
-        recoils = self.calibrate_recoils(corrected_energy, corrected_length)
+        plt.show()
+    def plot_calibrated_recoil_distributions(self):
+        recoils = self.recoils
         if corrected_energy == True:
             ekey = 'full_corrected_energy'
         else:
             ekey = 'track_energy'
-        if corrected_length == 0:
-            lkey = 'length'
-        if corrected_length == 1:
-            lkey = 'max_corrected_length'
-        if corrected_length == 2:
-            lkey = 'rms_corrected_length'
-        if corrected_energy == True and corrected_length == 0:
-            fig = 'calibration_figures/corrected_energy_raw_length'
-        elif corrected_energy == True and corrected_length == 1:
-            fig = 'calibration_figures/corrected_energy_max_length'
-        elif corrected_energy == True and corrected_length == 2:
-            fig = 'calibration_figures/corrected_energy_rms_length'
-        elif corrected_energy == False and corrected_length == 0:
-            fig = 'calibration_figures/uncorrected_energy_raw_length'
-        elif corrected_energy == False and corrected_length == 1:
-            fig = 'calibration_figures/uncorrected_energy_max_length'
-        elif corrected_energy == False and corrected_length == 2:
-            fig = 'calibration_figures/uncorrected_energy_rms_length'
         tpcs = recoils.keys()
         color_codes = self.load_colors()
         colors = [color_codes[i] for i in range(0,len(tpcs))]
@@ -786,12 +714,12 @@ class tpc_calibration(simulation):
             plt.xlabel('length [um]')
             plt.xlim(0,10000)
             plt.ylim(0,200)
-            plt.savefig(fig + '_%s.png'%(i))
+            #plt.savefig('_%s.png'%(i))
             i += 1
-        plt.clf()
-
-    def apply_recoil_cuts(self, corrected_energy = True, corrected_length = 0): #Cuts to train double Gaussian fit
-        recoils =  self.calibrate_recoils(corrected_energy, corrected_length)
+        #plt.clf()
+        plt.show()
+    def apply_recoil_cuts(self): #Cuts to train double Gaussian fit
+        recoils =  self.recoils
         y = np.array([6,20,800])
         for tpc in recoils.keys():
             #recoils[tpc] = recoils[tpc].loc[recoils[tpc]['track_energy']>8]
@@ -811,25 +739,21 @@ class tpc_calibration(simulation):
             recoils[tpc] = recoils[tpc].loc[recoils[tpc]['track_energy'] > cut[0]*recoils[tpc]['length']**2+cut[1]*recoils[tpc]['length']+cut[2]] #after this cut, only recoil bands remain
         return recoils
 
-    def write_to_root_file(self, recoils_only = True, corrected_energy = True, corrected_length = 0, outdir = '~/data/phase3/spring_2020/05-09-20/tpc_root_files/'):
+    def write_to_root_file(self, recoils_only = True, outdir = '~/data/phase3/spring_2020/05-09-20/tpc_root_files/'):
         if recoils_only == False:
-            recoils = self.calibrate_recoils(corrected_energy, corrected_length)
+            recoils = self.recoils
         else:
-            recoils = self.apply_recoil_cuts(corrected_energy, corrected_length)
+            recoils = self.apply_recoil_cuts()
         tpcs = recoils.keys()
-        for tpc in tpcs:
-            try:
-                recoils[tpc] = recoils[tpc].drop(columns = [['rms_width', 'max_corrected_length', 'rms_corrected_length']]) #attemts to remove obsolete branches if they exist
-            except KeyError:
-                pass
-            
+        #tpcs = ['nene','humu','tako','palila','elepaio']
+        for tpc in tpcs:            
             recoils[tpc].index = [i for i in range(0,len(recoils[tpc]))]
             recoils[tpc]['event_number'] = recoils[tpc].index
             keys = [val for val in recoils[tpc].columns]
             if recoils_only == True:
                 output = ROOT.TFile(outdir + '%s_all_recoils_only_even_newester2.root'%(tpc), 'new')
             else:
-                output = ROOT.TFile(outdir + '%s_all_newest.root'%(tpc), 'recreate')
+                output = ROOT.TFile(outdir + '%s_all_newester.root'%(tpc), 'recreate')
             tout = ROOT.TTree('data','data')
             branches = {}
             data={}
@@ -1043,4 +967,7 @@ def plot_uncalibrated_recoil_distributions(self):
             recoils[tpc]['He_recoil'] = 0
             recoils[tpc]['He_recoil'][index] = 1
         return recoils
+
+#legend_elements = [Patch(facecolor=matplotlib.colors.colorConverter.to_rgba(colors[0], alpha=0.2), edgecolor=matplotlib.colors.colorConverter.to_rgba(colors[0], alpha=1), label = 'iiwi'), Patch(facecolor=matplotlib.colors.colorConverter.to_rgba(colors[1], alpha=0.2), edgecolor=matplotlib.colors.colorConverter.to_rgba(colors[1], alpha=1), label = 'humu'), Patch(facecolor=matplotlib.colors.colorConverter.to_rgba(colors[2], alpha=0.2), edgecolor=matplotlib.colors.colorConverter.to_rgba(colors[2], alpha=1), label = 'nene'), Patch(facecolor=matplotlib.colors.colorConverter.to_rgba(colors[3], alpha=0.2), edgecolor=matplotlib.colors.colorConverter.to_rgba(colors[3], alpha=1), label = 'tako'), Patch(facecolor=matplotlib.colors.colorConverter.to_rgba(colors[4], alpha=0.2), edgecolor=matplotlib.colors.colorConverter.to_rgba(colors[4], alpha=1), label = 'palila'), Patch(facecolor=matplotlib.colors.colorConverter.to_rgba(colors[5], alpha=0.2), edgecolor=matplotlib.colors.colorConverter.to_rgba(colors[5], alpha=1), label = 'elepaio'), Patch(facecolor=matplotlib.colors.colorConverter.to_rgba(colors[0], alpha=0.2), edgecolor=matplotlib.colors.colorConverter.to_rgba(colors[0], alpha=1), hatch = '//\\\\', label = 'iiwi'), Patch(facecolor=matplotlib.colors.colorConverter.to_rgba(colors[1], alpha=0.2), edgecolor=matplotlib.colors.colorConverter.to_rgba(colors[1], alpha=1), hatch = '//\\\\', label = 'humu'), Patch(facecolor=matplotlib.colors.colorConverter.to_rgba(colors[2], alpha=0.2), edgecolor=matplotlib.colors.colorConverter.to_rgba(colors[2], alpha=1), hatch = '//\\\\', label = 'nene'), Patch(facecolor=matplotlib.colors.colorConverter.to_rgba(colors[3], alpha=0.2), edgecolor=matplotlib.colors.colorConverter.to_rgba(colors[3], alpha=1), hatch = '//\\\\', label = 'tako'), Patch(facecolor=matplotlib.colors.colorConverter.to_rgba(colors[4], alpha=0.2), edgecolor=matplotlib.colors.colorConverter.to_rgba(colors[4], alpha=1), hatch = '//\\\\', label = 'palila'), Patch(facecolor=matplotlib.colors.colorConverter.to_rgba(colors[5], alpha=0.2), edgecolor=matplotlib.colors.colorConverter.to_rgba(colors[5], alpha=1), hatch = '//\\\\', label = 'elepaio')]
+
 '''

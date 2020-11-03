@@ -1,4 +1,4 @@
-import pandas as pd
+recoils_mport pandas as pd
 import uproot as ur
 import root_pandas as rp
 import numpy as np
@@ -35,7 +35,7 @@ class analysis:
         tpcs = ['iiwi', 'humu', 'nene', 'tako', 'palila', 'elepaio']
         for tpc in tpcs:
             #data[tpc] = rp.read_root(input_dir + "%s_all_recoils_only_newest.root"%(tpc))
-            if recoils_only == True:
+            if recoils_only = True:
                 data[tpc] = ur.open(input_dir + "%s_all_recoils_only_even_newester2.root"%(tpc))[ur.open(input_dir + "%s_all_recoils_only_even_newester2.root"%(tpc)).keys()[0]].pandas.df(flatten=False)
             else:
                 data[tpc] = ur.open(input_dir + "%s_all_newester.root"%(tpc))[ur.open(input_dir + "%s_all_newester.root"%(tpc)).keys()[0]].pandas.df(flatten=False)
