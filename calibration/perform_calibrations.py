@@ -5,6 +5,7 @@ import pandas as pd
 import uproot as ur
 import root_pandas as rp
 import ROOT
+from ROOT import TVector3
 import array
 import matplotlib.pyplot as plt
 import matplotlib
@@ -526,11 +527,12 @@ class simulation:
             
 class tpc_calibration(simulation):
 
-    def __init__(self, corrected_energy = False, recoils_only = False):
+    def __init__(self, corrected_energy = False):
         #super().__init__() # inherit simulation classes methods
         self.alphas, self.scale_factor, self.scale_factor_err = self.calibrate_alphas(corrected_energy = corrected_energy)
         self.recoils = self.calibrate_recoils(corrected_energy = corrected_energy)
-        self.write_to_root_file(recoils_only = recoils_only)
+        self.updated_recoils = self.determine_new_angles_and_lengths()
+        self.write_to_root_file()
         #pass
         
     def get_tpc_list(self, tpc_list = ['iiwi', 'humu', 'nene', 'tako', 'palila', 'elepaio']):
@@ -639,7 +641,7 @@ class tpc_calibration(simulation):
             #print((alphas[tpc][ekey]*np.sin(alphas[tpc]['theta']*np.pi/180)).sem())
             alphas[tpc][ekey] = scale_factor[tpc]*alphas[tpc][ekey]
             alphas[tpc][ekey+'_err'] = scale_factor[tpc]*alphas[tpc][ekey]*(alphas[tpc][ekey]*np.sin(alphas[tpc]['theta']*np.pi/180)).sem()/((alphas[tpc][ekey]*np.sin(alphas[tpc]['theta']*np.pi/180)).mean())
-            #print(scale_factor[tpc], scale_factor_err[tpc])
+            #print(tpc, scale_factor_err[tpc]/scale_factor[tpc])
         return alphas, scale_factor, scale_factor_err
 
     def calibrate_recoils(self, corrected_energy): #calibrates recoils to a de/dx reference value of 500 keV/cm
@@ -653,8 +655,10 @@ class tpc_calibration(simulation):
         tpcs = recoils.keys()
         for tpc in tpcs:
             recoils[tpc]['track_energy'] = scale_factor[tpc]*recoils[tpc]['track_energy']
-            recoils[tpc]['track_energy_err'] = scale_factor_err[tpc]*recoils[tpc]['track_energy']/scale_factor[tpc]
-            #print(recoils[tpc]['track_energy']/recoils[tpc]['track_energy_err'])
+            recoils[tpc]['track_energy_err'] = scale_factor_err[tpc]*recoils[tpc]['track_energy']
+            #recoils[tpc]['track_energy_err'] = scale_factor_err[tpc]*alphas[tpc]['track_energy'].mean()
+            #recoils[tpc]['track_energy_err'] = scale_factor_err[tpc]*recoils[tpc]['track_energy']/scale_factor[tpc]
+            #print(tpc, recoils[tpc]['track_energy_err']/recoils[tpc]['track_energy'])
             if corrected_energy == True:
                 recoils[tpc]['saturation_corrected_energy'] = scale_factor[tpc]*recoils[tpc]['saturation_corrected_energy']
                 recoils[tpc]['full_corrected_energy'] = scale_factor[tpc]*recoils[tpc]['full_corrected_energy']
@@ -684,7 +688,8 @@ class tpc_calibration(simulation):
             #plt.hist(alphas[tpc][ekey]/alphas[tpc][lkey]*1e4, bins = 30, range = (200, 800), linewidth = 2, edgecolor = matplotlib.colors.colorConverter.to_rgba(colors[i], alpha=1), color = matplotlib.colors.colorConverter.to_rgba(colors[i], alpha=0.2), label = tpc)
             if gain == True:
                 alphas[tpc][ekey] = alphas[tpc]['track_charge']*35.075/alphas[tpc][ekey]*1e-3
-                print(tpc, alphas[tpc][ekey].unique(), alphas[tpc][ekey+'_err'].unique())
+                #print(tpc, alphas[tpc][ekey].unique(), alphas[tpc][ekey+'_err'].unique())
+                #print(tpc, alphas[tpc][ekey].mean(), scale_factor_err[tpc]*alphas[tpc][ekey].mean())
                 plt.bar(locations[i], alphas[tpc][ekey].mean(), yerr = scale_factor_err[tpc]*alphas[tpc][ekey].mean(), linewidth = 2, edgecolor = matplotlib.colors.colorConverter.to_rgba(colors[i], alpha=1), color = matplotlib.colors.colorConverter.to_rgba(colors[i], alpha=0.2))
             elif calibrated == True:
                 plt.hist(alphas[tpc][ekey], bins = 60, range = (0, 2000), linewidth = 2, edgecolor = matplotlib.colors.colorConverter.to_rgba(colors[i], alpha=1), color = matplotlib.colors.colorConverter.to_rgba(colors[i], alpha=0.2), label = '%s'%(tpc)) #hatch = '/\\'
@@ -718,7 +723,96 @@ class tpc_calibration(simulation):
             i += 1
         #plt.clf()
         plt.show()
-    def apply_recoil_cuts(self): #Cuts to train double Gaussian fit
+
+        
+    def determine_new_angles_and_lengths(self):
+        recoils = self.recoils
+        tpcs = recoils.keys()
+        ### Scale z by correct drift speed ###
+        for tpc in tpcs:
+            if tpc != 'elepaio':
+                recoils[tpc]['z'] = recoils[tpc]['z']*7/8
+            else:
+                recoils[tpc]['z'] = recoils[tpc]['z']*5.5/8
+        ### PERFORM SVD FITTER ###
+        def fitsvd_numpy(df, i): #faster than root fit, so this is standard
+            x = df.iloc[i]['x']
+            y = df.iloc[i]['y']
+            z = df.iloc[i]['z']
+            q = df.iloc[i]['pixel_charge']
+            data = np.concatenate((x[:, np.newaxis], y[:, np.newaxis], z[:, np.newaxis]), axis=1)
+            datamean = data.mean(axis=0)
+            uu, dd, vv = np.linalg.svd(data - datamean)
+            projection = []
+            for point in data:
+                projection += [np.dot(point, vv[0])]
+            vec = TVector3(vv[0][0],vv[0][1],vv[0][2])
+            maxp = max(projection)
+            minp = min(projection)
+            length = maxp - minp    
+            midp = 0.5*float(maxp+minp)
+            head_charge = 0
+            tail_charge = 0
+            i=0
+            for p in projection:
+                if p > midp:
+                    head_charge += q[i]
+                else:
+                    tail_charge += q[i]
+                i += 1
+            head_charge_fraction = head_charge/(head_charge+tail_charge)
+            theta = vec.Theta() #RADIANS
+            phi = vec.Phi() #RADIANS
+
+            if phi < -np.pi/2 or phi > np.pi/2: #fold phi to be restricted from 0 to pi
+                vec = -1*vec
+                theta = vec.Theta()
+                phi = vec.Phi()
+
+            return length, theta, phi, head_charge_fraction, head_charge, tail_charge
+
+        def update_dataframe(df):
+            length = []
+            theta = []
+            phi = []
+            head_charge_frac = []
+            head_charge = []
+            tail_charge = []
+            for j in range(0,len(df)):
+                l, t, p, q, hc, tc = fitsvd_numpy(df, j)
+                length.append(l)
+                theta.append(t)
+                phi.append(p)
+                head_charge_frac.append(q)
+                head_charge.append(hc)
+                tail_charge.append(tc)
+            df['new_length'] = length
+            df['new_theta'] = theta
+            df['new_phi'] = phi
+            df['new_head_q_frac'] = head_charge_frac
+            df['new_head_q'] = head_charge
+            df['new_tail_q'] = tail_charge
+            return df
+
+        for tpc in tpcs:
+            recoils[tpc] = update_dataframe(recoils[tpc])
+            
+        return recoils
+        
+    def apply_recoil_cuts(self): #Cuts without xray veto
+        recoils = self.updated_recoils
+        x = {'iiwi': np.array([850, 2500, 15000]), 'nene': np.array([950, 2500, 16000]), 'humu': np.array([1950, 3000, 20000]),
+             'palila': np.array([900, 2350, 15000]), 'tako': np.array([1400, 2500, 15000]), 'elepaio': np.array([1050, 2500, 15000])}
+        y = np.array([6,20,800])
+        cut = {}
+        tpcs = recoils.keys()
+        for tpc in tpcs:
+            cut[tpc] = np.polyfit(x[tpc],y,2)
+            recoils[tpc]['is_recoil'] = 0
+            index = recoils[tpc].loc[(recoils[tpc]['track_energy']>=(cut[tpc][0]*recoils[tpc]['new_length']**2 + cut[tpc][1]*recoils[tpc]['new_length'] + cut[tpc][2]))].index.to_numpy()
+            recoils[tpc]['is_recoil'][index]=1
+        
+        ''' ###old###
         recoils =  self.recoils
         y = np.array([6,20,800])
         for tpc in recoils.keys():
@@ -737,23 +831,24 @@ class tpc_calibration(simulation):
                 x = np.array([1050, 2000, 15000])
             cut = np.polyfit(x,y,2)
             recoils[tpc] = recoils[tpc].loc[recoils[tpc]['track_energy'] > cut[0]*recoils[tpc]['length']**2+cut[1]*recoils[tpc]['length']+cut[2]] #after this cut, only recoil bands remain
+        '''
         return recoils
 
-    def write_to_root_file(self, recoils_only = True, outdir = '~/data/phase3/spring_2020/05-09-20/tpc_root_files/'):
-        if recoils_only == False:
-            recoils = self.recoils
-        else:
-            recoils = self.apply_recoil_cuts()
+    def write_to_root_file(self, outdir = '~/data/phase3/spring_2020/05-09-20/tpc_root_files/'):
+        #if recoils_only == False:
+        #    recoils = self.recoils
+        #else:
+        recoils = self.apply_recoil_cuts()
         tpcs = recoils.keys()
         #tpcs = ['nene','humu','tako','palila','elepaio']
         for tpc in tpcs:            
             recoils[tpc].index = [i for i in range(0,len(recoils[tpc]))]
             recoils[tpc]['event_number'] = recoils[tpc].index
             keys = [val for val in recoils[tpc].columns]
-            if recoils_only == True:
-                output = ROOT.TFile(outdir + '%s_all_recoils_only_even_newester2.root'%(tpc), 'new')
-            else:
-                output = ROOT.TFile(outdir + '%s_all_newester.root'%(tpc), 'recreate')
+            #if recoils_only == True:
+            #    output = ROOT.TFile(outdir + '%s_all_recoils_only_even_newester2.root'%(tpc), 'new')
+            #else:
+            output = ROOT.TFile(outdir + '%s_all_newester4.root'%(tpc), 'recreate')
             tout = ROOT.TTree('data','data')
             branches = {}
             data={}
@@ -777,7 +872,7 @@ class tpc_calibration(simulation):
                             data[key][i]=recoils[tpc][key][j][i]
                     elif key != 'npoints':
                         data[key][0]=recoils[tpc][key][j]
-                print("Filling event %s out of %s"%(j, len(recoils[tpc])))
+                print("Filling event %s out of %s"%(j+1, len(recoils[tpc])))
                 tout.Fill()
 
             output.Write()

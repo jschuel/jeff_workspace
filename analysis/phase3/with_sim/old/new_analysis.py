@@ -4,6 +4,7 @@ import root_pandas as rp
 import numpy as np
 import matplotlib.pyplot as plt
 import ROOT
+from ROOT import TVector3
 import array
 from sklearn import linear_model
 from sklearn.linear_model.base import LinearModel
@@ -20,35 +21,30 @@ rc('text', usetex=False)
 
 class analysis:
 
-    def __init__(self, E_cut = 8, E_cut_err = 0, input_file= "~/data/phase3/spring_2020/05-09-20/combined_ntuples/05-09_whole_study_even_newerest.root", recoils_only = True, bigChip = False): #enter negative value for E_Cut_err to get low systematic
-        #self.LER_inj_avg = self.compute_means_and_errs("LER", "Cont_inj")
-        #self.HER_inj_avg = self.compute_means_and_errs("HER", "Cont_inj")
-        #self.LER_decay_avg = self.compute_means_and_errs("LER", "Decay")
-        #self.HER_decay_avg = self.compute_means_and_errs("HER", "Decay")
-        self.tpc_data = self.get_tpc_data(recoils_only = recoils_only)
-        self.study_data = self.get_raw_study_data(E_cut = E_cut, E_cut_err = E_cut_err)
-        self.MC_data = self.get_MC_data(recoils_only=recoils_only, bigChip = bigChip)
-        self.MC_rates = self.get_MC_rates(E_cut = E_cut)
+    def __init__(self, E_cut = 9, E_cut_err = 0, input_file= "~/data/phase3/spring_2020/05-09-20/combined_ntuples/05-09_whole_study_even_newerest.root", recoils_only = True, fei4_restrict = True): #enter negative value for E_Cut_err to get low systematic
+        self.tpc_data = self.get_tpc_data(recoils_only = recoils_only, E_cut = E_cut, E_cut_err = E_cut_err)
+        self.study_data = self.get_raw_study_data()
+        self.MC_base = self.apply_chip_calibrations_to_MC(E_cut = E_cut)
+        self.MC_data = self.create_VRCs()
+        self.MC_rates = self.get_MC_rates(fei4_restrict = fei4_restrict, recoils_only = recoils_only)
         
-    def get_tpc_data(self, input_dir = '~/data/phase3/spring_2020/05-09-20/tpc_root_files/', recoils_only = False):
+    def get_tpc_data(self, input_dir = '~/data/phase3/spring_2020/05-09-20/tpc_root_files/', recoils_only = False, E_cut = 9, E_cut_err = 0):
         data = {}
         tpcs = ['iiwi', 'humu', 'nene', 'tako', 'palila', 'elepaio']
         for tpc in tpcs:
-            #data[tpc] = rp.read_root(input_dir + "%s_all_recoils_only_newest.root"%(tpc))
+            data[tpc] = ur.open(input_dir + "%s_all_newester3.root"%(tpc))[ur.open(input_dir + "%s_all_newester3.root"%(tpc)).keys()[0]].pandas.df(flatten=False)
+            data[tpc] = data[tpc].loc[data[tpc]['track_energy']>=(E_cut+E_cut_err)]
             if recoils_only == True:
-                data[tpc] = ur.open(input_dir + "%s_all_recoils_only_even_newester2.root"%(tpc))[ur.open(input_dir + "%s_all_recoils_only_even_newester2.root"%(tpc)).keys()[0]].pandas.df(flatten=False)
-            else:
-                data[tpc] = ur.open(input_dir + "%s_all_newester.root"%(tpc))[ur.open(input_dir + "%s_all_newester.root"%(tpc)).keys()[0]].pandas.df(flatten=False)
+                data[tpc] = data[tpc].loc[data[tpc]['is_recoil'] == 1]
         return data
     
-    def get_raw_study_data(self, input_file= "~/data/phase3/spring_2020/05-09-20/combined_ntuples/05-09_whole_study_even_newerest.root", E_cut = 8, E_cut_err = 0):
+    def get_raw_study_data(self, input_file= "~/data/phase3/spring_2020/05-09-20/combined_ntuples/05-09_whole_study_even_newerest.root"):
         study_data = ur.open(input_file)[ur.open(input_file).keys()[0]].pandas.df(flatten=False)
         #dfs = self.get_tpc_data()
         dfs = self.tpc_data
         tpcs = dfs.keys()
         for tpc in tpcs:
             dfs[tpc]['ts'] = dfs[tpc]['timestamp_start'].astype('int')
-            dfs[tpc] = dfs[tpc].loc[dfs[tpc]['track_energy']>(E_cut+E_cut_err)]
             study_data[tpc+'_neutrons'] = 0
             pv = dfs[tpc].pivot_table(index=['ts'],aggfunc='size')
             pv = pv.loc[pv.index.isin(study_data['ts'])]
@@ -59,7 +55,7 @@ class analysis:
             study_data[tpc+'_neutrons'][index] = counts['rate'].to_numpy()
         return study_data
 
-    def get_MC_data(self, recoils_only = True, bigChip = False):
+    def get_MC_data(self):
         tpcs = ['iiwi', 'nene', 'humu', 'palila', 'tako', 'elepaio']
         bgtype = ['Coulomb_HER_base', 'Coulomb_LER_base', 'Coulomb_HER_dynamic', 'Coulomb_LER_dynamic', 'Brems_HER_base', 'Brems_LER_base', 'Brems_HER_dynamic', 'Brems_LER_dynamic', 'Touschek_HER_all', 'Touschek_LER_all', 'RBB_Lumi', 'twoPhoton_Lumi']
         tree = 'tree_fe4_after_threshold'
@@ -68,12 +64,13 @@ class analysis:
         for tpc in tpcs:
             data[tpc] = {}
             truth[tpc] = {}
-            if bigChip == True and recoils_only == True:
-                dir = '/home/jeef/data/phase3/spring_2020/05-09-20/geant4_simulation/big_chip/%s/'%(tpc)
-            elif bigChip == False and recoils_only == True:
-                dir = '/home/jeef/data/phase3/spring_2020/05-09-20/geant4_simulation/%s/'%(tpc)
-            else:
-                dir = '/home/jeef/data/phase3/spring_2020/05-09-20/geant4_simulation/all_events/%s/'%(tpc)
+            dir = '/home/jeef/data/phase3/spring_2020/05-09-20/geant4_simulation/all_events/%s/'%(tpc)
+            #if bigChip == True and recoils_only == True:
+            #    dir = '/home/jeef/data/phase3/spring_2020/05-09-20/geant4_simulation/big_chip/%s/'%(tpc)
+            #elif bigChip == False and recoils_only == True:
+            #    dir = '/home/jeef/data/phase3/spring_2020/05-09-20/geant4_simulation/%s/'%(tpc)
+            #else:
+            #    dir = '/home/jeef/data/phase3/spring_2020/05-09-20/geant4_simulation/all_events/%s/'%(tpc)
             for bg in bgtype:
                 try:
                     data[tpc][bg] = ur.open(dir+bg+'_%s.root'%(tpc))[tree].pandas.df(flatten=False)
@@ -86,10 +83,10 @@ class analysis:
                     truth[tpc][bg].index = [i for i in range(0,len(truth[tpc][bg]))]
                     data[tpc][bg]['ionization_energy'] = truth[tpc][bg]['eventIonizationEnergy']
                     data[tpc][bg]['PDG'] = truth[tpc][bg]['tkPDG']
-                    if recoils_only == True:
-                        data[tpc][bg]['truth_energy'] = truth[tpc][bg]['truthRecoilEnergy']
-                        data[tpc][bg]['truth_mother_energy'] = truth[tpc][bg]['truthMotherEnergy']
-                        data[tpc][bg][['truth_vertex_X', 'truth_vertex_Y', 'truth_vertex_Z', 'truth_px', 'truth_py', 'truth_pz', 'truth_mother_X', 'truth_mother_Y', 'truth_mother_Z', 'truth_mother_px', 'truth_mother_py', 'truth_mother_pz']] = truth[tpc][bg][['truthRecoilVtx_x_belle_frame', 'truthRecoilVtx_y_belle_frame', 'truthRecoilVtx_z_belle_frame', 'truthRecoilMom_x_belle_frame', 'truthRecoilMom_y_belle_frame', 'truthRecoilMom_z_belle_frame', 'truthMotherVtx_x_belle_frame', 'truthMotherVtx_y_belle_frame', 'truthMotherVtx_z_belle_frame', 'truthMotherMom_x_belle_frame', 'truthMotherMom_y_belle_frame', 'truthMotherMom_z_belle_frame']]
+                    #if recoils_only == True:
+                    #    data[tpc][bg]['truth_energy'] = truth[tpc][bg]['truthRecoilEnergy']
+                    #    data[tpc][bg]['truth_mother_energy'] = truth[tpc][bg]['truthMotherEnergy']
+                    #    data[tpc][bg][['truth_vertex_X', 'truth_vertex_Y', 'truth_vertex_Z', 'truth_px', 'truth_py', 'truth_pz', 'truth_mother_X', 'truth_mother_Y', 'truth_mother_Z', 'truth_mother_px', 'truth_mother_py', 'truth_mother_pz']] = truth[tpc][bg][['truthRecoilVtx_x_belle_frame', 'truthRecoilVtx_y_belle_frame', 'truthRecoilVtx_z_belle_frame', 'truthRecoilMom_x_belle_frame', 'truthRecoilMom_y_belle_frame', 'truthRecoilMom_z_belle_frame', 'truthMotherVtx_x_belle_frame', 'truthMotherVtx_y_belle_frame', 'truthMotherVtx_z_belle_frame', 'truthMotherMom_x_belle_frame', 'truthMotherMom_y_belle_frame', 'truthMotherMom_z_belle_frame']]
                 except KeyError:
                     truth[tpc][bg] = pd.DataFrame()
         data_red = {}
@@ -111,8 +108,8 @@ class analysis:
             
         return dfs
 
-    def apply_energy_calibrations_to_MC(self):
-        MC = self.MC_data
+    def apply_chip_calibrations_to_MC(self, E_cut):
+        MC = self.get_MC_data()
         tpcs = MC.keys()
         gain = {'iiwi': 1502, 'nene': 899, 'humu': 878, 'palila': 1033, 'tako': 807, 'elepaio': 797}
         W = 35.075
@@ -153,74 +150,149 @@ class analysis:
                 except ValueError:
                     print(tpc, i)
             MC[tpc]['sumtot'] = [MC[tpc]['q_from_tot'][i].sum() for i in range(0,len(MC[tpc]))]
-            MC[tpc]['reco_energy'] = MC[tpc]['sumtot']*35.075/gain[tpc]*1e-3
+            MC[tpc]['reco_energy'] = MC[tpc]['sumtot']*W/gain[tpc]*1e-3
+            MC[tpc] = MC[tpc].loc[MC[tpc]['reco_energy']>=(E_cut)]
 
         return MC
 
-    def visualize_MC(self, tpc, bgType = 'all'): #choices 
-        data = self.MC_data
-        data = data[str(tpc).lower()] #reduce to selected tpc
-        data = data.loc[np.abs(data['truth_mother_Z'])>1]
-        data['bgType'] = data['bgType'].str.replace('_base', '', regex=False)
-        data['bgType'] = data['bgType'].str.replace('_dynamic', '', regex=False)
-        data['bgType'] = data['bgType'].str.replace('_all', '', regex=False)
-        data['bgType'] = data['bgType'].str.replace('twoPhoton_', '', regex=False)
-        data['bgType'] = data['bgType'].str.replace('RBB_', '', regex=False)
-        if bgType.lower() != 'all':
-            data = data.loc[data['bgType'] == bgType]
-
-        plt.rc('legend', fontsize=12)
-        plt.rc('xtick', labelsize=16)
-        plt.rc('ytick', labelsize=16)
-        plt.rc('axes', labelsize=18)
-        plt.rc('axes', titlesize=18)
-
-        cm = matplotlib.cm.plasma
-        norm = matplotlib.colors.LogNorm(vmin = 1e0, vmax = 1e5)
-        sm = matplotlib.cm.ScalarMappable(cmap=cm, norm=norm)
-
-        color = cm(norm(data['truth_mother_energy']))
-        img = plt.imread("/home/jeef/Pictures/farbeamline_nocolor.png")
-        fig, ax = plt.subplots(2,1,figsize = (12,10))
+    def determine_new_angles(self):
+        def fitsvd_numpy(df, i): #faster than root fit, so this is standard
+            x = df.iloc[i]['x']
+            y = df.iloc[i]['y']
+            z = df.iloc[i]['z']
+            q = df.iloc[i]['q_from_tot']
+            data = np.concatenate((x[:, np.newaxis], y[:, np.newaxis], z[:, np.newaxis]), axis=1)
+            datamean = data.mean(axis=0)
+            uu, dd, vv = np.linalg.svd(data - datamean)
+            projection = []
+            for point in data:
+                projection += [np.dot(point, vv[0])]
+            vec = TVector3(vv[0][0],vv[0][1],vv[0][2])
+            maxp = max(projection)
+            minp = min(projection)
+            length = maxp - minp    
+            midp = 0.5*float(maxp+minp)
+            head_charge = 0
+            tail_charge = 0
+            i=0
+            for p in projection:
+                if p > midp:
+                    head_charge += q[i]
+                else:
+                    tail_charge += q[i]
+                i += 1
+            head_charge_fraction = head_charge/(head_charge+tail_charge)
+            theta = vec.Theta() #RADIANS
+            phi = vec.Phi() #RADIANS
+            if phi < -np.pi/2 or phi > np.pi/2: #fold phi to be restricted from 0 to pi
+                vec = -1*vec
+                theta = vec.Theta()
+                phi = vec.Phi()
         
-        ax[0].set_xlabel('z [cm]')
-        ax[0].set_ylabel('x [cm]')
-        ax[1].set_xlabel('z [cm]')
-        ax[1].set_ylabel('x [cm]')
+            return length, theta, phi, head_charge_fraction, head_charge, tail_charge
         
-        ax[0].imshow(np.flipud(img), origin = 'lower', extent = [-3333,3142, -438,414], aspect = 'auto')
-        ax[1].imshow(np.flipud(img), origin = 'lower', extent = [-3333,3142, -438,414], aspect = 'auto')
-        
-        ax[0].add_patch(Rectangle((-1415.5,196), 31, 10, color = 'green', alpha = 0.5)) #elepaio
-        ax[0].add_patch(Rectangle((-815.5,191), 31, 10, color = 'green', alpha = 0.5)) #tako
-        ax[0].add_patch(Rectangle((-578,-189), 31, 10, color = 'green', alpha = 0.5)) #palila
-        ax[0].add_patch(Rectangle((641,-199.4), 31, 10, color = 'green', alpha = 0.5)) #iiwi
-        ax[0].add_patch(Rectangle((1385,172), 31, 10, color = 'green', alpha = 0.5)) #nene
-        ax[0].add_patch(Rectangle((1585,170), 31, 10, color = 'green', alpha = 0.5)) #humu
-        ax[1].add_patch(Rectangle((-1415.5,196), 31, 10, color = 'green', alpha = 0.5)) #elepaio
-        ax[1].add_patch(Rectangle((-815.5,191), 31, 10, color = 'green', alpha = 0.5)) #tako
-        ax[1].add_patch(Rectangle((-578,-189), 31, 10, color = 'green', alpha = 0.5)) #palila
-        ax[1].add_patch(Rectangle((641,-199.4), 31, 10, color = 'green', alpha = 0.5)) #iiwi
-        ax[1].add_patch(Rectangle((1385,172), 31, 10, color = 'green', alpha = 0.5)) #nene
-        ax[1].add_patch(Rectangle((1585,170), 31, 10, color = 'green', alpha = 0.5)) #humu
+        def update_ntuple(df):
+            length = []
+            theta = []
+            phi = []
+            head_charge_frac = []
+            head_charge = []
+            tail_charge = []
+            for j in range(0,len(df)):
+                l, t, p, q, hc, tc = fitsvd_numpy(df, j)
+                length.append(l)
+                theta.append(t)
+                phi.append(p)
+                head_charge_frac.append(q)
+                head_charge.append(hc)
+                tail_charge.append(tc)
+            df['new_length'] = length
+            df['new_theta'] = theta
+            df['new_phi'] = phi
+            df['new_head_q_frac'] = head_charge_frac
+            df['new_head_q'] = head_charge
+            df['new_tail_q'] = tail_charge
+            return df
 
-        p = ax[0].scatter(data['truth_mother_Z'], data['truth_mother_X'], c= data['truth_mother_energy'], cmap = 'plasma', s=0.2, norm = matplotlib.colors.LogNorm(vmin = 1e0, vmax = 1e5))
-        ax[1].set_prop_cycle('color', color)
-        ax[1].plot(data[['truth_mother_Z','truth_vertex_Z']].T, data[['truth_mother_X','truth_vertex_X']].T, lw=1, alpha = 0.5)
-        plt.colorbar(p,ax=ax[0]).set_label(r'$E_{neutron}$', rotation = 270, labelpad = 20)
-        plt.colorbar(sm,ax=ax[1]).set_label(r'$E_{neutron}$', rotation = 270, labelpad = 20)
+        MC = self.MC_base
+        tpcs = MC.keys()
+        for tpc in tpcs:
+            MC[tpc] = update_ntuple(MC[tpc])
+        return MC
 
-        plt.show()
-        return data
-        
-            
-        
+    def identify_MC_recoils(self):
+        MC = self.determine_new_angles()
+        x = {'iiwi': np.array([850, 2500, 15000]), 'nene': np.array([950, 2500, 16000]), 'humu': np.array([1950, 3000, 20000]),
+             'palila': np.array([900, 2350, 15000]), 'tako': np.array([700, 2500, 15000]), 'elepaio': np.array([1050, 2500, 15000])}
+        y = np.array([8,20,800])
+        cut = {}
+        tpcs = MC.keys()
+        for tpc in tpcs:
+            MC[tpc]['is_recoil'] = 0
+            cut[tpc] = np.polyfit(x[tpc],y,2)
+            index = MC[tpc].loc[(MC[tpc]['reco_energy']>=cut[tpc][0]*((MC[tpc]['fit_length']*10000)**2 + cut[tpc][1]*(MC[tpc]['fit_length']*10000) + cut[tpc][2]))].index.to_numpy()
+            MC[tpc]['is_recoil'][index] = 1
+        return MC
 
-    def get_MC_rates(self, E_cut = 8, I_HER = 1000, I_LER = 1200, sy_LER=37, sy_HER=36, nb_LER=1576, nb_HER=1576, lumi=25): #Scale to luminosity of interest. Units: 1e34cm-2s-1
+    def create_VRCs(self): #VRC=virtual readout chip. We create them when we have MC chip larger than fiducial area of chip
+        
+        def identify_edges(df):
+            df['hit_edge'] = 0
+            for i in range(0,len(df)):
+                if ((0 in df['column'].iloc[i]) == True or (79 in df['column'].iloc[i]) == True 
+                or (-78 in df['column'].iloc[i]) == True or (-159 in df['column'].iloc[i]) == True
+                or (159 in df['column'].iloc[i]) == True or (0 in df['row'].iloc[i]) == True
+                or (335 in df['row'].iloc[i]) == True or (-335 in df['row'].iloc[i]) == True
+                or (670 in df['row'].iloc[i]) == True or (-670 in df['row'].iloc[i]) == True):
+                    df['hit_edge'].iloc[i] = 1
+            return df
+
+        def Assign_VRC_ID(df):
+            df['col_id'] = 0 #allowed values of 0-3 for 4x4 array of VRC
+            df['row_id'] = 0 #allowed values of 0-3 for 4x4 array of VRC
+            df['VRC_id'] = 0 #in practice we index from 1-9 given the locations of all hits
+    
+            index_col1 = df.loc[(df['column'].apply(lambda x: x.max()) > -79) & (df['column'].apply(lambda x: x.max()) <= 0)].index.to_numpy()
+            index_col2 = df.loc[(df['column'].apply(lambda x: x.max()) > 0) & (df['column'].apply(lambda x: x.max()) <= 79)].index.to_numpy()
+            index_col3 = df.loc[(df['column'].apply(lambda x: x.max()) > 79) & (df['column'].apply(lambda x: x.max()) <= 158)].index.to_numpy()
+            df['col_id'][index_col1] = 1
+            df['col_id'][index_col2] = 2
+            df['col_id'][index_col3] = 3
+    
+            index_row1 = df.loc[(df['row'].apply(lambda x: x.max()) > -335) & (df['row'].apply(lambda x: x.max()) <= 0)].index.to_numpy()
+            index_row2 = df.loc[(df['row'].apply(lambda x: x.max()) > 0) & (df['row'].apply(lambda x: x.max()) <= 335)].index.to_numpy()
+            index_row3 = df.loc[(df['row'].apply(lambda x: x.max()) > 335) & (df['row'].apply(lambda x: x.max()) <= 670)].index.to_numpy()
+            df['row_id'][index_row1] = 1
+            df['row_id'][index_row2] = 2
+            df['row_id'][index_row3] = 3
+            for i in range(1,4):
+                index_top = df.loc[(df['col_id']==i) & (df['row_id']==3)].index.to_numpy()
+                df['VRC_id'][index_top] = int(i)
+                index_mid = df.loc[(df['col_id']==i) & (df['row_id']==2)].index.to_numpy()
+                df['VRC_id'][index_mid] = i+3
+                index_bot = df.loc[(df['col_id']==i) & (df['row_id']==1)].index.to_numpy()
+                df['VRC_id'][index_bot] = i+6
+
+            return df
+
+        MC = self.identify_MC_recoils()
+        tpcs = MC.keys()
+        MC_red = {}
+        for tpc in tpcs:
+            MC[tpc] = identify_edges(MC[tpc])
+            MC[tpc]['ones'] = 1
+            MC_red[tpc] = MC[tpc].loc[MC[tpc]['hit_edge'] == 0] #edge cut
+            MC_red[tpc].index = [i for i in range(0,len(MC_red[tpc]))]
+            MC_red[tpc] = Assign_VRC_ID(MC_red[tpc])
+
+        return MC_red
+    
+    def get_MC_rates(self, fei4_restrict = True, recoils_only = True, I_HER = 1000, I_LER = 1200, sy_LER=37, sy_HER=36, nb_LER=1576, nb_HER=1576, lumi=25): #Scale to luminosity of interest. Units: 1e34cm-2s-1
         tpcs = ['elepaio', 'tako', 'palila', 'iiwi', 'nene', 'humu']
         bgtype = ['Coulomb_HER_base', 'Coulomb_LER_base', 'Coulomb_HER_dynamic', 'Coulomb_LER_dynamic', 'Brems_HER_base', 'Brems_LER_base', 'Brems_HER_dynamic', 'Brems_LER_dynamic', 'Touschek_HER_all', 'Touschek_LER_all', 'RBB_Lumi', 'twoPhoton_Lumi']
         tree = 'tree_fe4_after_threshold'
-        MC = self.apply_energy_calibrations_to_MC()
+        MC = self.MC_data
+        MC_new = {}
         rates = {}
         rates_err = {}
         df = pd.DataFrame()
@@ -229,8 +301,19 @@ class analysis:
         for tpc in tpcs:
             rates[tpc] = {}
             rates_err[tpc] = {}
-            MC[tpc] = MC[tpc].loc[MC[tpc]['reco_energy']>E_cut]
-            MC[tpc].index = [i for i in range(0,len(MC[tpc]))]
+            #MC[tpc] = MC[tpc].loc[MC[tpc]['reco_energy']>E_cut]
+            if recoils_only == True and fei4_restrict == True:
+                MC_new[tpc] = MC[tpc].loc[MC[tpc]['is_recoil'] == 1]
+                MC_new[tpc] = MC_new[tpc].loc[MC_new[tpc]['VRC_id']==5]
+            elif recoils_only == False and fei4_restrict == True:
+                MC_new[tpc] = MC[tpc].loc[MC[tpc]['VRC_id']==5]
+            elif recoils_only == True and fei4_restrict == False:
+                MC_new[tpc] = MC[tpc].loc[MC[tpc]['is_recoil'] == 1]
+            else:
+                MC_new[tpc] = MC[tpc]
+            #if fei4_restrict == True:
+            #    MC_new[tpc] = MC_new[tpc].loc[MC_new[tpc]['VRC_id']==5] #ID for actual fei4 active area
+            MC_new[tpc].index = [i for i in range(0,len(MC_new[tpc]))]
             for bg in bgtype:
                 if (bg == 'Brems_HER_dynamic'):
                     t = 400.
@@ -251,8 +334,8 @@ class analysis:
                 elif (bg == 'twoPhoton_Lumi'):
                     t = 1e-2*lumi_frac
                 try:
-                    rates[tpc][bg] = len(MC[tpc].loc[MC[tpc]['bgType']==bg])/(t*100) #100 is from dialing up cross section
-                    rates_err[tpc][bg] = np.sqrt(len(MC[tpc].loc[MC[tpc]['bgType']==bg]))/(t*100)
+                    rates[tpc][bg] = len(MC_new[tpc].loc[MC_new[tpc]['bgType']==bg])/(t*100) #100 is from dialing up cross section
+                    rates_err[tpc][bg] = np.sqrt(len(MC_new[tpc].loc[MC_new[tpc]['bgType']==bg]))/(t*100)
                 except FileNotFoundError:
                     rates[tpc][bg] = 0
                     rates_err[tpc][bg] = 0
@@ -288,7 +371,7 @@ class analysis:
 
     def get_tpc_data_during_study_period(self, study_type, study_period):
         study_data = self.select_study(study_type, study_period)
-        tpc_data = self.get_tpc_data()
+        tpc_data = self.tpc_data
         tpcs = tpc_data.keys()
         tpc_study_data = {}
         for tpc in tpcs:
@@ -354,12 +437,12 @@ class analysis:
             #f2.SetParLimits(0,1e-12,1e-6)
             #f2.SetParLimits(1,1e-9,1e-2)
             #f2.SetParLimits(2,1e-13,2e-1)
-            f2.SetParLimits(0,1e-12,1e-5)
-            f2.SetParLimits(1,1e-8,1e-2)
-            f2.SetParLimits(2,1e-8,1)
-            #f2.SetParLimits(0,0,1e-4)
-            #f2.SetParLimits(1,0,1)
-            #f2.SetParLimits(2,0,1)
+            #f2.SetParLimits(0,1e-12,1e-5)
+            #f2.SetParLimits(1,1e-8,1e-2)
+            #f2.SetParLimits(2,1e-8,1)
+            f2.SetParLimits(0,0,1e-5)
+            f2.SetParLimits(1,0,1e-2)
+            f2.SetParLimits(2,0,1)
             gr = ROOT.TGraph2DErrors(len(x1), x1, x2, y_root, x1err, x2err, y_root_err)
             gr.Fit(f2, 'SREM')
             fit[tpc+'_B0'] = f2.GetParameter(0)
@@ -451,7 +534,7 @@ class analysis:
             #    plt.fill_between(data_tmp['ts'], (fit_bg_tmp-fit_bg_err_tmp), (fit_bg_tmp+fit_bg_err_tmp), 'o', color = 'cyan', alpha = 0.3, label = 'Predicted beam-gas rate')
             #   plt.fill_between(data_tmp['ts'], (fit_t_tmp-fit_t_err_tmp), (fit_t_tmp+fit_t_err_tmp), 'o', color = 'limegreen', alpha = 0.3, label = 'Predicted Touschek rate')
             #    plt.fill_between(data_tmp['ts'], (fit_tmp-fit_err_tmp), (fit_tmp+fit_err_tmp), 'o', color = 'magenta', alpha = 0.3, label = 'Predicted total rate')
-        plt.ylim(-0.01,ymax)
+        #plt.ylim(-0.01,ymax)
         plt.ylabel('Rate[Hz]')
         if legend == True:
             #if study_type == "LER":
@@ -721,7 +804,7 @@ class analysis:
 
         #MC = self.get_MC_rates(E_cut = E_cut, I_HER = I_HER, I_LER = I_LER, sy_LER=sy_LER, sy_HER=sy_HER, nb_LER=nb_LER, nb_HER=nb_HER, lumi=L)
         MC = self.MC_rates
-        tpcs = ['palila', 'tako', 'elepaio', 'iiwi', 'nene', 'humu']
+        tpcs = ['elepaio', 'tako', 'palila', 'iiwi', 'nene', 'humu']
         LER_fit_params = self.get_fit_parameters("LER", study_period, bins)
         HER_fit_params = self.get_fit_parameters("HER", study_period, bins)
         fit_dict = {}
@@ -788,108 +871,5 @@ class analysis:
         data_MC_ratio = pd.concat([data_MC,data_MC_err],axis = 1)
         data_MC_ratio = data_MC_ratio[['LER_bg_base',  'LER_bg_base_err', 'LER_bg_dynamic', 'LER_bg_dynamic_err', 'LER_T', 'LER_T_err', 'HER_bg_base', 'HER_bg_base_err', 'HER_bg_dynamic', 'HER_bg_dynamic_err', 'HER_T', 'HER_T_err', 'Lumi', 'Lumi_err']]
         return df, MC, data_MC_ratio
-        
-    '''
-    def get_fit_parameters(self, study_type, study_period, bins=n):
-        data = self.heuristic_averages(study_type, study_period, bins)
-        tpcs = ['iiwi', 'humu', 'nene', 'tako', 'elepaio', 'palila']
-        #x = {}
-        #x_err = {}
-        #y = {}
-        #y_err = {}
-        #gr = {}
-        #fits = {}
-        #for tpc in tpcs:
-        #    index = data.loc[data['%s_heuristic_y'%(tpc)]!=0].index.to_numpy()
-        #    x[tpc] = array.array('d', data['heuristic_x'][index].to_numpy())
-        #    x_err[tpc] = array.array('d', data['heuristic_x_err'][index].to_numpy())
-        #    y[tpc] = array.array('d',data['%s_heuristic_y'%(tpc)][index])
-        #    y_err[tpc] = array.array('d', data['%s_heuristic_y_err'%(tpc)][index])
-        #    gr[tpc] = ROOT.TGraph(len(x[tpc]), x[tpc], y[tpc])#, x_err[tpc], y_err[tpc])
-        #    f1 = ROOT.TF1("f1", "[0] + [1]*x", 0,  data['I_'+study_type].max())
-            #f1.SetParLimits(1,0,0.5)
-            #f1.SetParLimits(0,0,1e5)
-        #    gr[tpc].Fit("f1", "SEM")
-        #    fits['%s_B'%(tpc)] = gr[tpc].GetFunction("f1").GetParameter(0)
-        #    fits['%s_B_err'%(tpc)] = gr[tpc].GetFunction("f1").GetParError(0)
-        #    fits['%s_T'%(tpc)] = gr[tpc].GetFunction("f1").GetParameter(1)
-        #    fits['%s_T_err'%(tpc)] = gr[tpc].GetFunction("f1").GetParError(1)
-        #return fits
 
-    def plot_heuristic_fit(self, tpc, study_type, study_period, bins=n):
-        data = self.heuristic_averages(study_type, study_period, bins)
-        #fit = self.get_fit_parameters(study_type, study_period, bins)
-        Nbs = [393, 783, 1565]
-        index_393 = data.loc[data['Nb_'+study_type]==393].index.to_numpy()
-        index_783 = data.loc[data['Nb_'+study_type]==783].index.to_numpy()
-        index_1565 = data.loc[data['Nb_'+study_type]==1565].index.to_numpy()
-        plt.errorbar(data['heuristic_x'][index_393], data[tpc+'_heuristic_y'][index_393], data[tpc+'_heuristic_y_err'][index_393], data['heuristic_x_err'][index_393], 'o', markersize = 3, color = 'magenta', label = 'Nb 393')
-        plt.errorbar(data['heuristic_x'][index_783], data[tpc+'_heuristic_y'][index_783], data[tpc+'_heuristic_y_err'][index_783], data['heuristic_x_err'][index_783], 'o', markersize = 3, color = 'tab:blue', label = 'Nb 783')
-        plt.errorbar(data['heuristic_x'][index_1565], data[tpc+'_heuristic_y'][index_1565], data[tpc+'_heuristic_y_err'][index_1565], data['heuristic_x_err'][index_1565], 'o', markersize = 3, color = 'tab:green', label = 'Nb 1565')
-        plt.plot(data['heuristic_x'],data['heuristic_x']*fit[tpc+'_T']+fit[tpc+'_B'], color = 'black', label = 'B=%s+/-%s, T=%s+/-%s'%(float('%.2g' % fit[tpc+'_B']), float('%.2g' % fit[tpc+'_B_err']), float('%.2g' % fit[tpc+'_T']), float('%.2g' % fit[tpc+'_T_err'])))
-        plt.legend()
-
-    def make_fwd_plots(self, study_type, bins=10):
-        plt.subplot(2,3,1)
-        self.plot_heuristic_fit("iiwi", study_type, "Decay", bins)
-        plt.title("Iiwi (z = +6.6m) Decay")
-        #plt.xlim(0,800000)
-        plt.subplot(2,3,4)
-        self.plot_heuristic_fit("iiwi", study_type, "Cont_inj", bins)
-        plt.title("Iiwi (z = +6.6m) Cont. Inj.")
-        #plt.xlim(0,800000)
-        plt.subplot(2,3,2)
-        self.plot_heuristic_fit("nene", study_type, "Decay", bins)
-        plt.title("Nene (z = +14m) Decay")
-        #plt.xlim(0,800000)
-        plt.subplot(2,3,5)
-        self.plot_heuristic_fit("nene", study_type, "Cont_inj", bins)
-        plt.title("Nene (z = +14m) Cont. Inj.")
-        #plt.xlim(0,800000)
-        plt.subplot(2,3,3)
-        self.plot_heuristic_fit("humu", study_type, "Decay", bins)
-        plt.title("Humu (z = +16m) Decay")
-        #plt.xlim(0,800000)
-        plt.subplot(2,3,6)
-        self.plot_heuristic_fit("humu", study_type, "Cont_inj", bins)
-        plt.title("Humu (z = +16m) Cont. Inj.")
-        #plt.xlim(0,800000)
-        plt.show()
-
-    def make_bwd_plots(self, study_type, bins=10):
-        plt.subplot(2,3,1)
-        self.plot_heuristic_fit("palila", study_type, "Decay", bins)
-        plt.title("palila (z = -5.6m) Decay")
-        #plt.xlim(0,800000)
-        plt.subplot(2,3,4)
-        self.plot_heuristic_fit("palila", study_type, "Cont_inj", bins)
-        plt.title("Palila (z = -5.6m) Cont. Inj.")
-        #plt.xlim(0,800000)
-        plt.subplot(2,3,2)
-        self.plot_heuristic_fit("tako", study_type, "Decay", bins)
-        plt.title("Tako (z = -8.0m) Decay")
-        #plt.xlim(0,800000)
-        plt.subplot(2,3,5)
-        self.plot_heuristic_fit("tako", study_type, "Cont_inj", bins)
-        plt.title("Tako (z = -8.0m) Cont. Inj.")
-        #plt.xlim(0,800000)
-        plt.subplot(2,3,3)
-        self.plot_heuristic_fit("elepaio", study_type, "Decay", bins)
-        plt.title("Elepaio (z = +14m) Decay")
-        #plt.xlim(0,800000)
-        plt.subplot(2,3,6)
-        self.plot_heuristic_fit("elepaio", study_type, "Cont_inj", bins)
-        plt.title("Elepaio (z = -14m) Cont. Inj.")
-        #plt.xlim(0,800000)
-        plt.show()
-        
-    def plot_fits(self, study_type, study_period, bins=10):
-        raw_data = self.compute_means_and_errs(study_type, study_period)
-        fits = self.get_fit_parameters(study_type, study_period, bins)
-        #plt.plot(raw_data['ts'], raw_data['I_'+study_type], 'o', markersize = 1)
-        #plt.errorbar(raw_data['ts'], raw_data['elepaio_neutrons'], raw_data['elepaio_neutrons_err'], 'o', markersize = 1)
-        plt.plot(raw_data['I_'+study_type], raw_data['nene_neutrons'], 'o')
-    '''
-    
 a = analysis()
-

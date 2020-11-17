@@ -21,7 +21,7 @@ rc('text', usetex=False)
 
 class analysis:
 
-    def __init__(self, E_cut = 9, E_cut_err = 0, input_file= "~/data/phase3/spring_2020/05-09-20/combined_ntuples/05-09_whole_study_even_newerest.root", recoils_only = False, fei4_restrict = True): #enter negative value for E_Cut_err to get low systematic
+    def __init__(self, E_cut = 9, E_cut_err = 0, input_file= "~/data/phase3/spring_2020/05-09-20/combined_ntuples/05-09_whole_study_even_newerest.root", recoils_only = True, fei4_restrict = True): #enter negative value for E_Cut_err to get low systematic
         self.tpc_data = self.get_tpc_data(recoils_only = recoils_only, E_cut = E_cut, E_cut_err = E_cut_err)
         self.study_data = self.get_raw_study_data()
         self.MC_base = self.apply_chip_calibrations_to_MC(E_cut = E_cut)
@@ -32,7 +32,7 @@ class analysis:
         data = {}
         tpcs = ['iiwi', 'humu', 'nene', 'tako', 'palila', 'elepaio']
         for tpc in tpcs:
-            data[tpc] = ur.open(input_dir + "%s_all_newester3.root"%(tpc))[ur.open(input_dir + "%s_all_newester3.root"%(tpc)).keys()[0]].pandas.df(flatten=False)
+            data[tpc] = ur.open(input_dir + "%s_all_newester4.root"%(tpc))[ur.open(input_dir + "%s_all_newester4.root"%(tpc)).keys()[0]].pandas.df(flatten=False)
             data[tpc] = data[tpc].loc[data[tpc]['track_energy']>=(E_cut+E_cut_err)]
             if recoils_only == True:
                 data[tpc] = data[tpc].loc[data[tpc]['is_recoil'] == 1]
@@ -40,6 +40,7 @@ class analysis:
     
     def get_raw_study_data(self, input_file= "~/data/phase3/spring_2020/05-09-20/combined_ntuples/05-09_whole_study_even_newerest.root"):
         study_data = ur.open(input_file)[ur.open(input_file).keys()[0]].pandas.df(flatten=False)
+        #dfs = self.get_tpc_data()
         dfs = self.tpc_data
         tpcs = dfs.keys()
         for tpc in tpcs:
@@ -63,10 +64,13 @@ class analysis:
         for tpc in tpcs:
             data[tpc] = {}
             truth[tpc] = {}
-            if recoils_only == True:
-                dir = '/home/jeef/data/phase3/spring_2020/05-09-20/geant4_simulation/%s/'%(tpc)
-            else:
-                dir = '/home/jeef/data/phase3/spring_2020/05-09-20/geant4_simulation/all_events/%s/'%(tpc)
+            dir = '/home/jeef/data/phase3/spring_2020/05-09-20/geant4_simulation/all_events/%s/'%(tpc)
+            #if bigChip == True and recoils_only == True:
+            #    dir = '/home/jeef/data/phase3/spring_2020/05-09-20/geant4_simulation/big_chip/%s/'%(tpc)
+            #elif bigChip == False and recoils_only == True:
+            #    dir = '/home/jeef/data/phase3/spring_2020/05-09-20/geant4_simulation/%s/'%(tpc)
+            #else:
+            #    dir = '/home/jeef/data/phase3/spring_2020/05-09-20/geant4_simulation/all_events/%s/'%(tpc)
             for bg in bgtype:
                 try:
                     data[tpc][bg] = ur.open(dir+bg+'_%s.root'%(tpc))[tree].pandas.df(flatten=False)
@@ -153,9 +157,9 @@ class analysis:
 
     def determine_new_angles(self):
         def fitsvd_numpy(df, i): #faster than root fit, so this is standard
-            x = df.iloc[i]['x']
-            y = df.iloc[i]['y']
-            z = df.iloc[i]['z']
+            x = df.iloc[i]['x']*10000
+            y = df.iloc[i]['y']*10000
+            z = df.iloc[i]['z']*10000
             q = df.iloc[i]['q_from_tot']
             data = np.concatenate((x[:, np.newaxis], y[:, np.newaxis], z[:, np.newaxis]), axis=1)
             datamean = data.mean(axis=0)
@@ -219,14 +223,14 @@ class analysis:
     def identify_MC_recoils(self):
         MC = self.determine_new_angles()
         x = {'iiwi': np.array([850, 2500, 15000]), 'nene': np.array([950, 2500, 16000]), 'humu': np.array([1950, 3000, 20000]),
-             'palila': np.array([900, 2350, 15000]), 'tako': np.array([700, 2500, 15000]), 'elepaio': np.array([1050, 2500, 15000])}
-        y = np.array([8,20,800])
+             'palila': np.array([900, 2350, 15000]), 'tako': np.array([1400, 2500, 15000]), 'elepaio': np.array([1050, 2500, 15000])}
+        y = np.array([6,20,800])
         cut = {}
         tpcs = MC.keys()
         for tpc in tpcs:
             MC[tpc]['is_recoil'] = 0
             cut[tpc] = np.polyfit(x[tpc],y,2)
-            index = MC[tpc].loc[(MC[tpc]['reco_energy']>=cut[tpc][0]*((MC[tpc]['fit_length']*10000)**2 + cut[tpc][1]*(MC[tpc]['fit_length']*10000) + cut[tpc][2]))].index.to_numpy()
+            index = MC[tpc].loc[(MC[tpc]['reco_energy']>=cut[tpc][0]*((MC[tpc]['new_length']*10000)**2 + cut[tpc][1]*(MC[tpc]['new_length']*10000) + cut[tpc][2]))].index.to_numpy()
             MC[tpc]['is_recoil'][index] = 1
         return MC
 
@@ -360,7 +364,6 @@ class analysis:
         return df_combined
 
     def select_study(self, study_type, study_period): #LER, HER, Lumi, Cont_inj, Decay
-        #raw_data = self.get_raw_study_data()
         raw_data = self.study_data
         study_data = raw_data.loc[(raw_data['%s_study_flag'%(study_type)]==1) & (raw_data['%s_flag'%(study_period)] == 1)]
         return study_data
@@ -371,37 +374,30 @@ class analysis:
         tpcs = tpc_data.keys()
         tpc_study_data = {}
         for tpc in tpcs:
-            tpc_study_data[tpc] = tpc_data[tpc].loc[(tpc_data[tpc]['timestamp_start'].astype('int')).isin(study_data['ts'].astype('int'))==True]
+            tpc_study_data[tpc] = tpc_data[tpc].loc[tpc_data[tpc]['ts'].isin(study_data['ts'])]
         return tpc_study_data
 
-    def partition_data_into_subsets(self, study_type, study_period, bins=12):
+    def partition_data_into_subsets(self, study_type, study_period, bins = 12):
         study_data = self.select_study(study_type, study_period)
-        study_data.index = [i for i in range(0,len(study_data))] #reindexes from 0 to length of dataset
+        study_data = study_data.reset_index(drop=True)
         partition_indices = [study_data.index.to_list()[0]] + study_data.loc[np.abs(study_data['ts'].diff())>10].index.to_list() + [study_data.index.to_list()[len(study_data)-1]]
         data_subsets = {}
         for i in range(0,len(partition_indices)-1):
             data_subsets['fill_%s'%(i)] = [i for i in range(partition_indices[i], partition_indices[i+1])]
         #print(data_subsets)
         dfs = {}
-        for i in range(0,len(data_subsets)):
-            dfs['fill_%s'%(i)] = np.array_split(study_data.iloc[data_subsets['fill_%s'%(i)]], bins)
+        for key in data_subsets.keys():
+            dfs[key] = np.array_split(study_data.iloc[data_subsets[key]], bins)
         return dfs
 
-    def compute_means_and_errs(self, study_type, study_period, bins=12):
-        partitioned_data = self.partition_data_into_subsets(study_type, study_period, bins)
-        means = partitioned_data['fill_0'][0].head(1) #to give structure to new dataframe
-        errs = partitioned_data['fill_0'][0].head(1) #to give structure to new dataframe
-        for col in means.columns:
-            means[col]=0 #will be deleted at the end. Used so we can append rows of means
-            errs[col] = 0
+    def compute_means_and_errs(self, study_type, study_period,bins = 12):
+        partitioned_data = self.partition_data_into_subsets(study_type, study_period, bins = bins)
+        means = pd.DataFrame()
+        errs = pd.DataFrame()
         for key in partitioned_data.keys():
             for i in range(0,len(partitioned_data[key])):
-                means = means.append(partitioned_data[key][i].mean(), ignore_index=True)
-                errs = errs.append(partitioned_data[key][i].std()/np.sqrt(len(partitioned_data[key][i])), ignore_index=True)
-        means = means.loc[means.index>0] # to get rid of phantom row of zeros used for formatting
-        means.index = [i for i in range(0,len(means))] #reindex
-        errs = errs.loc[errs.index>0] # to get rid of phantom row of zeros used for formatting
-        errs.index = [i for i in range(0,len(errs))] #reindex
+                means = means.append(partitioned_data[key][i].apply(lambda x: x.mean()), ignore_index = True)
+                errs = errs.append(partitioned_data[key][i].apply(lambda x: x.sem()), ignore_index = True)
         errs.columns = [str(col) + '_err' for col in errs.columns]
         for col in errs.columns:
             means[col] = errs[col]
@@ -409,7 +405,7 @@ class analysis:
         return means
 
     def get_fit_parameters(self, study_type, study_period, bins=12): #Gives parameters B0, B1, and T defined by Rate/I = B0 + B1*I + T*I/(sy*Nb)
-        averaged_data = self.compute_means_and_errs(study_type, study_period, bins)
+        averaged_data = self.compute_means_and_errs(study_type, study_period,bins = bins)
         tpcs = ['iiwi', 'humu', 'nene', 'tako', 'elepaio', 'palila']
         fit = {}
         averaged_data['heuristic_x'] = averaged_data['I_'+study_type]/(averaged_data['Sy_'+study_type]*averaged_data['Nb_'+study_type])
@@ -427,15 +423,6 @@ class analysis:
             y_root = array.array('d', y)
             y_root_err = array.array('d', yerr)
             f2 = ROOT.TF2("f2","[0] + [1]*x + [2]*y", 0, X['I_'+study_type].max(), 0, X['heuristic_x'].max())
-            #f2.SetParLimits(0,2e-12,2e-4)
-            #f2.SetParLimits(1,2e-9,2e-2)
-            #f2.SetParLimits(2,1e-12,1)
-            #f2.SetParLimits(0,1e-12,1e-6)
-            #f2.SetParLimits(1,1e-9,1e-2)
-            #f2.SetParLimits(2,1e-13,2e-1)
-            #f2.SetParLimits(0,1e-12,1e-5)
-            #f2.SetParLimits(1,1e-8,1e-2)
-            #f2.SetParLimits(2,1e-8,1)
             f2.SetParLimits(0,0,1e-5)
             f2.SetParLimits(1,0,1e-2)
             f2.SetParLimits(2,0,1)
@@ -449,274 +436,144 @@ class analysis:
             fit[tpc+'_T_err'] = f2.GetParError(2)
         return fit
 
-    def plot_fit(self, tpc, study_type,  bins=12, ymax = 2, legend = False):
-        study_periods = ["Cont_inj", "Decay"]
+    def measure_and_fit_lumi_bgs(self, study_period,bins = 25):
+        lumi_data_avg = self.compute_means_and_errs("Lumi", study_period,bins = bins)
+        LER_fit_params = self.get_fit_parameters("LER", study_period, bins=bins)
+        HER_fit_params = self.get_fit_parameters("HER", study_period,bins = bins)
+        tpcs = ['iiwi', 'humu', 'nene', 'tako', 'elepaio', 'palila']
+        fits = {}
+        LER_rates = {}
+        HER_rates = {}
+        LER_rates_err = {}
+        HER_rates_err = {}
+        lumi_rates = {}
+        lumi_rates_err = {}
+        for tpc in tpcs:
+            LER_rates[tpc] = LER_fit_params[tpc+'_B0']*lumi_data_avg['I_LER'] + LER_fit_params[tpc+'_B1']*lumi_data_avg['I_LER']**2 + LER_fit_params[tpc+'_T']*lumi_data_avg['I_LER']**2/(lumi_data_avg['Sy_LER']*lumi_data_avg['Nb_LER'])
+            HER_rates[tpc] = HER_fit_params[tpc+'_B0']*lumi_data_avg['I_HER'] + HER_fit_params[tpc+'_B1']*lumi_data_avg['I_HER']**2 + HER_fit_params[tpc+'_T']*lumi_data_avg['I_HER']**2/(lumi_data_avg['Sy_HER']*lumi_data_avg['Nb_HER'])
+            LER_rates_err[tpc] = np.sqrt((LER_fit_params[tpc+'_B0']+2*LER_fit_params[tpc+'_B1']*lumi_data_avg['I_LER']+2*LER_fit_params[tpc+'_T']*lumi_data_avg['I_LER']/(lumi_data_avg['Sy_LER']**2*lumi_data_avg['Nb_LER'])*lumi_data_avg['I_LER_err'])**2+(LER_fit_params[tpc+'_T']*lumi_data_avg['I_LER']**2/(lumi_data_avg['Sy_LER']**2*lumi_data_avg['Nb_LER'])*lumi_data_avg['Sy_LER_err'])**2)
+            HER_rates_err[tpc] = np.sqrt((HER_fit_params[tpc+'_B0']+2*HER_fit_params[tpc+'_B1']*lumi_data_avg['I_HER']+2*HER_fit_params[tpc+'_T']*lumi_data_avg['I_HER']/(lumi_data_avg['Sy_HER']**2*lumi_data_avg['Nb_HER'])*lumi_data_avg['I_HER_err'])**2+(HER_fit_params[tpc+'_T']*lumi_data_avg['I_HER']**2/(lumi_data_avg['Sy_HER']**2*lumi_data_avg['Nb_HER'])*lumi_data_avg['Sy_HER_err'])**2)
+            lumi_rates[tpc] = lumi_data_avg[tpc+'_neutrons'] - LER_rates[tpc] - HER_rates[tpc]
+            lumi_rates_err[tpc] = np.sqrt(lumi_data_avg[tpc+'_neutrons_err']**2 + LER_rates_err[tpc]**2 + HER_rates_err[tpc]**2)
+        
+            gr = ROOT.TGraphErrors(len(lumi_rates[tpc]), array.array('d', lumi_data_avg['ECL_lumi']/10000), array.array('d', lumi_rates[tpc]), array.array('d', lumi_data_avg['ECL_lumi_err']/10000), array.array('d', lumi_rates_err[tpc]))
+            f1 = ROOT.TF1("f1", "[0] + [1]*x", 0, 2)
+            gr.Fit("f1", "SEMR")
+            fits['%s_int'%(tpc)] = gr.GetFunction("f1").GetParameter(0)
+            fits['%s_int_err'%(tpc)] = gr.GetFunction("f1").GetParError(0)
+            fits['%s_slope'%(tpc)] = gr.GetFunction("f1").GetParameter(1)
+            fits['%s_slope_err'%(tpc)] = gr.GetFunction("f1").GetParError(1)
+            
+        return fits, lumi_rates, lumi_rates_err
+
+    def plot_fit(self, tpc, legend = False):
+        fig, ax = plt.subplots()
+        ax1 = plt.twinx()
+        ax.set_ylabel('Beam Current [mA]')
+        ax.set_ylim(0,620)
+        ax1.set_ylabel('Rate [Hz]')
         fit_params = {}
         data = {}
         data_avg = {}
-        fit_bg_base  = {}
-        fit_bg_dynamic  = {}
+        fit_bg_base = {}
         fit_bg_base_err = {}
+        fit_bg_dynamic = {}
         fit_bg_dynamic_err = {}
         fit_t = {}
         fit_t_err = {}
         fit = {}
         fit_err = {}
-        fit_bg_base_avg  = {}
+        fit_bg_base_avg = {}
         fit_bg_base_avg_err = {}
-        fit_bg_dynamic_avg  = {}
+        fit_bg_dynamic_avg = {}
         fit_bg_dynamic_avg_err = {}
         fit_t_avg = {}
         fit_t_avg_err = {}
         fit_avg = {}
         fit_avg_err = {}
-        for study_period in study_periods:
-            fit_params[study_period] = self.get_fit_parameters(study_type, study_period, bins)
-            data[study_period] = self.select_study(study_type, study_period)
-            data_avg[study_period] = self.compute_means_and_errs(study_type, study_period, bins)
+        for study_period in ["Cont_inj", "Decay"]:
+            fit_params[study_period+'_Lumi'] = self.measure_and_fit_lumi_bgs(study_period, bins = 9)
+            data[study_period+'_Lumi'] = self.select_study('Lumi', study_period)
+            data_avg[study_period+'_Lumi'] = self.compute_means_and_errs('Lumi', study_period, bins= 9)
+            ax.plot(data[study_period+'_'+'Lumi']['ts'], data[study_period+'_'+'Lumi']['I_LER'], 'o', markersize = 1, color = 'red', label = "I_LER [mA]")
+            ax.plot(data[study_period+'_'+'Lumi']['ts'], data[study_period+'_'+'Lumi']['I_HER'], 'o', markersize = 1, color = 'blue', label = "I_HER [mA]")
+            for ring in ['LER', 'HER']:
+                fit_params[study_period+'_'+ring] = self.get_fit_parameters(ring, study_period, bins = 12)
+                data[study_period+'_'+ring] = self.select_study(ring, study_period)
+                data_avg[study_period+'_'+ring] = self.compute_means_and_errs(ring, study_period, bins = 12)
+                if ring == 'LER':
+                    ax.plot(data[study_period+'_'+ring]['ts'], data[study_period+'_'+ring]['I_%s'%(ring)], 'o', markersize = 1, color = 'red', label = "I_LER [mA]")
+                else:
+                    ax.plot(data[study_period+'_'+ring]['ts'], data[study_period+'_'+ring]['I_%s'%(ring)], 'o', markersize = 1, color = 'blue', label = "I_HER [mA]")
 
+                fit_bg_base[study_period+'_'+ring] = fit_params[study_period+'_'+ring][tpc+'_B0']*data[study_period+'_'+ring]['I_%s'%(ring)]
+                fit_bg_dynamic[study_period+'_'+ring] = fit_params[study_period+'_'+ring][tpc+'_B1']*data[study_period+'_'+ring]['I_%s'%(ring)]**2
+                fit_bg_base_err[study_period+'_'+ring] = np.sqrt((fit_params[study_period+'_'+ring][tpc+'_B0_err']*data[study_period+'_'+ring]['I_%s'%(ring)])**2)
+                fit_bg_dynamic_err[study_period+'_'+ring] = np.sqrt((fit_params[study_period+'_'+ring][tpc+'_B1_err']*data[study_period+'_'+ring]['I_%s'%(ring)]**2)**2)
+                fit_t[study_period+'_'+ring] = fit_params[study_period+'_'+ring][tpc+'_T']*data[study_period+'_'+ring]['I_%s'%(ring)]**2/(data[study_period+'_'+ring]['Sy_%s'%(ring)]*data[study_period+'_'+ring]['Nb_%s'%(ring)])
+                fit_t_err[study_period+'_'+ring] = fit_params[study_period+'_'+ring][tpc+'_T_err']*data[study_period+'_'+ring]['I_%s'%(ring)]**2/(data[study_period+'_'+ring]['Sy_%s'%(ring)]*data[study_period+'_'+ring]['Nb_%s'%(ring)])
+                fit[study_period+'_'+ring] = fit_params[study_period+'_'+ring][tpc+'_B0']*data[study_period+'_'+ring]['I_%s'%(ring)] + fit_params[study_period+'_'+ring][tpc+'_B1']*data[study_period+'_'+ring]['I_%s'%(ring)]**2 + fit_params[study_period+'_'+ring][tpc+'_T']*data[study_period+'_'+ring]['I_%s'%(ring)]**2/(data[study_period+'_'+ring]['Sy_%s'%(ring)]*data[study_period+'_'+ring]['Nb_%s'%(ring)])
+                fit_err[study_period+'_'+ring] = np.sqrt(fit_bg_base_err[study_period+'_'+ring]**2 + fit_bg_dynamic_err[study_period+'_'+ring]**2 + fit_t_err[study_period+'_'+ring]**2)
             
-            fit_bg_base[study_period] = fit_params[study_period][tpc+'_B0']*data[study_period]['I_%s'%(study_type)]
-            fit_bg_dynamic[study_period] = fit_params[study_period][tpc+'_B1']*data[study_period]['I_%s'%(study_type)]**2
-            fit_bg_base_err[study_period] = np.sqrt((fit_params[study_period][tpc+'_B0_err']*data[study_period]['I_%s'%(study_type)])**2)
-            fit_bg_dynamic_err[study_period] = np.sqrt((fit_params[study_period][tpc+'_B1_err']*data[study_period]['I_%s'%(study_type)]**2)**2)
-            fit_t[study_period] = fit_params[study_period][tpc+'_T']*data[study_period]['I_%s'%(study_type)]**2/(data[study_period]['Sy_%s'%(study_type)]*data[study_period]['Nb_%s'%(study_type)])
-            fit_t_err[study_period] = fit_params[study_period][tpc+'_T_err']*data[study_period]['I_%s'%(study_type)]**2/(data[study_period]['Sy_%s'%(study_type)]*data[study_period]['Nb_%s'%(study_type)])
-            fit[study_period] = fit_params[study_period][tpc+'_B0']*data[study_period]['I_%s'%(study_type)] + fit_params[study_period][tpc+'_B1']*data[study_period]['I_%s'%(study_type)]**2 + fit_params[study_period][tpc+'_T']*data[study_period]['I_%s'%(study_type)]**2/(data[study_period]['Sy_%s'%(study_type)]*data[study_period]['Nb_%s'%(study_type)])
-            fit_err[study_period] = np.sqrt(fit_bg_base_err[study_period]**2 + fit_bg_dynamic_err[study_period]**2 + fit_t_err[study_period]**2)
+                fit_bg_base_avg[study_period+'_'+ring] = fit_params[study_period+'_'+ring][tpc+'_B0']*data_avg[study_period+'_'+ring]['I_%s'%(ring)]
+                fit_bg_dynamic_avg[study_period+'_'+ring] = fit_params[study_period+'_'+ring][tpc+'_B1']*data_avg[study_period+'_'+ring]['I_%s'%(ring)]**2
+                fit_bg_base_avg_err[study_period+'_'+ring] = np.sqrt((fit_params[study_period+'_'+ring][tpc+'_B0_err']*data_avg[study_period+'_'+ring]['I_%s'%(ring)])**2)
+                fit_bg_dynamic_avg_err[study_period+'_'+ring] = np.sqrt((fit_params[study_period+'_'+ring][tpc+'_B1_err']*data_avg[study_period+'_'+ring]['I_%s'%(ring)]**2)**2)
+                fit_t_avg[study_period+'_'+ring] = fit_params[study_period+'_'+ring][tpc+'_T']*data_avg[study_period+'_'+ring]['I_%s'%(ring)]**2/(data_avg[study_period+'_'+ring]['Sy_%s'%(ring)]*data_avg[study_period+'_'+ring]['Nb_%s'%(ring)])
+                fit_t_avg_err[study_period+'_'+ring] = fit_params[study_period+'_'+ring][tpc+'_T_err']*data_avg[study_period+'_'+ring]['I_%s'%(ring)]**2/(data_avg[study_period+'_'+ring]['Sy_%s'%(ring)]*data_avg[study_period+'_'+ring]['Nb_%s'%(ring)])
+                fit_avg[study_period+'_'+ring] = fit_params[study_period+'_'+ring][tpc+'_B0']*data_avg[study_period+'_'+ring]['I_%s'%(ring)] + fit_params[study_period+'_'+ring][tpc+'_B1']*data_avg[study_period+'_'+ring]['I_%s'%(ring)]**2 + fit_params[study_period+'_'+ring][tpc+'_T']*data_avg[study_period+'_'+ring]['I_%s'%(ring)]**2/(data_avg[study_period+'_'+ring]['Sy_%s'%(ring)]*data_avg[study_period+'_'+ring]['Nb_%s'%(ring)])
+                fit_avg_err[study_period+'_'+ring] = np.sqrt(fit_bg_base_avg_err[study_period+'_'+ring]**2 + fit_bg_dynamic_avg_err[study_period+'_'+ring]**2 + fit_t_avg_err[study_period+'_'+ring]**2)
 
-            
-            fit_bg_base_avg[study_period] = fit_params[study_period][tpc+'_B0']*data_avg[study_period]['I_%s'%(study_type)]
-            fit_bg_dynamic_avg[study_period] = fit_params[study_period][tpc+'_B1']*data_avg[study_period]['I_%s'%(study_type)]**2
-            fit_bg_base_avg_err[study_period] = np.sqrt((fit_params[study_period][tpc+'_B0_err']*data_avg[study_period]['I_%s'%(study_type)])**2)
-            fit_bg_dynamic_avg_err[study_period] = np.sqrt((fit_params[study_period][tpc+'_B1_err']*data_avg[study_period]['I_%s'%(study_type)]**2)**2)
-            fit_t_avg[study_period] = fit_params[study_period][tpc+'_T']*data_avg[study_period]['I_%s'%(study_type)]**2/(data_avg[study_period]['Sy_%s'%(study_type)]*data_avg[study_period]['Nb_%s'%(study_type)])
-            fit_t_avg_err[study_period] = fit_params[study_period][tpc+'_T_err']*data_avg[study_period]['I_%s'%(study_type)]**2/(data_avg[study_period]['Sy_%s'%(study_type)]*data_avg[study_period]['Nb_%s'%(study_type)])
-            fit_avg[study_period] = fit_params[study_period][tpc+'_B0']*data_avg[study_period]['I_%s'%(study_type)] + fit_params[study_period][tpc+'_B1']*data_avg[study_period]['I_%s'%(study_type)]**2 + fit_params[study_period][tpc+'_T']*data_avg[study_period]['I_%s'%(study_type)]**2/(data_avg[study_period]['Sy_%s'%(study_type)]*data_avg[study_period]['Nb_%s'%(study_type)])
-            fit_avg_err[study_period] = np.sqrt(fit_bg_base_avg_err[study_period]**2 + fit_bg_dynamic_avg_err[study_period]**2 + fit_t_avg_err[study_period]**2)
+                p1 = ax1.errorbar(data_avg[study_period+'_'+ring]['ts'], data_avg[study_period+'_'+ring][tpc+'_neutrons'], data_avg[study_period+'_'+ring][tpc+'_neutrons_err'], data_avg[study_period+'_'+ring]['ts_err'], 'o', markersize = 2, color = 'black', label = 'data')
+                p2 = ax1.errorbar(data_avg[study_period+'_'+ring]['ts'], fit_avg[study_period+'_'+ring], fit_avg_err[study_period+'_'+ring], data_avg[study_period+'_'+ring]['ts_err'], 's', markersize = 2, color = 'cyan', label = 'total fit', alpha = 0.6)
+                p3 = ax1.errorbar(data_avg[study_period+'_'+ring]['ts'], fit_bg_base_avg[study_period+'_'+ring], fit_bg_base_avg_err[study_period+'_'+ring], data_avg[study_period+'_'+ring]['ts_err'], 's', markersize = 2, color = 'purple', label = 'beam gas base', alpha = 0.6)
+                p4 = ax1.errorbar(data_avg[study_period+'_'+ring]['ts'], fit_bg_dynamic_avg[study_period+'_'+ring], fit_bg_dynamic_avg_err[study_period+'_'+ring], data_avg[study_period+'_'+ring]['ts_err'], 's', markersize = 2, color = 'gray', label = 'beam gas dyn.', alpha = 0.6)
+                p5 = ax1.errorbar(data_avg[study_period+'_'+ring]['ts'], fit_t_avg[study_period+'_'+ring], fit_t_avg_err[study_period+'_'+ring], data_avg[study_period+'_'+ring]['ts_err'], 's', markersize = 2, color = 'green', label = 'Touschek', alpha = 0.6)
 
+            LER_rates = fit_params[study_period+'_'+'LER'][tpc+'_B0']*data_avg[study_period+'_Lumi']['I_LER'] + fit_params[study_period+'_'+'LER'][tpc+'_B1']*data_avg[study_period+'_Lumi']['I_LER']**2 + fit_params[study_period+'_'+'LER'][tpc+'_T']*data_avg[study_period+'_Lumi']['I_LER']**2/(data_avg[study_period+'_Lumi']['Sy_LER']*data_avg[study_period+'_Lumi']['Nb_LER']) #during lumi period
+            HER_rates = fit_params[study_period+'_'+'HER'][tpc+'_B0']*data_avg[study_period+'_Lumi']['I_HER'] + fit_params[study_period+'_'+'HER'][tpc+'_B1']*data_avg[study_period+'_Lumi']['I_HER']**2 + fit_params[study_period+'_'+'HER'][tpc+'_T']*data_avg[study_period+'_Lumi']['I_HER']**2/(data_avg[study_period+'_Lumi']['Sy_HER']*data_avg[study_period+'_Lumi']['Nb_HER']) #during lumi period
+            LER_rates_err = np.sqrt((fit_params[study_period+'_'+'LER'][tpc+'_B0']+2*fit_params[study_period+'_'+'LER'][tpc+'_B1']*data_avg[study_period+'_Lumi']['I_LER']+2*fit_params[study_period+'_'+'LER'][tpc+'_T']*data_avg[study_period+'_Lumi']['I_LER']/(data_avg[study_period+'_Lumi']['Sy_LER']**2*data_avg[study_period+'_Lumi']['Nb_LER'])*data_avg[study_period+'_Lumi']['I_LER_err'])**2+(fit_params[study_period+'_'+'LER'][tpc+'_T']*data_avg[study_period+'_Lumi']['I_LER']**2/(data_avg[study_period+'_Lumi']['Sy_LER']**2*data_avg[study_period+'_Lumi']['Nb_LER'])*data_avg[study_period+'_Lumi']['Sy_LER_err'])**2) #during lumi period
+            HER_rates_err = np.sqrt((fit_params[study_period+'_'+'HER'][tpc+'_B0']+2*fit_params[study_period+'_'+'HER'][tpc+'_B1']*data_avg[study_period+'_Lumi']['I_HER']+2*fit_params[study_period+'_'+'HER'][tpc+'_T']*data_avg[study_period+'_Lumi']['I_HER']/(data_avg[study_period+'_Lumi']['Sy_HER']**2*data_avg[study_period+'_Lumi']['Nb_HER'])*data_avg[study_period+'_Lumi']['I_HER_err'])**2+(fit_params[study_period+'_'+'HER'][tpc+'_T']*data_avg[study_period+'_Lumi']['I_HER']**2/(data_avg[study_period+'_Lumi']['Sy_HER']**2*data_avg[study_period+'_Lumi']['Nb_HER'])*data_avg[study_period+'_Lumi']['Sy_HER_err'])**2) #during lumi period
+            Lumi_rates = LER_rates+HER_rates+fit_params[study_period+'_'+'Lumi'][tpc+'_int']+fit_params[study_period+'_'+'Lumi'][tpc+'_slope']*data_avg[study_period+'_Lumi']['ECL_lumi']/10000
+            Lumi_fit_err = np.sqrt(fit_params[study_period+'_'+'Lumi'][tpc+'_int_err']**2+(data_avg[study_period+'_Lumi']['ECL_lumi']/10000)**2*fit_params[study_period+'_'+'Lumi'][tpc+'_slope_err']**2+fit_params[study_period+'_'+'Lumi'][tpc+'_slope']**2*(data_avg[study_period+'_Lumi']['ECL_lumi_err']/10000)**2)
+            Lumi_rates_err = np.sqrt(LER_rates_err**2 + HER_rates_err**2 + Lumi_fit_err**2)
             
-            if study_type == "LER":
-                plt.plot(data[study_period]['ts'], data[study_period]['I_%s'%(study_type)], 'o', markersize = 1, color = 'red', label = "I_LER [mA]")
-            else:
-                plt.plot(data[study_period]['ts'], data[study_period]['I_%s'%(study_type)], 'o', markersize = 1, color = 'blue', label = "I_HER [mA]")
-        plt.ylim(0,620)
-        plt.ylabel('Beam Current [mA]')
-        plt.twinx()
-        for study_period in study_periods:
-            p1 = plt.errorbar(data_avg[study_period]['ts'], data_avg[study_period][tpc+'_neutrons'], data_avg[study_period][tpc+'_neutrons_err'], data_avg[study_period]['ts_err'], 'o', markersize = 2, color = 'black', label = 'data')
-            p2 = plt.errorbar(data_avg[study_period]['ts'], fit_avg[study_period], fit_avg_err[study_period], data_avg[study_period]['ts_err'], 's', markersize = 2, color = 'cyan', label = 'total fit', alpha = 0.6)
-            p3 = plt.errorbar(data_avg[study_period]['ts'], fit_bg_base_avg[study_period], fit_bg_base_avg_err[study_period], data_avg[study_period]['ts_err'], 's', markersize = 2, color = 'purple', label = 'beam gas base', alpha = 0.6)
-            p4 = plt.errorbar(data_avg[study_period]['ts'], fit_bg_dynamic_avg[study_period], fit_bg_dynamic_avg_err[study_period], data_avg[study_period]['ts_err'], 's', markersize = 2, color = 'gray', label = 'beam gas dyn.', alpha = 0.6)
-            p5 = plt.errorbar(data_avg[study_period]['ts'], fit_t_avg[study_period], fit_t_avg_err[study_period], data_avg[study_period]['ts_err'], 's', markersize = 2, color = 'green', label = 'Touschek', alpha = 0.6)
-
-            #p1 = plt.errorbar(data_avg[study_period]['ts'], data_avg[study_period][tpc+'_neutrons'], data_avg[study_period][tpc+'_neutrons_err'], data_avg[study_period]['ts_err'], 'o', markersize = 2, color = 'black', label = 'data')
-            #p2 = plt.errorbar(data[study_period]['ts'], fit[study_period], fit_err[study_period], [0 for i in range(0,len(data[study_period]))], 's', markersize = 2, color = 'cyan', label = 'total fit', alpha = 0.3)
-            #p3 = plt.errorbar(data[study_period]['ts'], fit_bg_base[study_period], fit_bg_base_err[study_period], [0 for i in range(0,len(data[study_period]))], 's', markersize = 2, color = 'purple', label = 'beam gas base', alpha = 0.3)
-            #p4 = plt.errorbar(data[study_period]['ts'], fit_bg_dynamic[study_period], fit_bg_dynamic_err[study_period], [0 for i in range(0,len(data[study_period]))], 's', markersize = 2, color = 'gray', label = 'beam gas dyn.', alpha = 0.3)
-            #p5 = plt.errorbar(data[study_period]['ts'], fit_t[study_period], fit_t_err[study_period], [0 for i in range(0,len(data[study_period]))], 's', markersize = 2, color = 'green', label = 'Touschek', alpha = 0.3)
+            ax1.errorbar(data_avg[study_period+'_'+'Lumi']['ts'], Lumi_rates,Lumi_rates_err, data_avg[study_period+'_Lumi']['ts_err'], 'o', markersize = 2, color = 'orange', label = 'Touschek', alpha = 0.6)
+            ax1.errorbar(data_avg[study_period+'_Lumi']['ts'], data_avg[study_period+'_Lumi'][tpc+'_neutrons'], data_avg[study_period+'_Lumi'][tpc+'_neutrons_err'], data_avg[study_period+'_Lumi']['ts_err'], 'o', markersize = 2, color = 'black', label = 'data')
             
-            #partitions = [data[study_period].index.to_list()[0]] + data[study_period].loc[np.abs(data[study_period]['ts'].diff())>100].index.to_list() + [data[study_period].index.to_list()[len(data[study_period])-1]]
-            #indices = []
-            #for i in range(0,len(partitions)-1):
-            #    indices = [i for i in range(partitions[i], partitions[i+1])]
-            #    data_tmp = data[study_period].loc[data[study_period].index.isin(indices) == True]
-            #    fit_bg_tmp = fit_bg[study_period].loc[fit_bg[study_period].index.isin(indices) == True]
-            #    fit_bg_err_tmp = fit_bg_err[study_period].loc[fit_bg_err[study_period].index.isin(indices) == True]
-            #    fit_t_tmp = fit_t[study_period].loc[fit_t[study_period].index.isin(indices) == True]
-            #    fit_t_err_tmp = fit_t_err[study_period].loc[fit_t_err[study_period].index.isin(indices) == True]
-            #    fit_tmp = fit[study_period].loc[fit[study_period].index.isin(indices) == True]
-            #    fit_err_tmp = fit_err[study_period].loc[fit_err[study_period].index.isin(indices) == True]
-            #    plt.fill_between(data_tmp['ts'], (fit_bg_tmp-fit_bg_err_tmp), (fit_bg_tmp+fit_bg_err_tmp), 'o', color = 'cyan', alpha = 0.3, label = 'Predicted beam-gas rate')
-            #   plt.fill_between(data_tmp['ts'], (fit_t_tmp-fit_t_err_tmp), (fit_t_tmp+fit_t_err_tmp), 'o', color = 'limegreen', alpha = 0.3, label = 'Predicted Touschek rate')
-            #    plt.fill_between(data_tmp['ts'], (fit_tmp-fit_err_tmp), (fit_tmp+fit_err_tmp), 'o', color = 'magenta', alpha = 0.3, label = 'Predicted total rate')
-        #plt.ylim(-0.01,ymax)
-        plt.ylabel('Rate[Hz]')
         if legend == True:
-            #if study_type == "LER":
-            #    custom_lines = [Line2D([0], [0], color='red', lw=4, label = '%s Current [mA]'%(study_type)), Line2D([0], [0], color='magenta', lw=4, label = 'TPC predicted rate'), Line2D([0], [0], color='limegreen', lw=4, label = 'TPC predicted Touschek rate'), Line2D([0], [0], color='cyan', lw=4, label = 'TPC predicted beam-gas rate'), Line2D([0], [0], marker='o', color='w', markersize=6, lw=0, markerfacecolor = 'black', label = 'Data')]
-            #else:
-            #    custom_lines = [Line2D([0], [0], color='blue', lw=4, label = '%s Current [mA]'%(study_type)), Line2D([0], [0], color='magenta', lw=4, label = 'TPC predicted rate'), Line2D([0], [0], color='limegreen', lw=4, label = 'TPC predicted Touschek rate'), Line2D([0], [0], color='cyan', lw=4, label = 'TPC predicted beam-gas rate'), Line2D([0], [0], marker='o', color='w', markersize=6, lw=0, markerfacecolor = 'black', label = 'Data')]
-            #plt.legend(handles = custom_lines, loc = 'upper right')
-            plt.legend([p1,p2,p3,p4,p5],['Data', 'Total Fit', 'Beam Gas Base', 'Beam Gas Dyn.', 'Touschek'])
-    def make_fwd_plots(self, study_type, bins=12):
-        if study_type == "LER":
-            ymax = 2
-        else:
-            ymax = 2
-        plt.figure(figsize = (12,8))
-        plt.rc('legend', fontsize=10)
-        plt.rc('xtick', labelsize=16)
-        plt.rc('ytick', labelsize=16)
-        plt.rc('axes', labelsize=16)
-        plt.rc('axes', titlesize=16)
-        plt.subplot(3,1,1)
-        self.plot_fit("iiwi", study_type, bins, ymax=1, legend = True)
-        plt.title("Iiwi (z = +6.6 m)")
-        plt.xticks([])
-        plt.subplot(3,1,2)
-        self.plot_fit("nene", study_type, bins, ymax)
-        plt.title("Nene (z = +14 m)")
-        plt.xticks([])
-        plt.subplot(3,1,3)
-        self.plot_fit("humu", study_type, bins, ymax)
-        plt.title("Humu (z = +16 m)")
-        plt.xticks([])
-        plt.tight_layout()
-        plt.subplots_adjust(hspace = 0.2)
-        plt.subplots_adjust(wspace = 0.5)
-        plt.show()
-
-    def make_bwd_plots(self, study_type, bins=12):
-        if study_type == "HER":
-            ymax = 0.3
-        else:
-            ymax = 0.3
-        plt.figure(figsize = (16,8))
-        plt.rc('legend', fontsize=10)
-        plt.rc('xtick', labelsize=16)
-        plt.rc('ytick', labelsize=16)
-        plt.rc('axes', labelsize=16)
-        plt.rc('axes', titlesize=16)
-        plt.subplot(3,1,1)
-        self.plot_fit("palila", study_type, bins, ymax=0.2, legend = True)
-        plt.title("Palila (z = -5.6 m)")
-        plt.xticks([])
-        plt.subplot(3,1,2)
-        self.plot_fit("tako", study_type, bins, ymax=0.2)
-        plt.title("Tako (z = -8.0 m)")
-        plt.xticks([])
-        plt.subplot(3,1,3)
-        self.plot_fit("elepaio", study_type, bins, ymax=0.6)
-        plt.title("elepaio (z = -14 m)")
-        plt.xticks([])
-        plt.tight_layout()
-        plt.subplots_adjust(hspace = 0.2)
-        plt.show()
-
-    def measure_and_fit_lumi_bgs(self, tpc, study_period ,bins=12):
-        lumi_data_avg = self.compute_means_and_errs("Lumi", study_period, bins=20)
-        LER_fit_params = self.get_fit_parameters("LER", study_period, bins)
-        HER_fit_params = self.get_fit_parameters("HER", study_period, bins)
-        LER_rates = LER_fit_params[tpc+'_B0']*lumi_data_avg['I_LER'] + LER_fit_params[tpc+'_B1']*lumi_data_avg['I_LER']**2 + LER_fit_params[tpc+'_T']*lumi_data_avg['I_LER']**2/(lumi_data_avg['Sy_LER']*lumi_data_avg['Nb_LER'])
-        HER_rates = HER_fit_params[tpc+'_B0']*lumi_data_avg['I_HER'] + HER_fit_params[tpc+'_B1']*lumi_data_avg['I_HER']**2 + HER_fit_params[tpc+'_T']*lumi_data_avg['I_HER']**2/(lumi_data_avg['Sy_HER']*lumi_data_avg['Nb_HER'])
-        LER_rates_err = np.sqrt((LER_fit_params[tpc+'_B0']+2*LER_fit_params[tpc+'_B1']*lumi_data_avg['I_LER']+2*LER_fit_params[tpc+'_T']*lumi_data_avg['I_LER']/(lumi_data_avg['Sy_LER']**2*lumi_data_avg['Nb_LER'])*lumi_data_avg['I_LER_err'])**2+(LER_fit_params[tpc+'_T']*lumi_data_avg['I_LER']**2/(lumi_data_avg['Sy_LER']**2*lumi_data_avg['Nb_LER'])*lumi_data_avg['Sy_LER_err'])**2)
-        HER_rates_err = np.sqrt((HER_fit_params[tpc+'_B0']+2*HER_fit_params[tpc+'_B1']*lumi_data_avg['I_HER']+2*HER_fit_params[tpc+'_T']*lumi_data_avg['I_HER']/(lumi_data_avg['Sy_HER']**2*lumi_data_avg['Nb_HER'])*lumi_data_avg['I_HER_err'])**2+(HER_fit_params[tpc+'_T']*lumi_data_avg['I_HER']**2/(lumi_data_avg['Sy_HER']**2*lumi_data_avg['Nb_HER'])*lumi_data_avg['Sy_HER_err'])**2)
-        lumi_rates = lumi_data_avg[tpc+'_neutrons'] - LER_rates - HER_rates
-        lumi_rates_err = np.sqrt(lumi_data_avg[tpc+'_neutrons_err']**2 + LER_rates_err**2 + HER_rates_err**2)
-        
-        gr = ROOT.TGraphErrors(len(lumi_rates), array.array('d', lumi_data_avg['ECL_lumi']/10000), array.array('d', lumi_rates), array.array('d', lumi_data_avg['ECL_lumi_err']/10000), array.array('d', lumi_rates_err))
-        f1 = ROOT.TF1("f1", "[0] + [1]*x", 0, 2)
-        gr.Fit("f1", "SEMR")
-        fits = {}
-        fits['%s_int'%(tpc)] = gr.GetFunction("f1").GetParameter(0)
-        fits['%s_int_err'%(tpc)] = gr.GetFunction("f1").GetParError(0)
-        fits['%s_slope'%(tpc)] = gr.GetFunction("f1").GetParameter(1)
-        fits['%s_slope_err'%(tpc)] = gr.GetFunction("f1").GetParError(1)
-
-        x = np.linspace(0,2,10000) #for plotting fit
-        plt.errorbar(lumi_data_avg['ECL_lumi']/10000,lumi_rates,lumi_rates_err,lumi_data_avg['ECL_lumi_err']/10000,'o', label = 'Data', alpha = 0.6)
-        plt.plot(x, fits['%s_int'%(tpc)]+ fits['%s_slope'%(tpc)]*x, color = 'black', label = r'offset=%s$\pm$%s'%(float('%.2g' % fits[tpc+'_int']), float('%.2g' % fits[tpc+'_int_err'])))
-        plt.fill_between([0],[0],[0], lw = 0, label = r'slope=%s$\pm$%s'%(float('%.2g' % fits[tpc+'_slope']), float('%.2g' % fits[tpc+'_slope_err'])), color = 'white')
-        plt.xlim(0,2)
-        plt.xlabel(r'Luminosity [$10^{34}$cm$^{-2}$s$^{-1}$]')
-        #plt.ylabel(r'Rate - $LER_{fit}$ - $HER_{fit}$ [Hz]')
-        plt.ylabel(r'R$_L$ [Hz]')
-        plt.ylim(-1.5,3.5)
-        plt.yticks([-1,0,1,2,3])
-        plt.legend(loc = 'best')
-        return fits
-
-    def plot_all_luminosity(self, study_period = "Cont_inj", bins=12):
+            plt.legend([p6,p7,p1,p2,p3,p4,p5],[r'$I_{LER}$','$I_{HER}$','Data', 'Total Fit', 'Beam Gas Base', 'Beam Gas Dyn.', 'Touschek'])
+    
+    def plot_all_luminosity(self, study_period = "Cont_inj", bins=9):
         plt.figure(figsize = (15,15))
         plt.rc('legend', fontsize=12)
         plt.rc('xtick', labelsize=16)
         plt.rc('ytick', labelsize=16)
         plt.rc('axes', labelsize=16)
         plt.rc('axes', titlesize=16)
-        plt.subplot(3,2,1)
-        self.measure_and_fit_lumi_bgs("palila", study_period, bins)
-        plt.title("z = -5.6m")
-        plt.grid()
-        plt.subplot(3,2,2)
-        self.measure_and_fit_lumi_bgs("iiwi", study_period, bins)
-        plt.title("z = +6.6m")
-        plt.grid()
-        plt.subplot(3,2,3)
-        self.measure_and_fit_lumi_bgs("tako", study_period, bins)
-        plt.title("z = -8.0m")
-        plt.grid()
-        plt.subplot(3,2,4)
-        self.measure_and_fit_lumi_bgs("nene", study_period, bins)
-        plt.title("z = +14m")
-        plt.grid()
-        plt.subplot(3,2,5)
-        self.measure_and_fit_lumi_bgs("elepaio", study_period, bins)
-        plt.title("z = -14m")
-        plt.grid()
-        plt.subplot(3,2,6)
-        self.measure_and_fit_lumi_bgs("humu", study_period, bins)
-        plt.title("z = +16m")
-        plt.subplots_adjust(hspace=0.5)
-        plt.subplots_adjust(wspace=0.5)
-        plt.grid()
+        lumi_data_avg = self.compute_means_and_errs("Lumi", study_period,bins = bins)
+        fits, lumi_rates, lumi_rates_err = self.measure_and_fit_lumi_bgs(study_period, bins)
+        tpcs = ['palila', 'iiwi', 'tako', 'nene', 'elepaio', 'humu']
+        pos = ['z = -5.6m', 'z = +6.6m', 'z = -8.0m', 'z = +14m', 'z = -14m', 'z = +16m']
+        i=1
+        x = np.linspace(0,2,10000) #for plotting fit
+        for tpc in tpcs:
+            plt.subplot(3,2,i)
+            plt.errorbar(lumi_data_avg['ECL_lumi']/10000,lumi_rates[tpc],lumi_rates_err[tpc],lumi_data_avg['ECL_lumi_err']/10000,'o', label = 'Data', alpha = 0.6)
+            plt.plot(x, fits['%s_int'%(tpc)]+ fits['%s_slope'%(tpc)]*x, color = 'black', label = r'offset=%s$\pm$%s'%(float('%.2g' % fits[tpc+'_int']), float('%.2g' % fits[tpc+'_int_err'])))
+            plt.fill_between([0],[0],[0], lw = 0, label = r'slope=%s$\pm$%s'%(float('%.2g' % fits[tpc+'_slope']), float('%.2g' % fits[tpc+'_slope_err'])), color = 'white')
+            plt.xlim(0,2)
+            plt.xlabel(r'Luminosity [$10^{34}$cm$^{-2}$s$^{-1}$]')
+            plt.ylabel(r'R$_L$ [Hz]')
+            plt.ylim(-1.5,3.5)
+            plt.yticks([-1,0,1,2,3])
+            plt.legend(loc = 'best')
+            plt.title(pos[i-1])
+            plt.grid()
+            i+=1
+            plt.subplots_adjust(hspace=0.5)
+            plt.subplots_adjust(wspace=0.5)
         #plt.savefig('lumi_fits.png', bbox_inches='tight')
-        plt.show()
-
-    def plot_bwd_luminosity(self, bins=12):
-        plt.figure(figsize = (16,8))
-        plt.rc('legend', fontsize=12)
-        plt.rc('xtick', labelsize=16)
-        plt.rc('ytick', labelsize=16)
-        plt.rc('axes', labelsize=16)
-        plt.rc('axes', titlesize=16)
-        plt.subplot(2,3,1)
-        self.measure_and_fit_lumi_bgs("palila", "Cont_inj", bins)
-        plt.title("Palila (z = -5.6 m) Cont. Inj. Fit")
-        plt.subplot(2,3,4)
-        self.measure_and_fit_lumi_bgs("palila", "Decay", bins)
-        plt.title("Palila (z = -5.6 m) Decay Fit")
-        plt.subplot(2,3,2)
-        self.measure_and_fit_lumi_bgs("tako", "Cont_inj", bins)
-        plt.title("Tako (z = -8.0 m) Cont. Inj. Fit")
-        plt.subplot(2,3,5)
-        self.measure_and_fit_lumi_bgs("tako", "Decay", bins)
-        plt.title("Tako (z = -8.0 m) Decay Fit")
-        plt.subplot(2,3,3)
-        self.measure_and_fit_lumi_bgs("elepaio", "Cont_inj", bins)
-        plt.title("Elepaio (z = -14 m) Cont. Inj. Fit")
-        plt.subplot(2,3,6)
-        self.measure_and_fit_lumi_bgs("elepaio", "Decay", bins)
-        plt.title("Elepaio (z = -14 m) Decay Fit")
-        plt.tight_layout()
-        plt.show()
-
-    def plot_fwd_luminosity(self, bins=12):
-        plt.figure(figsize = (16,8))
-        plt.rc('legend', fontsize=12)
-        plt.rc('xtick', labelsize=16)
-        plt.rc('ytick', labelsize=16)
-        plt.rc('axes', labelsize=16)
-        plt.rc('axes', titlesize=16)
-        plt.subplot(2,3,1)
-        self.measure_and_fit_lumi_bgs("iiwi", "Cont_inj", bins)
-        plt.title("Iiwi (z = +6.6 m) Cont. Inj. Fit")
-        plt.subplot(2,3,4)
-        self.measure_and_fit_lumi_bgs("iiwi", "Decay", bins)
-        plt.title("Iiwi (z = +6.6 m) Decay Fit")
-        plt.subplot(2,3,2)
-        self.measure_and_fit_lumi_bgs("nene", "Cont_inj", bins)
-        plt.title("Nene (z = +14 m) Cont. Inj. Fit")
-        plt.subplot(2,3,5)
-        self.measure_and_fit_lumi_bgs("nene", "Decay", bins)
-        plt.title("Nene (z = +14 m) Decay Fit")
-        plt.subplot(2,3,3)
-        self.measure_and_fit_lumi_bgs("humu", "Cont_inj", bins)
-        plt.title("Humu (z = +16 m) Cont. Inj. Fit")
-        plt.subplot(2,3,6)
-        self.measure_and_fit_lumi_bgs("humu", "Decay", bins)
-        plt.title("Humu (z = +16 m) Decay Fit")
-        plt.tight_layout()
         plt.show()
 
     def plot_bg_summary(self, study_period, bins=12, MC = False, I_HER = 1000, I_LER = 1200, sy_LER=37, sy_HER=36, nb_LER=1576, nb_HER=1576, L=25):
@@ -734,7 +591,8 @@ class analysis:
             LER_fit_params = self.get_fit_parameters("LER", study_period, bins)
             HER_fit_params = self.get_fit_parameters("HER", study_period, bins)
             fit_dict = {}
-            df = pd.DataFrame() #order is LER_bg, LER_T, HER_bg, HER_T, Lumi 
+            df = pd.DataFrame() #order is LER_bg, LER_T, HER_bg, HER_T, Lumi
+            lumi_fits = self.measure_and_fit_lumi_bgs(study_period ,bins=20)[0]
             for tpc in tpcs:
                 #I_HER = 1000
                 #I_LER = 1200
@@ -743,7 +601,7 @@ class analysis:
                 #nb_LER = 1576
                 #nb_HER = 1576
                 #L = 25 #luminoisty in 1e34 cm-2s-1
-                lumi_fits = self.measure_and_fit_lumi_bgs(tpc, study_period ,bins=20)
+                #lumi_fits = self.measure_and_fit_lumi_bgs(tpc, study_period ,bins=20)
                 fit_dict['%s_lumi_int'%(tpc)]=lumi_fits['%s_int'%(tpc)]
                 fit_dict['%s_lumi_slope'%(tpc)]=lumi_fits['%s_slope'%(tpc)]
                 fit_dict['%s_LER_B0'%(tpc)] = LER_fit_params[tpc+'_B0']
@@ -804,7 +662,8 @@ class analysis:
         LER_fit_params = self.get_fit_parameters("LER", study_period, bins)
         HER_fit_params = self.get_fit_parameters("HER", study_period, bins)
         fit_dict = {}
-        df = pd.DataFrame() #order is LER_bg, LER_T, HER_bg, HER_T, Lumi 
+        df = pd.DataFrame() #order is LER_bg, LER_T, HER_bg, HER_T, Lumi
+        lumi_fits = self.measure_and_fit_lumi_bgs(study_period ,bins=20)[0]
         for tpc in tpcs:
             #I_HER = 1000
             #I_LER = 1200
@@ -813,7 +672,7 @@ class analysis:
             #nb_LER = 1576
             #nb_HER = 1576
             #L = 25 #luminoisty in 1e34 cm-2s-1
-            lumi_fits = self.measure_and_fit_lumi_bgs(tpc, study_period ,bins=20)
+            #lumi_fits = self.measure_and_fit_lumi_bgs(tpc, study_period ,bins=20)
             fit_dict['%s_lumi_int'%(tpc)]=lumi_fits['%s_int'%(tpc)]
             fit_dict['%s_lumi_int_err'%(tpc)]=lumi_fits['%s_int_err'%(tpc)]
             fit_dict['%s_lumi_slope'%(tpc)]=lumi_fits['%s_slope'%(tpc)]
