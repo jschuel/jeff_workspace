@@ -10,7 +10,7 @@ from matplotlib.lines import Line2D
 from scipy.stats import ks_2samp
 from scipy.stats import chi2_contingency
 from scipy.stats import epps_singleton_2samp
-import new_analysis
+import analysis
 
 class analysis:
 
@@ -161,7 +161,7 @@ class analysis:
         plt.rc('axes', titlesize=18)
         print(self.get_MC_data(bgtype))
 
-        a = new_analysis.analysis() #call analysis class to import exp. data
+        a = analysis.analysis() #call analysis class to import exp. data
         MC = a.apply_energy_calibrations_to_MC() #all MC recoils
         MC_Lumi = {} #only MC lumi
         Lumi_cont_inj = a.get_tpc_data_during_study_period("Lumi", "Cont_inj")
