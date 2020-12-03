@@ -18,18 +18,18 @@ pd.set_option('mode.chained_assignment', None) #remove copy warning
 
 class analysis:
 
-    def __init__(self, E_cut = 0, input_file= "~/data/phase3/spring_2020/05-09-20/combined_ntuples/05-09_whole_study_even_newerest.root", recoils_only = True, fei4_restrict = True): #enter negative value for E_Cut_err to get low systematic
+    def __init__(self, E_cut = 0, E_cut_err = 0, input_file= "~/data/phase3/spring_2020/05-09-20/combined_ntuples/05-09_whole_study_even_newerest.root", recoils_only = True, fei4_restrict = True): #enter negative value for E_Cut_err to get low systematic
         self.tpc_data = self.get_tpc_data(recoils_only = recoils_only, E_cut = E_cut)
         #self.study_data = self.get_raw_study_data()
-        self.MC_base = self.apply_chip_calibrations_to_MC(E_cut = E_cut)
+        self.MC_base = self.apply_chip_calibrations_to_MC(E_cut = E_cut, E_cut_err=E_cut_err)
         self.MC_data = self.create_VRCs()
-        self.MC_rates = self.get_MC_rates(E_cut = E_cut, fei4_restrict = fei4_restrict, recoils_only = recoils_only)
+        self.MC_rates = self.get_MC_rates(E_cut = E_cut, E_cut_err=E_cut_err, fei4_restrict = fei4_restrict, recoils_only = recoils_only)
         
     def get_tpc_data(self, input_dir = '~/data/phase3/spring_2020/05-09-20/tpc_root_files/', recoils_only = False, E_cut = 0):
         data = {}
         tpcs = ['iiwi', 'humu', 'nene', 'tako', 'palila', 'elepaio']
         for tpc in tpcs:
-            data[tpc] = ur.open(input_dir + "%s_all_newester4.root"%(tpc))[ur.open(input_dir + "%s_all_newester4.root"%(tpc)).keys()[0]].pandas.df(flatten=False)
+            data[tpc] = ur.open(input_dir + "%s_all_newester5.root"%(tpc))[ur.open(input_dir + "%s_all_newester5.root"%(tpc)).keys()[0]].pandas.df(flatten=False)
             data[tpc] = data[tpc].loc[data[tpc]['track_energy']>=(E_cut)]
             if recoils_only == True:
                 data[tpc] = data[tpc].loc[data[tpc]['is_recoil'] == 1]
@@ -107,7 +107,7 @@ class analysis:
             
         return dfs
 
-    def apply_chip_calibrations_to_MC(self, E_cut):
+    def apply_chip_calibrations_to_MC(self, E_cut, E_cut_err):
         MC = self.get_MC_data()
         tpcs = MC.keys()
         gain = {'iiwi': 1502, 'nene': 899, 'humu': 878, 'palila': 1033, 'tako': 807, 'elepaio': 797}
@@ -150,7 +150,7 @@ class analysis:
                     print(tpc, i)
             MC[tpc]['sumtot'] = [MC[tpc]['q_from_tot'][i].sum() for i in range(0,len(MC[tpc]))]
             MC[tpc]['reco_energy'] = MC[tpc]['sumtot']*W/gain[tpc]*1e-3
-            MC[tpc] = MC[tpc].loc[MC[tpc]['reco_energy']>=(E_cut)]
+            MC[tpc] = MC[tpc].loc[MC[tpc]['reco_energy']>=(E_cut + E_cut_err)]
 
         return MC
 
@@ -286,7 +286,7 @@ class analysis:
 
         return MC_red
     
-    def get_MC_rates(self, E_cut = 0, fei4_restrict = True, recoils_only = True, I_HER = 1000, I_LER = 1200, sy_LER=37, sy_HER=36, nb_LER=1576, nb_HER=1576, lumi=25): #Scale to luminosity of interest. Units: 1e34cm-2s-1
+    def get_MC_rates(self, E_cut = 0, E_cut_err = 0, fei4_restrict = True, recoils_only = True, I_HER = 1000, I_LER = 1200, sy_LER=37, sy_HER=36, nb_LER=1576, nb_HER=1576, lumi=25): #Scale to luminosity of interest. Units: 1e34cm-2s-1
         tpcs = ['elepaio', 'tako', 'palila', 'iiwi', 'nene', 'humu']
         bgtype = ['Coulomb_HER_base', 'Coulomb_LER_base', 'Coulomb_HER_dynamic', 'Coulomb_LER_dynamic', 'Brems_HER_base', 'Brems_LER_base', 'Brems_HER_dynamic', 'Brems_LER_dynamic', 'Touschek_HER_all', 'Touschek_LER_all', 'RBB_Lumi', 'twoPhoton_Lumi']
         tree = 'tree_fe4_after_threshold'
@@ -300,7 +300,7 @@ class analysis:
         for tpc in tpcs:
             rates[tpc] = {}
             rates_err[tpc] = {}
-            MC_new[tpc] = MC[tpc].loc[MC[tpc]['reco_energy']>E_cut]
+            MC_new[tpc] = MC[tpc].loc[MC[tpc]['reco_energy']>(E_cut+E_cut_err)]
             if recoils_only == True and fei4_restrict == True:
                 MC_new[tpc] = MC_new[tpc].loc[(MC_new[tpc]['is_recoil'] == 1)&(MC_new[tpc]['VRC_id']==5)]
             elif recoils_only == False and fei4_restrict == True:
@@ -610,10 +610,10 @@ class analysis:
         #plt.savefig('lumi_fits.png', bbox_inches='tight')
         plt.show()
 
-    def plot_bg_summary(self, study_period, E_cut=0, bins=12, MC = False, I_HER = 1000, I_LER = 1200, sy_LER=37, sy_HER=36, nb_LER=1576, nb_HER=1576, L=25):
+    def plot_bg_summary(self, study_period, E_cut=0, E_cut_err = 0, bins=12, MC = False, I_HER = 1000, I_LER = 1200, sy_LER=37, sy_HER=36, nb_LER=1576, nb_HER=1576, L=25):
         #tpcs = ['iiwi', 'nene', 'humu', 'palila', 'tako', 'elepaio']
         if MC == True:
-            df = self.get_MC_rates(E_cut = E_cut, I_HER = I_HER, I_LER = I_LER, sy_LER=sy_LER, sy_HER=sy_HER, nb_LER=nb_LER, nb_HER=nb_HER, lumi=L)
+            df = self.get_MC_rates(E_cut = E_cut, E_cut_err = E_cut_err, I_HER = I_HER, I_LER = I_LER, sy_LER=sy_LER, sy_HER=sy_HER, nb_LER=nb_LER, nb_HER=nb_HER, lumi=L)
             #df = self.MC_rates
             df = df[['LER_bg_base', 'LER_bg_dynamic', 'LER_T', 'HER_bg_base', 'HER_bg_dynamic', 'HER_T', 'Lumi']]
             df['total']=df.sum(axis = 1)
@@ -688,9 +688,9 @@ class analysis:
         plt.show()
         return df
 
-    def compute_data_MC_ratios(self, study_period, E_cut = 0, bins=12, I_HER = 1000, I_LER = 1200, sy_LER=37, sy_HER=36, nb_LER=1576, nb_HER=1576, L=25):
+    def compute_data_MC_ratios(self, study_period, E_cut = 0, E_cut_err = 0, bins=12, I_HER = 1000, I_LER = 1200, sy_LER=37, sy_HER=36, nb_LER=1576, nb_HER=1576, L=25):
 
-        MC = self.get_MC_rates(E_cut = E_cut, I_HER = I_HER, I_LER = I_LER, sy_LER=sy_LER, sy_HER=sy_HER, nb_LER=nb_LER, nb_HER=nb_HER, lumi=L)
+        MC = self.get_MC_rates(E_cut = E_cut, E_cut_err = E_cut_err, I_HER = I_HER, I_LER = I_LER, sy_LER=sy_LER, sy_HER=sy_HER, nb_LER=nb_LER, nb_HER=nb_HER, lumi=L)
         #MC = self.MC_rates
         tpcs = ['elepaio', 'tako', 'palila', 'iiwi', 'nene', 'humu']
         LER_fit_params = self.get_fit_parameters("LER", study_period, bins, E_cut=E_cut)
