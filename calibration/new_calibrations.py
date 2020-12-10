@@ -21,7 +21,7 @@ class tpc_calibration:
         self.calibrated_alphas, self.scale_factor, self.scale_factor_err = self.calibrate_alphas()
         self.calibrated_recoils = self.calibrate_recoils()
         self.write_to_root_file()
-        pass
+        #pass
         
     def get_tpc_list(self, tpc_list = ['iiwi', 'humu', 'nene', 'tako', 'palila', 'elepaio']):
         return tpc_list
@@ -31,8 +31,8 @@ class tpc_calibration:
         df = {}
         for tpc in tpcs:
             df[tpc] = ur.open('~/data/phase3/spring_2020/maintenance_day_test/%s_alphas_all.root'%(tpc))[ur.open('~/data/phase3/spring_2020/maintenance_day_test/%s_alphas_all.root'%(tpc)).keys()[0]].pandas.df(flatten=False)
-            df[tpc]['track_energy'] = df[tpc]['track_charge']*35.075/2000*1e-3 # "uncalibrates" energy to start fresh
-            df[tpc]['pixel_energy'] = df[tpc]['pixel_charge']*35.075/2000*1e-3 # "uncalibrates" energy to start fresh
+            df[tpc]['track_energy'] = df[tpc]['track_charge']*34.4525/2000*1e-3 # "uncalibrates" energy to start fresh
+            df[tpc]['pixel_energy'] = df[tpc]['pixel_charge']*34.4525/2000*1e-3 # "uncalibrates" energy to start fresh
         return df #returns dictionary of horizontal alphas
 
     def get_study_data(self):
@@ -40,8 +40,8 @@ class tpc_calibration:
         df = {}
         for tpc in tpcs:
             df[tpc] = ur.open('~/data/phase3/spring_2020/05-09-20/tpc_root_files/%s_all_new.root'%(tpc))[ur.open('~/data/phase3/spring_2020/05-09-20/tpc_root_files/%s_all_new.root'%(tpc)).keys()[0]].pandas.df(flatten=False)
-            df[tpc]['track_energy'] = df[tpc]['track_charge']*35.075/2000*1e-3 # "uncalibrates" energy to start fresh
-            df[tpc]['pixel_energy'] = df[tpc]['pixel_charge']*35.075/2000*1e-3 # "uncalibrates" energy to start fresh
+            df[tpc]['track_energy'] = df[tpc]['track_charge']*34.4525/2000*1e-3 # "uncalibrates" energy to start fresh
+            df[tpc]['pixel_energy'] = df[tpc]['pixel_charge']*34.4525/2000*1e-3 # "uncalibrates" energy to start fresh
         return df
 
     def loose_neutron_cuts(self, dataframe): #computes minimal set of cuts to start
@@ -164,8 +164,8 @@ class tpc_calibration:
             df[tpc] = df[tpc].loc[(df[tpc]['track_energy'] > 400)]# & (df[tpc]['BCID_range'] < 90)] #selection for alphas
             df[tpc] = df[tpc].loc[(np.abs(df[tpc]['phi']) < 5) | (np.abs(df[tpc]['phi']-180) < 5) | (np.abs(-180 - df[tpc]['phi']) < 5)]
             df[tpc] = df[tpc].loc[(df[tpc]['theta']>85) & (df[tpc]['theta']<95)]
-            df[tpc]['track_energy'] = df[tpc]['track_charge']*35.075/2000*1e-3 # "uncalibrates" energy to start fresh
-            df[tpc]['pixel_energy'] = df[tpc]['pixel_charge']*35.075/2000*1e-3 # "uncalibrates" energy to start fresh
+            df[tpc]['track_energy'] = df[tpc]['track_charge']*34.4525/2000*1e-3 # "uncalibrates" energy to start fresh
+            df[tpc]['pixel_energy'] = df[tpc]['pixel_charge']*34.4525/2000*1e-3 # "uncalibrates" energy to start fresh
         return df #returns dictionary of horizontal alphas
 
 
@@ -178,10 +178,10 @@ class tpc_calibration:
         for tpc in tpcs:
             #alphas[tpc]['dedx'] = alphas[tpc][ekey]/alphas[tpc][lkey]
             scale_factor[tpc] = 1430/((alphas[tpc][ekey]*np.sin(alphas[tpc]['new_theta'])).mean())
-            scale_factor_err[tpc] = scale_factor[tpc]*(alphas[tpc][ekey]*np.sin(alphas[tpc]['new_theta'])).sem()/((alphas[tpc][ekey]*np.sin(alphas[tpc]['new_theta'])).mean())
+            scale_factor_err[tpc] = scale_factor[tpc]*(alphas[tpc][ekey]*np.sin(alphas[tpc]['new_theta'])).std()/((alphas[tpc][ekey]*np.sin(alphas[tpc]['new_theta'])).mean())
             #print((alphas[tpc][ekey]*np.sin(alphas[tpc]['theta']*np.pi/180)).sem())
             alphas[tpc][ekey] = scale_factor[tpc]*alphas[tpc][ekey]
-            alphas[tpc][ekey+'_err'] = scale_factor[tpc]*alphas[tpc][ekey]*(alphas[tpc][ekey]*np.sin(alphas[tpc]['new_theta'])).sem()/((alphas[tpc][ekey]*np.sin(alphas[tpc]['new_theta'])).mean())
+            alphas[tpc][ekey+'_err'] = scale_factor[tpc]*alphas[tpc][ekey]*(alphas[tpc][ekey]*np.sin(alphas[tpc]['new_theta'])).std()/((alphas[tpc][ekey]*np.sin(alphas[tpc]['new_theta'])).mean())
             #print(tpc, scale_factor_err[tpc]/scale_factor[tpc])
         return alphas, scale_factor, scale_factor_err
 
@@ -216,10 +216,12 @@ class tpc_calibration:
         for tpc in tpcs:
             #plt.hist(alphas[tpc][ekey]/alphas[tpc][lkey]*1e4, bins = 30, range = (200, 800), linewidth = 2, edgecolor = matplotlib.colors.colorConverter.to_rgba(colors[i], alpha=1), color = matplotlib.colors.colorConverter.to_rgba(colors[i], alpha=0.2), label = tpc)
             if gain == True:
-                alphas[tpc][ekey] = alphas[tpc]['track_charge']*35.075/alphas[tpc][ekey]*1e-3
+                alphas[tpc][ekey] = alphas[tpc]['track_charge']*34.4525/alphas[tpc][ekey]*1e-3
                 #print(tpc, alphas[tpc][ekey].unique(), alphas[tpc][ekey+'_err'].unique())
                 #print(tpc, alphas[tpc][ekey].mean(), scale_factor_err[tpc]*alphas[tpc][ekey].mean())
                 plt.bar(locations[i], alphas[tpc][ekey].mean(), yerr = scale_factor_err[tpc]*alphas[tpc][ekey].mean(), linewidth = 2, edgecolor = matplotlib.colors.colorConverter.to_rgba(colors[i], alpha=1), color = matplotlib.colors.colorConverter.to_rgba(colors[i], alpha=0.2))
+                plt.xlabel('TPC Location')
+                plt.ylabel(r'$G_{eff}$')
             elif calibrated == True:
                 plt.hist(alphas[tpc][ekey], bins = 60, range = (0, 2000), linewidth = 2, edgecolor = matplotlib.colors.colorConverter.to_rgba(colors[i], alpha=1), color = matplotlib.colors.colorConverter.to_rgba(colors[i], alpha=0.2), label = '%s'%(tpc)) #hatch = '/\\'
             elif calibrated == False:
@@ -281,7 +283,7 @@ class tpc_calibration:
             #if recoils_only == True:
             #    output = ROOT.TFile(outdir + '%s_all_recoils_only_even_newester2.root'%(tpc), 'new')
             #else:
-            output = ROOT.TFile(outdir + '%s_all_newester5.root'%(tpc), 'recreate')
+            output = ROOT.TFile(outdir + '%s_all_newester6.root'%(tpc), 'recreate')
             tout = ROOT.TTree('data','data')
             branches = {}
             data={}
