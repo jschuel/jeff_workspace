@@ -20,36 +20,46 @@ pd.set_option('mode.chained_assignment', None) #remove copy warning
 class analysis:
 
     def __init__(self, E_cut = {'palila': 9.0, 'iiwi': 8.8, 'tako': 4.6, 'nene': 5.8, 'elepaio': 6.6, 'humu': 6.6}, E_cut_err = 0, input_file= "/home/jeff/data/phase3/spring_2020/05-09-20/combined_ntuples/05-09_whole_study_even_newerest.root", recoils_only = True, fei4_restrict = True): #enter negative value for E_Cut_err to get low systematic
-        self.tpc_data = self.get_tpc_data(recoils_only = recoils_only, E_cut = E_cut)
-        self.study_data = self.get_raw_study_data()
-        self.MC_base = self.apply_chip_calibrations_to_MC(E_cut = E_cut, E_cut_err=E_cut_err)
+        self.raw_tpc_data = self.get_tpc_data(recoils_only = recoils_only, E_cut = E_cut, E_cut_err = E_cut_err)
+        self.study_data = self.get_raw_study_data(E_cut = E_cut, E_cut_err = 0)
+        self.MC_base = self.apply_chip_calibrations_to_MC(E_cut = E_cut)
         self.MC_data = self.create_VRCs()
-        self.MC_rates = self.get_MC_rates(E_cut = E_cut, E_cut_err=E_cut_err, fei4_restrict = fei4_restrict, recoils_only = recoils_only)
+        self.MC_rates = self.get_MC_rates(E_cut = E_cut, fei4_restrict = fei4_restrict, recoils_only = recoils_only)
         
-    def get_tpc_data(self, input_dir = '/home/jeff/data/phase3/spring_2020/05-09-20/tpc_root_files/', recoils_only = False, E_cut = {'palila': 9.0, 'iiwi': 8.8, 'tako': 4.6, 'nene': 5.8, 'elepaio': 6.6, 'humu': 6.6}):
+    def get_tpc_data(self, input_dir = '/home/jeff/data/phase3/spring_2020/05-09-20/tpc_root_files/', recoils_only = False, E_cut = {'palila': 9.0, 'iiwi': 8.8, 'tako': 4.6, 'nene': 5.8, 'elepaio': 6.6, 'humu': 6.6}, E_cut_err = 0):
         data = {}
         tpcs = ['iiwi', 'humu', 'nene', 'tako', 'palila', 'elepaio']
         for tpc in tpcs:
             data[tpc] = ur.open(input_dir + "%s_all_newester6.root"%(tpc))[ur.open(input_dir + "%s_all_newester6.root"%(tpc)).keys()[0]].pandas.df(flatten=False)
-            if isinstance(E_cut,dict):
-                data[tpc] = data[tpc].loc[data[tpc]['track_energy']>=(E_cut[tpc])]
+            ### For flexibility between passing in dictionaries and numbers
+            if isinstance(E_cut,dict) and isinstance(E_cut_err,dict):
+                data[tpc] = data[tpc].loc[data[tpc]['track_energy']>=(E_cut[tpc]+E_cut_err[tpc])]
+            elif isinstance(E_cut,dict) and isinstance(E_cut_err,dict)==False:
+                data[tpc] = data[tpc].loc[data[tpc]['track_energy']>=(E_cut[tpc]+E_cut_err)]
+            elif isinstance(E_cut,dict)==False and isinstance(E_cut_err,dict):
+                data[tpc] = data[tpc].loc[data[tpc]['track_energy']>=(E_cut+E_cut_err[tpc])]
             else:
-                data[tpc] = data[tpc].loc[data[tpc]['track_energy']>=(E_cut)]
+                data[tpc] = data[tpc].loc[data[tpc]['track_energy']>=(E_cut+E_cut_err)]
+            ###
             if recoils_only == True:
                 data[tpc] = data[tpc].loc[data[tpc]['is_recoil'] == 1]
             data[tpc]['ts'] = data[tpc]['timestamp_start'].astype('int')
         return data
     
-    def get_raw_study_data(self, input_file= "/home/jeff/data/phase3/spring_2020/05-09-20/combined_ntuples/05-09_whole_study_even_newerest.root", E_cut = {'palila': 9.0, 'iiwi': 8.8, 'tako': 4.6, 'nene': 5.8, 'elepaio': 6.6, 'humu': 6.6}):
+    def get_raw_study_data(self, input_file= "/home/jeff/data/phase3/spring_2020/05-09-20/combined_ntuples/05-09_whole_study_even_newerest.root", E_cut = {'palila': 9.0, 'iiwi': 8.8, 'tako': 4.6, 'nene': 5.8, 'elepaio': 6.6, 'humu': 6.6}, E_cut_err = 0):
         study_data = ur.open(input_file)[ur.open(input_file).keys()[0]].pandas.df(flatten=False)
-        tpc_data = self.tpc_data
+        tpc_data = self.raw_tpc_data
         tpcs = tpc_data.keys()
         dfs = {}
         for tpc in tpcs:
-            if isinstance(E_cut,dict):
-                dfs[tpc] = tpc_data[tpc].loc[tpc_data[tpc]['track_energy']>=(E_cut[tpc])]
+            if isinstance(E_cut,dict) and isinstance(E_cut_err,dict):
+                dfs[tpc] = tpc_data[tpc].loc[tpc_data[tpc]['track_energy']>=(E_cut[tpc]+E_cut_err[tpc])]
+            elif isinstance(E_cut,dict) and isinstance(E_cut_err,dict)==False:
+                dfs[tpc] = tpc_data[tpc].loc[tpc_data[tpc]['track_energy']>=(E_cut[tpc]+E_cut_err)]
+            elif isinstance(E_cut,dict)==False and isinstance(E_cut_err,dict):
+                dfs[tpc] = tpc_data[tpc].loc[tpc_data[tpc]['track_energy']>=(E_cut+E_cut_err[tpc])]
             else:
-                dfs[tpc] = tpc_data[tpc].loc[tpc_data[tpc]['track_energy']>=(E_cut)]
+                dfs[tpc] = tpc_data[tpc].loc[tpc_data[tpc]['track_energy']>=(E_cut+E_cut_err)]
             dfs[tpc]['ts'] = dfs[tpc]['timestamp_start'].astype('int')
             study_data[tpc+'_neutrons'] = 0
             pv = dfs[tpc].pivot_table(index=['ts'],aggfunc='size')
@@ -71,24 +81,21 @@ class analysis:
             data[tpc] = {}
             truth[tpc] = {}
             dir = '~/data/phase3/spring_2020/05-09-20/geant4_simulation/all_events/%s/'%(tpc)
-            #if bigChip == True and recoils_only == True:
-            #    dir = '/home/jeef/data/phase3/spring_2020/05-09-20/geant4_simulation/big_chip/%s/'%(tpc)
-            #elif bigChip == False and recoils_only == True:
-            #    dir = '/home/jeef/data/phase3/spring_2020/05-09-20/geant4_simulation/%s/'%(tpc)
-            #else:
-            #    dir = '/home/jeef/data/phase3/spring_2020/05-09-20/geant4_simulation/all_events/%s/'%(tpc)
             for bg in bgtype:
                 try:
-                    data[tpc][bg] = ur.open(dir+bg+'_%s.root'%(tpc))[tree].pandas.df(flatten=False)
-                    truth[tpc][bg] = ur.open(dir+bg+'_'+tpc+'_'+'truth.root')['recoils'].pandas.df(flatten=False)
-                except FileNotFoundError:
+                    data[tpc][bg] = rp.read_root(dir+bg+'_%s.root'%(tpc),key = tree)
+                    truth[tpc][bg] = rp.read_root(dir+bg+'_'+tpc+'_'+'truth.root')
+                except:
                     data[tpc][bg] = pd.DataFrame()
                     truth[tpc][bg] = pd.DataFrame()
                 try:
                     truth[tpc][bg] = truth[tpc][bg].loc[truth[tpc][bg].index.isin(data[tpc][bg]['truth_index'])==True]
                     truth[tpc][bg].index = [i for i in range(0,len(truth[tpc][bg]))]
                     data[tpc][bg]['ionization_energy'] = truth[tpc][bg]['eventIonizationEnergy']
-                    data[tpc][bg]['PDG'] = truth[tpc][bg]['tkPDG']
+                    if 'pdg' in data[tpc][bg].columns:
+                        data[tpc][bg]['PDG'] = data[tpc][bg]['pdg']
+                    else:
+                        data[tpc][bg]['PDG'] = truth[tpc][bg]['tkPDG']
                     #if recoils_only == True:
                     #    data[tpc][bg]['truth_energy'] = truth[tpc][bg]['truthRecoilEnergy']
                     #    data[tpc][bg]['truth_mother_energy'] = truth[tpc][bg]['truthMotherEnergy']
@@ -114,7 +121,7 @@ class analysis:
             
         return dfs
 
-    def apply_chip_calibrations_to_MC(self, E_cut = {'palila': 9.0, 'iiwi': 8.8, 'tako': 4.6, 'nene': 5.8, 'elepaio': 6.6, 'humu': 6.6}, E_cut_err = 0):
+    def apply_chip_calibrations_to_MC(self, E_cut = {'palila': 9.0, 'iiwi': 8.8, 'tako': 4.6, 'nene': 5.8, 'elepaio': 6.6, 'humu': 6.6}):
         MC = self.get_MC_data()
         tpcs = MC.keys()
         gain = {'iiwi': 1502, 'nene': 899, 'humu': 878, 'palila': 1033, 'tako': 807, 'elepaio': 797}
@@ -158,9 +165,9 @@ class analysis:
             MC[tpc]['sumtot'] = [MC[tpc]['q_from_tot'][i].sum() for i in range(0,len(MC[tpc]))]
             MC[tpc]['reco_energy'] = MC[tpc]['sumtot']*W/gain[tpc]*1e-3
             if isinstance(E_cut,dict):
-                MC[tpc] = MC[tpc].loc[MC[tpc]['reco_energy']>=(E_cut[tpc] + E_cut_err)]
+                MC[tpc] = MC[tpc].loc[MC[tpc]['reco_energy']>=(E_cut[tpc])]
             else:
-                MC[tpc] = MC[tpc].loc[MC[tpc]['reco_energy']>=(E_cut + E_cut_err)]
+                MC[tpc] = MC[tpc].loc[MC[tpc]['reco_energy']>=(E_cut)]
 
         return MC
 
@@ -311,9 +318,9 @@ class analysis:
             rates[tpc] = {}
             rates_err[tpc] = {}
             if isinstance(E_cut,dict):
-                MC_new[tpc] = MC[tpc].loc[MC[tpc]['reco_energy']>(E_cut[tpc]+E_cut_err)]
+                MC_new[tpc] = MC[tpc].loc[MC[tpc]['reco_energy']>(E_cut[tpc])]
             else:
-                MC_new[tpc] = MC[tpc].loc[MC[tpc]['reco_energy']>(E_cut+E_cut_err)]
+                MC_new[tpc] = MC[tpc].loc[MC[tpc]['reco_energy']>(E_cut)]
             if recoils_only == True and fei4_restrict == True:
                 MC_new[tpc] = MC_new[tpc].loc[(MC_new[tpc]['is_recoil'] == 1)&(MC_new[tpc]['VRC_id']==5)]
             elif recoils_only == False and fei4_restrict == True:
@@ -374,28 +381,24 @@ class analysis:
         df_combined = pd.concat([df,df_err], axis=1)
         return df_combined
 
-    def select_study(self, study_type, study_period, E_cut = {'palila': 9.0, 'iiwi': 8.8, 'tako': 4.6, 'nene': 5.8, 'elepaio': 6.6, 'humu': 6.6}): #LER, HER, Lumi, Cont_inj, Decay
+    def select_study(self, study_type, study_period, E_cut = {'palila': 9.0, 'iiwi': 8.8, 'tako': 4.6, 'nene': 5.8, 'elepaio': 6.6, 'humu': 6.6}, E_cut_err = 0): #LER, HER, Lumi, Cont_inj, Decay
         #raw_data = self.study_data
-        raw_data = self.get_raw_study_data(E_cut = E_cut)
+        raw_data = self.get_raw_study_data(E_cut = E_cut, E_cut_err = E_cut_err)
         study_data = raw_data.loc[(raw_data['%s_study_flag'%(study_type)]==1) & (raw_data['%s_flag'%(study_period)] == 1)]
         return study_data
 
-    def get_tpc_data_during_study_period(self, study_type, study_period, E_cut = {'palila': 9.0, 'iiwi': 8.8, 'tako': 4.6, 'nene': 5.8, 'elepaio': 6.6, 'humu': 6.6}):
-        study_data = self.select_study(study_type, study_period, E_cut=E_cut)
-        tpc_data = self.tpc_data
+    def get_tpc_data_during_study_period(self, study_type, study_period, E_cut = {'palila': 9.0, 'iiwi': 8.8, 'tako': 4.6, 'nene': 5.8, 'elepaio': 6.6, 'humu': 6.6}, E_cut_err = 0):
+        study_data = self.select_study(study_type, study_period, E_cut=E_cut, E_cut_err=E_cut_err)
+        tpc_data = self.raw_tpc_data
         #tpc_data = self.get_tpc_data(E_cut = E_cut)
         tpcs = tpc_data.keys()
         tpc_study_data = {}
         for tpc in tpcs:
-            if isinstance(E_cut,dict):
-                tpc_study_data[tpc] = tpc_data[tpc].loc[tpc_data[tpc]['track_energy']>=(E_cut[tpc])]
-            else:
-                tpc_study_data[tpc] = tpc_data[tpc].loc[tpc_data[tpc]['track_energy']>=(E_cut)]
             tpc_study_data[tpc] = tpc_data[tpc].loc[tpc_data[tpc]['ts'].isin(study_data['ts'])]
         return tpc_study_data
 
-    def partition_data_into_subsets(self, study_type, study_period, bins = 6, E_cut = {'palila': 9.0, 'iiwi': 8.8, 'tako': 4.6, 'nene': 5.8, 'elepaio': 6.6, 'humu': 6.6}):
-        study_data = self.select_study(study_type, study_period, E_cut=E_cut)
+    def partition_data_into_subsets(self, study_type, study_period, bins = 6, E_cut = {'palila': 9.0, 'iiwi': 8.8, 'tako': 4.6, 'nene': 5.8, 'elepaio': 6.6, 'humu': 6.6}, E_cut_err = 0):
+        study_data = self.select_study(study_type, study_period, E_cut=E_cut, E_cut_err = E_cut_err)
         study_data = study_data.reset_index(drop=True)
         partition_indices = [study_data.index.to_list()[0]] + study_data.loc[np.abs(study_data['ts'].diff())>10].index.to_list() + [study_data.index.to_list()[len(study_data)-1]]
         data_subsets = {}
@@ -407,8 +410,8 @@ class analysis:
             dfs[key] = np.array_split(study_data.iloc[data_subsets[key]], bins)
         return dfs
 
-    def compute_means_and_errs(self, study_type, study_period,bins = 6,E_cut={'palila': 9.0, 'iiwi': 8.8, 'tako': 4.6, 'nene': 5.8, 'elepaio': 6.6, 'humu': 6.6}):
-        partitioned_data = self.partition_data_into_subsets(study_type, study_period, bins = bins,E_cut=E_cut)
+    def compute_means_and_errs(self, study_type, study_period,bins = 6,E_cut={'palila': 9.0, 'iiwi': 8.8, 'tako': 4.6, 'nene': 5.8, 'elepaio': 6.6, 'humu': 6.6}, E_cut_err = 0):
+        partitioned_data = self.partition_data_into_subsets(study_type, study_period, bins = bins, E_cut=E_cut, E_cut_err = E_cut_err)
         means = pd.DataFrame()
         errs = pd.DataFrame()
         for key in partitioned_data.keys():
@@ -421,8 +424,8 @@ class analysis:
         means = means.drop(columns = ['LER_study_flag_err', 'HER_study_flag_err', 'Lumi_study_flag_err', 'Cont_inj_flag_err', 'Decay_flag_err', 'Nb_HER_err', 'Nb_LER_err'])
         return means
 
-    def get_fit_parameters(self, study_type, study_period, bins = 6, E_cut={'palila': 9.0, 'iiwi': 8.8, 'tako': 4.6, 'nene': 5.8, 'elepaio': 6.6, 'humu': 6.6}): #Gives parameters B0, B1, and T defined by Rate/I = B0 + B1*I + T*I/(sy*Nb)
-        averaged_data = self.compute_means_and_errs(study_type, study_period,bins = bins, E_cut=E_cut)
+    def get_fit_parameters(self, study_type, study_period, bins = 6, E_cut={'palila': 9.0, 'iiwi': 8.8, 'tako': 4.6, 'nene': 5.8, 'elepaio': 6.6, 'humu': 6.6}, E_cut_err = 0): #Gives parameters B0, B1, and T defined by Rate/I = B0 + B1*I + T*I/(sy*Nb)
+        averaged_data = self.compute_means_and_errs(study_type, study_period,bins = bins, E_cut=E_cut, E_cut_err = E_cut_err)
         tpcs = ['iiwi', 'humu', 'nene', 'tako', 'elepaio', 'palila']
         fit = {}
         averaged_data['heuristic_x'] = averaged_data['I_'+study_type]/(averaged_data['Sy_'+study_type]*averaged_data['Nb_'+study_type])
@@ -457,10 +460,10 @@ class analysis:
             fit[tpc+'_T_err'] = f2.GetParError(2)
         return fit
 
-    def measure_and_fit_lumi_bgs(self, study_period,bins = 15, E_cut = {'palila': 9.0, 'iiwi': 8.8, 'tako': 4.6, 'nene': 5.8, 'elepaio': 6.6, 'humu': 6.6}):
-        lumi_data_avg = self.compute_means_and_errs("Lumi", study_period,bins = bins, E_cut = E_cut)
-        LER_fit_params = self.get_fit_parameters("LER", study_period, bins=bins, E_cut = E_cut)
-        HER_fit_params = self.get_fit_parameters("HER", study_period,bins = bins, E_cut = E_cut)
+    def measure_and_fit_lumi_bgs(self, study_period,bins = 15, E_cut = {'palila': 9.0, 'iiwi': 8.8, 'tako': 4.6, 'nene': 5.8, 'elepaio': 6.6, 'humu': 6.6}, E_cut_err = 0):
+        lumi_data_avg = self.compute_means_and_errs("Lumi", study_period,bins = bins, E_cut = E_cut, E_cut_err = E_cut_err)
+        LER_fit_params = self.get_fit_parameters("LER", study_period, bins=bins, E_cut = E_cut, E_cut_err = E_cut_err)
+        HER_fit_params = self.get_fit_parameters("HER", study_period,bins = bins, E_cut = E_cut, E_cut_err = E_cut_err)
         tpcs = ['iiwi', 'humu', 'nene', 'tako', 'elepaio', 'palila']
         fits = {}
         LER_rates = {}
@@ -674,7 +677,7 @@ class analysis:
     def plot_bg_summary(self, study_period, E_cut={'palila': 9.0, 'iiwi': 8.8, 'tako': 4.6, 'nene': 5.8, 'elepaio': 6.6, 'humu': 6.6}, E_cut_err = 0, bins = 6, MC = False, I_HER = 1000, I_LER = 1200, sy_LER=37, sy_HER=36, nb_LER=1576, nb_HER=1576, L=25):
         #tpcs = ['iiwi', 'nene', 'humu', 'palila', 'tako', 'elepaio']
         if MC == True:
-            df = self.get_MC_rates(E_cut = E_cut, E_cut_err = E_cut_err, I_HER = I_HER, I_LER = I_LER, sy_LER=sy_LER, sy_HER=sy_HER, nb_LER=nb_LER, nb_HER=nb_HER, lumi=L)
+            df = self.get_MC_rates(E_cut = E_cut, I_HER = I_HER, I_LER = I_LER, sy_LER=sy_LER, sy_HER=sy_HER, nb_LER=nb_LER, nb_HER=nb_HER, lumi=L)
             #df = self.MC_rates
             df = df[['LER_bg_base', 'LER_bg_dynamic', 'LER_T', 'HER_bg_base', 'HER_bg_dynamic', 'HER_T', 'Lumi']]
             df['total']=df.sum(axis = 1)
@@ -751,14 +754,14 @@ class analysis:
 
     def compute_data_MC_ratios(self, study_period, E_cut = {'palila': 9.0, 'iiwi': 8.8, 'tako': 4.6, 'nene': 5.8, 'elepaio': 6.6, 'humu': 6.6}, E_cut_err = 0, bins = 6, I_HER = 1000, I_LER = 1200, sy_LER=37, sy_HER=36, nb_LER=1576, nb_HER=1576, L=25):
 
-        MC = self.get_MC_rates(E_cut = E_cut, E_cut_err = E_cut_err, I_HER = I_HER, I_LER = I_LER, sy_LER=sy_LER, sy_HER=sy_HER, nb_LER=nb_LER, nb_HER=nb_HER, lumi=L)
-        #MC = self.MC_rates
+        #MC = self.get_MC_rates(E_cut = E_cut, I_HER = I_HER, I_LER = I_LER, sy_LER=sy_LER, sy_HER=sy_HER, nb_LER=nb_LER, nb_HER=nb_HER, lumi=L)
+        MC = self.MC_rates
         tpcs = ['elepaio', 'tako', 'palila', 'iiwi', 'nene', 'humu']
-        LER_fit_params = self.get_fit_parameters("LER", study_period, bins, E_cut=E_cut)
-        HER_fit_params = self.get_fit_parameters("HER", study_period, bins, E_cut=E_cut)
+        LER_fit_params = self.get_fit_parameters("LER", study_period, bins, E_cut=E_cut, E_cut_err = E_cut_err)
+        HER_fit_params = self.get_fit_parameters("HER", study_period, bins, E_cut=E_cut, E_cut_err = E_cut_err)
         fit_dict = {}
         df = pd.DataFrame() #order is LER_bg, LER_T, HER_bg, HER_T, Lumi
-        lumi_fits = self.measure_and_fit_lumi_bgs(study_period ,bins = 15,E_cut=E_cut)[0]
+        lumi_fits = self.measure_and_fit_lumi_bgs(study_period ,bins = 15,E_cut=E_cut, E_cut_err = E_cut_err)[0]
         for tpc in tpcs:
             #I_HER = 1000
             #I_LER = 1200
@@ -839,4 +842,4 @@ class analysis:
         data_MC_ratio = data_MC_ratio[['LER_bg_base',  'LER_bg_base_err', 'LER_bg_dynamic', 'LER_bg_dynamic_err', 'LER_T', 'LER_T_err', 'HER_bg_base', 'HER_bg_base_err', 'HER_bg_dynamic', 'HER_bg_dynamic_err', 'HER_T', 'HER_T_err', 'Lumi', 'Lumi_err']]
         return df, MC, data_MC_ratio
 E_cut = {'palila': 9.0, 'iiwi': 8.8, 'tako': 4.6, 'nene': 5.8, 'elepaio': 6.6, 'humu': 6.6}
-a = analysis(E_cut = E_cut)
+a = analysis(E_cut = E_cut, E_cut_err = 0)
