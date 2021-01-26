@@ -125,7 +125,7 @@ class analysis:
         MC = self.get_MC_data()
         tpcs = MC.keys()
         gain = {'iiwi': 1502, 'nene': 899, 'humu': 878, 'palila': 1033, 'tako': 807, 'elepaio': 797}
-        W = 35.075
+        W = 34.4525
         tot_to_q = {}
         for tpc in tpcs:
             tot_to_q[tpc] = pd.DataFrame()
@@ -469,8 +469,10 @@ class analysis:
         lumi = self.select_study("Lumi", study_period)
         ler = self.select_study("LER", study_period)
         her = self.select_study("HER", study_period)
-        ler_scale = 1/(lumi['Sy_LER'].mean()/ler['Sy_LER'].mean()) #scale touschek contriubtions down to luminosity conditions (for beam-beam blowup correction)
-        her_scale = 1/(lumi['Sy_HER'].mean()/her['Sy_HER'].mean())
+        #ler_scale = 1/(lumi['Sy_LER'].mean()/ler['Sy_LER'].mean()) #scale touschek contriubtions down to luminosity conditions (for beam-beam blowup correction)
+        ler_scale = 1
+        #her_scale = 1/(lumi['Sy_HER'].mean()/her['Sy_HER'].mean())
+        her_scale = 1
         tpcs = ['iiwi', 'humu', 'nene', 'tako', 'elepaio', 'palila']
         fits = {}
         fits_corrected = {}
@@ -600,8 +602,10 @@ class analysis:
                     else:
                         ax.plot((data[study_period+'_'+ring]['ts']-t0)/3600, data[study_period+'_'+ring]['I_%s'%(ring)], 'o', markersize = 1, color = 'blue', label = "I_HER [mA]")
             for ring in ['LER','HER']:
-                scale_ler = data[study_period+'_'+'LER']['Sy_LER'].mean()/data[study_period+'_'+'Lumi']['Sy_LER'].mean() #scale touschek contriubtions down to luminosity conditions (for beam-beam blowup correction)
-                scale_her = data[study_period+'_'+'HER']['Sy_HER'].mean()/data[study_period+'_'+'Lumi']['Sy_HER'].mean() #scale touschek contriubtions down to luminosity conditions (for beam-beam blowup correction)
+                #scale_ler = data[study_period+'_'+'LER']['Sy_LER'].mean()/data[study_period+'_'+'Lumi']['Sy_LER'].mean() #scale touschek contriubtions down to luminosity conditions (for beam-beam blowup correction)
+                scale_ler = 1
+                #scale_her = data[study_period+'_'+'HER']['Sy_HER'].mean()/data[study_period+'_'+'Lumi']['Sy_HER'].mean() #scale touschek contriubtions down to luminosity conditions (for beam-beam blowup correction)
+                scale_her = 1
                 shapes = ['o','s','^']
                 colors_data = ['indigo', 'darkviolet', 'magenta']
                 colors = ['darkgreen', 'forestgreen', 'springgreen']
@@ -654,10 +658,7 @@ class analysis:
             ax0.plot(np.linspace(-0.1,2.5,101), np.linspace(0,0,101), '--', color = 'red')
             ax0.set_ylabel(r'$\frac{\mathrm{Measured} - \mathrm{Fit}}{\mathrm{Measured}}$ [%]')
             ax0.set_xlabel('Elapsed Time [h]')
-            if tunnel.upper() == 'BWD':
-                ax0.set_ylim(-70,70)
-            else:
-                ax0.set_ylim(-100,100)
+            ax0.set_ylim(-100,100)
             ax0.set_xlim(-0.03,2.1)
             handles = [Line2D([0], [0], marker=shapes[0], color='w', label=labels[0], markeredgecolor='k', markerfacecolor = 'gray', markersize=15, alpha = 0.5), Line2D([0], [0], marker=shapes[1], color='w', label=labels[1], markeredgecolor='k', markerfacecolor = 'gray', markersize=15, alpha = 0.5), Line2D([0], [0], marker=shapes[2], color='w', label=labels[2], markeredgecolor='k', markerfacecolor = 'gray', markersize=15, alpha = 0.5)]
             if tunnel.upper() == 'BWD':
@@ -689,15 +690,15 @@ class analysis:
         x = np.linspace(0,2,10000) #for plotting fit
         for tpc in tpcs:
             plt.subplot(2,3,i)
-            plt.errorbar(lumi_data_avg['ECL_lumi']/10000,lumi_rates[tpc],lumi_rates_err[tpc],lumi_data_avg['ECL_lumi_err']/10000,'o', label = 'Raw', alpha = 0.6)
+            plt.errorbar(lumi_data_avg['ECL_lumi']/10000,lumi_rates[tpc],lumi_rates_err[tpc],lumi_data_avg['ECL_lumi_err']/10000,'o', label = 'Data', alpha = 0.6)
             #plt.plot(x, fits['%s_int'%(tpc)]+ fits['%s_slope'%(tpc)]*x, color = 'tab:blue', label = r'Offset=%s$\pm$%s'%(float('%.2g' % fits[tpc+'_int']), float('%.2g' % fits[tpc+'_int_err'])))
-            plt.plot(x, fits['%s_int'%(tpc)]+ fits['%s_slope'%(tpc)]*x, color = 'tab:blue', label = r'Raw fit')
+            plt.plot(x, fits['%s_int'%(tpc)]+ fits['%s_slope'%(tpc)]*x, color = 'k', label = r'Fit')
             #plt.fill_between([0],[0],[0], lw = 0, label = r'Slope=%s$\pm$%s'%(float('%.2g' % fits[tpc+'_slope']), float('%.2g' % fits[tpc+'_slope_err'])), color = 'white')
             #if i > 3:
-            plt.errorbar(lumi_data_avg['ECL_lumi']/10000,lumi_rates_scale[tpc],lumi_rates_err[tpc],lumi_data_avg['ECL_lumi_err']/10000,'o', label = 'Corrected', alpha = 0.6)
+            #plt.errorbar(lumi_data_avg['ECL_lumi']/10000,lumi_rates_scale[tpc],lumi_rates_err[tpc],lumi_data_avg['ECL_lumi_err']/10000,'o', label = 'Corrected', alpha = 0.6)
                 #plt.plot(x, fits_corrected['%s_int'%(tpc)]+ fits_corrected['%s_slope'%(tpc)]*x, color = 'tab:orange', label = r'Corrected offset=%s$\pm$%s'%(float('%.2g' % fits_corrected[tpc+'_int']), float('%.2g' % fits_corrected[tpc+'_int_err'])))
                 #plt.plot(x, fits['%s_int'%(tpc)]+ fits['%s_slope'%(tpc)]*x, color = 'tab:blue', label = r'Uncorrected fit')
-            plt.plot(x, fits_corrected['%s_int'%(tpc)]+ fits_corrected['%s_slope'%(tpc)]*x, color = 'tab:orange', label = r'Corrected fit')
+            #plt.plot(x, fits_corrected['%s_int'%(tpc)]+ fits_corrected['%s_slope'%(tpc)]*x, color = 'tab:orange', label = r'Corrected fit')
                 #plt.fill_between([0],[0],[0], lw = 0, label = r'Corrected slope=%s$\pm$%s'%(float('%.2g' % fits_corrected[tpc+'_slope']), float('%.2g' % fits_corrected[tpc+'_slope_err'])), color = 'white')
             plt.xlim(0,2)
             plt.xlabel(r'Luminosity [$10^{34}$cm$^{-2}$s$^{-1}$]')
@@ -708,9 +709,13 @@ class analysis:
             plt.title(pos[i-1])
             plt.grid()
             i+=1
-            plt.subplots_adjust(hspace=0.5)
-            plt.subplots_adjust(wspace=0.5)
-        #plt.savefig('lumi_fits_newest.png', bbox_inches='tight')
+            plt.subplots_adjust(hspace=0.31)
+            plt.subplots_adjust(wspace=0.29)
+            plt.subplots_adjust(top=0.935)
+            plt.subplots_adjust(bottom=0.090)
+            plt.subplots_adjust(left=0.065)
+            plt.subplots_adjust(right=0.935)
+        plt.savefig('lumi_fits_newest.png')
         plt.show()
 
     def plot_bg_summary(self, study_period, E_cut={'palila': 9.0, 'iiwi': 8.8, 'tako': 4.6, 'nene': 5.6, 'elepaio': 6.4, 'humu': 5.6}, E_cut_err = 0, bins = 6, MC = False, I_HER = 1000, I_LER = 1200, sy_LER=37, sy_HER=36, nb_LER=1576, nb_HER=1576, L=25):
