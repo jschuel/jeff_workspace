@@ -26,7 +26,7 @@ class analysis:
         df = pd.DataFrame()
         for tpc in tpcs:
             rates[tpc] = {}
-            dir = '/home/jeef/data/phase3/spring_2020/05-09-20/geant4_simulation/truth_neutrons_only/%s/'%(tpc)
+            dir = '/home/jeff/data/phase3/spring_2020/05-09-20/geant4_simulation/truth_neutrons_only/%s/'%(tpc)
             for bg in bgtype:
                 if (bg == 'Brems_HER_base') or (bg == 'Brems_HER_dynamic'):
                     t = 400
@@ -54,7 +54,7 @@ class analysis:
         #bgtype = 'RBB_Lumi'
         truth = {}
         for tpc in tpcs:
-            dir = '/home/jeef/data/phase3/spring_2020/05-09-20/geant4_simulation/truth_neutrons_only/%s/'%(tpc)
+            dir = '/home/jeff/data/phase3/spring_2020/05-09-20/geant4_simulation/truth_neutrons_only/%s/'%(tpc)
             try:
                 try:
                     truth[tpc+'_'+bgtype] = ur.open(dir+bgtype+'_'+tpc+'_all.root')['recoils'].pandas.df(flatten=False)
@@ -110,8 +110,8 @@ class analysis:
         color = cm(norm(df.dropna()['truthNeutronEnergy']))
         ###
         
-        #img = plt.imread("/home/jeef/Pictures/farbeamline_update.png")
-        img = plt.imread("/home/jeef/Pictures/farbeamline_nocolor.png")
+        #img = plt.imread("/home/jeff/Pictures/farbeamline_update.png")
+        img = plt.imread("/home/jeff/Pictures/farbeamline_nocolor.png")
         fig, ax = plt.subplots(2,1,figsize = (12,10))
         fig.suptitle('%s neutron SimHits and vertices'%(bgtype), fontsize=16)
         #ax[0].set_xticks([])
@@ -148,9 +148,9 @@ class analysis:
         plt.colorbar(p,ax=ax[0]).set_label(r'$E_{neutron}$', rotation = 270, labelpad = 20)
         plt.colorbar(sm,ax=ax[1]).set_label(r'$E_{neutron}$', rotation = 270, labelpad = 20)
                 
-        #plt.savefig("/home/jeef/Pictures/all_SimHits_%s.png"%(bgtype))
-        #plt.savefig("/home/jeef/Pictures/all_RBB_hotspots.png")
-        #plt.savefig("/home/jeef/Pictures/all_LER_Touschek_hotspots.png")
+        #plt.savefig("/home/jeff/Pictures/all_SimHits_%s.png"%(bgtype))
+        #plt.savefig("/home/jeff/Pictures/all_RBB_hotspots.png")
+        #plt.savefig("/home/jeff/Pictures/all_LER_Touschek_hotspots.png")
         plt.show()
 
     def plot_cos_theta_dist(self, bgtype):
@@ -281,7 +281,7 @@ class analysis:
         ax.set_zlabel('y')
         plt.colorbar(sm).set_label('Neutron Energy [keV]')
         fig.suptitle('%s 3D neutron SimHits and vertices'%(bgtype), fontsize=16)
-        plt.savefig("/home/jeef/Pictures/3D_all_SimHits_%s.png"%(bgtype))
+        plt.savefig("/home/jeff/Pictures/3D_all_SimHits_%s.png"%(bgtype))
         plt.show()
 
     def get_all_MC_data(self):
@@ -289,7 +289,7 @@ class analysis:
         bgtype = ['Coulomb_LER_dynamic', 'Coulomb_LER_base', 'Coulomb_HER_dynamic', 'Coulomb_HER_base', 'Brems_LER_dynamic', 'Brems_HER_dynamic', 'Brems_LER_base', 'twoPhoton_Lumi', 'RBB_Lumi', 'Touschek_LER', 'Touschek_HER']
         truth = {}
         for tpc in tpcs:
-            dir = '/home/jeef/data/phase3/spring_2020/05-09-20/geant4_simulation/truth_neutrons_only/%s/'%(tpc)
+            dir = '/home/jeff/data/phase3/spring_2020/05-09-20/geant4_simulation/truth_neutrons_only/%s/'%(tpc)
             for bg in bgtype:
                 try:
                     try:
@@ -311,7 +311,7 @@ class analysis:
         bgtype = ['twoPhoton_Lumi', 'RBB_Lumi']
         truth = {}
         for tpc in tpcs:
-            dir = '/home/jeef/data/phase3/spring_2020/05-09-20/geant4_simulation/truth_neutrons_only/%s/'%(tpc)
+            dir = '/home/jeff/data/phase3/spring_2020/05-09-20/geant4_simulation/truth_neutrons_only/%s/'%(tpc)
             for bg in bgtype:
                 try:
                     try:
@@ -333,7 +333,7 @@ class analysis:
         bgtype = ['Coulomb_LER_dynamic', 'Coulomb_LER_base', 'Coulomb_HER_dynamic', 'Coulomb_HER_base', 'Brems_LER_dynamic', 'Brems_HER_dynamic', 'Brems_LER_base', 'Touschek_LER', 'Touschek_HER']
         truth = {}
         for tpc in tpcs:
-            dir = '/home/jeef/data/phase3/spring_2020/05-09-20/geant4_simulation/truth_neutrons_only/%s/'%(tpc)
+            dir = '/home/jeff/data/phase3/spring_2020/05-09-20/geant4_simulation/truth_neutrons_only/%s/'%(tpc)
             for bg in bgtype:
                 try:
                     try:
@@ -368,8 +368,8 @@ class analysis:
         df_palila = df.loc[df['detNb'] == 3]
         df_tako = df.loc[df['detNb'] == 4]
         df_elepaio = df.loc[df['detNb'] == 5]
-        #img = plt.imread("/home/jeef/Pictures/farbeamline_update.png")
-        img = plt.imread("/home/jeef/Pictures/farbeamline_nocolor.png")
+        #img = plt.imread("/home/jeff/Pictures/farbeamline_update.png")
+        img = plt.imread("/home/jeff/Pictures/farbeamline_nocolor.png")
         fig, ax = plt.subplots(1,1,figsize = (25,10))
         #ax.set_xticks([])
         #ax.set_yticks([])
@@ -409,10 +409,10 @@ class analysis:
         
         #plt.colorbar(p).set_label('Neutron Energy [keV]')
         #fig.suptitle('All neutron SimHits and vertices', fontsize=16)
-        #plt.savefig("/home/jeef/Pictures/3D_all_SimHits_%s.png"%(bgtype))
-        #plt.savefig("/home/jeef/Pictures/old.png")
+        #plt.savefig("/home/jeff/Pictures/3D_all_SimHits_%s.png"%(bgtype))
+        #plt.savefig("/home/jeff/Pictures/old.png")
         plt.legend(handles=handle, bbox_to_anchor=(0.95, 0.95))
-        plt.savefig("/home/jeef/Pictures/new.png")
+        plt.savefig("/home/jeff/Pictures/new.png")
         plt.show()
 
     def make_paper_figure(self):
@@ -421,6 +421,7 @@ class analysis:
         plt.rc('ytick', labelsize=24)
         plt.rc('axes', labelsize=26)
         plt.rc('axes', titlesize=26)
+
         
         lumi = self.get_Lumi_MC_data()
         sb = self.get_single_beam_MC_data()
@@ -437,8 +438,10 @@ class analysis:
         
         df_SB.index = [i for i in range(0,len(df_SB))]
         df_Lumi.index = [i for i in range(0,len(df_Lumi))]
-        img = plt.imread("/home/jeef/Pictures/farbeamline_nocolor.png")
-        fig, ax = plt.subplots(1,1,figsize = (25,10))
+        
+        
+        img = plt.imread("/home/jeff/Pictures/farbeamline_nocolor.png")
+        fig, ax = plt.subplots(1,1,figsize = (24,7.5))
         ax.set_xlabel('z [cm]')
         ax.set_ylabel('x [cm]')
         ax.set_ylim(-300,300)
@@ -455,19 +458,29 @@ class analysis:
         ax.add_patch(Rectangle((641,-199.4), 31, 10, facecolor = 'gold', alpha = 1.0, edgecolor = 'black', zorder=1e6+3)) #iiwi
         ax.add_patch(Rectangle((1385,172), 31, 10, facecolor = 'gold', alpha = 1.0, edgecolor = 'black', zorder=1e6+4)) #nene
         ax.add_patch(Rectangle((1585,170), 31, 10, facecolor = 'gold', alpha = 1.0, edgecolor = 'black', zorder=1e6+5)) #humu
+        ax.arrow(-2800, -140, 600, 22, fc='blue', ec='blue', head_width=15, head_length=75, lw=2, zorder=1e9)
+        ax.text(-2650, -170, r'HER e$^{-}$', size = 28, color = 'blue')
+        ax.arrow(2050, 46, 600, 22, fc='blue', ec='blue', head_width=15, head_length=75, lw=2, zorder=1e9)
+        ax.text(2200, 16, r'HER e$^{-}$', size = 28, color = 'blue')
+        ax.arrow(2700, -90, -600, 22, fc='red', ec='red', head_width=15, head_length=75, lw=2, zorder=1e9)
+        ax.text(2200, -130, r'LER e$^{+}$', size = 28, color = 'red')
+        ax.arrow(-2100, 105, -600, 22, fc='red', ec='red', head_width=15, head_length=75, lw=2, zorder=1e9)
+        ax.text(-2650, 70, r'LER e$^{+}$', size = 28, color = 'red')
 
-        ax.add_patch(Rectangle((-870,20), 120, 40, facecolor = 'lime', alpha = 0.5, edgecolor = 'black', zorder=1e6+6)) #hotspot
-        ax.add_patch(Rectangle((1390,30), 290, 50, facecolor = 'lime', alpha = 0.5, edgecolor = 'black', zorder=1e6+7)) #hotspot
+        #ax.add_patch(Rectangle((-870,20), 120, 40, facecolor = 'lime', alpha = 0.5, edgecolor = 'black', zorder=1e6+6)) #hotspot
+        #ax.add_patch(Rectangle((1390,30), 290, 50, facecolor = 'lime', alpha = 0.5, edgecolor = 'black', zorder=1e6+7)) #hotspot
+        ax.text(-50,20,r'IP',size = 28, color='yellow')
 
         handle = [Line2D([0], [0], marker='s', color='black', label='TPC',
                           markerfacecolor='gold', alpha = 1.0, markersize=15, lw=0),
         Line2D([0], [0], color='magenta', label='Single Beam', alpha = 1.0),
         Line2D([0], [0], color = 'cyan', label='Luminosity', alpha = 1.0)]
     
-        plt.legend(handles=handle, bbox_to_anchor=(0.84, 0.8), framealpha=1)
-        plt.savefig("/home/jeef/Pictures/MC_tracks.png")
-        #plt.savefig("/home/jeef/Pictures/just_tpcs.png")
-        plt.show()
+        #plt.legend(handles=handle, bbox_to_anchor=(0.844, 1.02), framealpha=1)
+        plt.legend(handles=handle, bbox_to_anchor=(0.84, .74), framealpha=1)
+        plt.savefig("/home/jeff/Pictures/MC_tracks2.png")
+        #plt.savefig("/home/jeff/Pictures/just_tpcs.png")
+        #plt.show()
     
     def visualize_all_3D(self):
         bgtypes = ['Coulomb_LER_dynamic', 'Coulomb_LER_base', 'Coulomb_HER_dynamic', 'Coulomb_HER_base', 'Brems_LER_dynamic', 'Brems_HER_dynamic', 'Brems_LER_base', 'RBB_Lumi', 'Touschek_LER', 'Touschek_HER']
@@ -499,7 +512,7 @@ class analysis:
         ax.set_zlabel('y')
         plt.colorbar(p).set_label('Neutron Energy [keV]')
         fig.suptitle('All neutron SimHits and vertices', fontsize=16)
-        #plt.savefig("/home/jeef/Pictures/3D_all_SimHits_%s.png"%(bgtype))
+        #plt.savefig("/home/jeff/Pictures/3D_all_SimHits_%s.png"%(bgtype))
         plt.show()
         
     

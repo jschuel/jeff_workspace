@@ -514,27 +514,29 @@ class analysis:
         return fits, lumi_rates, lumi_rates_err, lumi_rates_scale, fits_corrected
 
     def plot_fit(self, lumi_only=True, tunnel = 'BWD', legend = True):
-        plt.rc('legend', fontsize=16)
+        plt.rc('legend', fontsize=13)
         plt.rc('xtick', labelsize=20)
         plt.rc('ytick', labelsize=20)
-        plt.rc('axes', labelsize=20)
-        plt.rc('axes', titlesize=20)
+        plt.rc('axes', labelsize=16)
+        plt.rc('axes', titlesize=16)
         if lumi_only == True:
-            fig, (ax,ax0) = plt.subplots(2,1, figsize = (18,9), gridspec_kw={'height_ratios': [3.5,1]})
+            fig, (ax,ax0) = plt.subplots(2,1, figsize = (18,7), gridspec_kw={'height_ratios': [3,1]}, sharex='all')
         else:
             fig, ax = plt.subplots(figsize = (18,9))
         ax1 = ax.twinx()
-        ax.set_ylabel(r'Current [mA],   Luminosity [$10^{32}$cm$^{-2}$s$^{-1}$]')
-        ax.set_ylim(0,750)
+        ax.set_ylabel(r'Lumi. [$10^{32}$cm$^{-2}$s$^{-1}$], Current [mA]')
+        ax.set_ylim(0,550)
         if lumi_only == True:
-            ax.set_xlim(-0.03,2.1)
+            ax.set_xlim(-0.03,2.18)
         ax.set_xlabel('Elapsed Time [h]')
 
         if legend == True:
             if tunnel.lower() == 'bwd':
-                labels = ['z=-14m','z=-8.0m','z=-5.6m']
+                labels = ['\n z=-14m','\n z=-8.0m','\n z=-5.6m']
+                labels_bot = ['z=-14m','z=-8.0m','z=-5.6m']
             else:
-                labels = ['z=+6.6m','z=+14m','z=+16m']
+                labels = ['\n z=+6.6m','\n z=+14m','\n z=+16m']
+                labels_bot = ['z=+6.6m','z=+14m','z=+16m']
             #shapes = ['o','s','^']
             #colors_data = ['black', 'dimgray', 'silver']
             #colors = ['darkgreen', 'forestgreen', 'lime']
@@ -542,7 +544,8 @@ class analysis:
             colors_data = ['indigo', 'darkviolet', 'magenta']
             colors = ['darkgreen', 'forestgreen', 'springgreen']
             skb_handles = [Line2D([0], [0], color='b', lw=4, label='HER Current'),Line2D([0], [0], color='r', lw=4, label='LER Current'), Line2D([0], [0], marker='o', color='w', label='Luminosity',markerfacecolor='gold', markersize=15), Line2D([0], [0], marker=shapes[0], color='w', label=labels[0], markerfacecolor=colors_data[0], markersize=0), Line2D([0], [0], marker=shapes[0], color='w', label='Measured', markerfacecolor=colors_data[0], markersize=15), Line2D([0], [0], marker=shapes[0], color='w', label='Fit', markerfacecolor=colors[0], markersize=15), Line2D([0], [0], marker=shapes[1], color='w', label=labels[1], markerfacecolor=colors_data[1], markersize=0), Line2D([0], [0], marker=shapes[1], color='w', label='Measured', markerfacecolor=colors_data[1], markersize=15), Line2D([0], [0], marker=shapes[1], color='w', label='Fit', markerfacecolor=colors[1], markersize=15), Line2D([0], [0], marker=shapes[2], color='w', label=labels[2], markerfacecolor=colors_data[0], markersize=0), Line2D([0], [0], marker=shapes[2], color='w', label='Measured', markerfacecolor=colors_data[2], markersize=15), Line2D([0], [0], marker=shapes[2], color='w', label='Fit', markerfacecolor=colors[2], markersize=15)]
-            l_skb = plt.legend(handles = skb_handles,loc = 'upper left', ncol = 4)
+            l_skb = plt.legend(handles = skb_handles,loc = 'upper left', ncol = 1, bbox_to_anchor = (1.1,1))
+            
             #l_tpc = plt.legend(handles = tpc_handles,ncol=3, loc='upper center')
             #ax.add_artist(l_skb)
             #ax.add_artist(l_tpc)
@@ -553,9 +556,9 @@ class analysis:
             ax1.set_yscale("Log")
         else:
             if tunnel.upper() == 'BWD':
-                ax1.set_ylim(0,4)
+                ax1.set_ylim(0,3)
             else:
-                ax1.set_ylim(0,1)
+                ax1.set_ylim(0,0.7)
         fit_params = {}
         data = {}
         data_avg = {}
@@ -610,6 +613,7 @@ class analysis:
                 colors_data = ['indigo', 'darkviolet', 'magenta']
                 colors = ['darkgreen', 'forestgreen', 'springgreen']
                 i=0
+                offsets = [-0.01,0,0.01]
                 if tunnel.lower() == 'bwd':
                     tpcs = ['elepaio', 'tako', 'palila']
                 else:
@@ -647,30 +651,38 @@ class analysis:
                     Lumi_fit_err = np.sqrt(fit_params[study_period+'_'+'Lumi'][tpc+'_int_err']**2+(data_avg[study_period+'_Lumi']['ECL_lumi']/10000)**2*fit_params[study_period+'_'+'Lumi'][tpc+'_slope_err']**2+fit_params[study_period+'_'+'Lumi'][tpc+'_slope']**2*(data_avg[study_period+'_Lumi']['ECL_lumi_err']/10000)**2)
                     Lumi_rates_err = np.sqrt(LER_rates_err**2 + HER_rates_err**2 + Lumi_fit_err**2)
             
-                    ax1.errorbar((data_avg[study_period+'_'+'Lumi']['ts']-t0)/3600, Lumi_rates,Lumi_rates_err, data_avg[study_period+'_Lumi']['ts_err']/3600, shapes[i], markersize = 6, color = colors[i], markeredgecolor = 'k', label = 'Fit', elinewidth=0.5, alpha = 0.5)
-                    ax1.errorbar((data_avg[study_period+'_Lumi']['ts']-t0)/3600, data_avg[study_period+'_Lumi'][tpc+'_neutrons'], data_avg[study_period+'_Lumi'][tpc+'_neutrons_err'], data_avg[study_period+'_Lumi']['ts_err']/3600, shapes[i], markersize = 6, color = colors_data[i], markeredgecolor = 'k', label = 'data', elinewidth=0.5,alpha = 0.5)
+                    ax1.errorbar((data_avg[study_period+'_'+'Lumi']['ts']-t0)/3600, Lumi_rates,Lumi_rates_err, data_avg[study_period+'_Lumi']['ts_err']/3600, shapes[i], markersize = 8, color = colors[i], markeredgecolor = 'k', label = 'Fit', alpha = 0.5, elinewidth = 1)
+                    ax1.errorbar((data_avg[study_period+'_Lumi']['ts']-t0)/3600, data_avg[study_period+'_Lumi'][tpc+'_neutrons'], data_avg[study_period+'_Lumi'][tpc+'_neutrons_err'], data_avg[study_period+'_Lumi']['ts_err']/3600, shapes[i], markersize = 8, color = colors_data[i], markeredgecolor = 'k', label = 'data',alpha = 0.5, elinewidth=1)
                     if lumi_only == True:
                         residual = ((data_avg[study_period+'_Lumi'][tpc+'_neutrons'] - Lumi_rates)/data_avg[study_period+'_Lumi'][tpc+'_neutrons'])*100
                         residual_err = np.sqrt((Lumi_rates_err)**2 + (data_avg[study_period+'_Lumi'][tpc+'_neutrons_err'])**2)/(data_avg[study_period+'_Lumi'][tpc+'_neutrons'])*100
-                        ax0.errorbar((data_avg[study_period+'_'+'Lumi']['ts']-t0)/3600, residual, residual_err, data_avg[study_period+'_Lumi']['ts_err']/3600 , shapes[i], label = labels[i], color = 'k', markeredgecolor='k', markerfacecolor = 'gray', alpha = 0.5)
+                        ax0.errorbar((data_avg[study_period+'_'+'Lumi']['ts']-t0)/3600+offsets[i], residual, residual_err, data_avg[study_period+'_Lumi']['ts_err']/3600, shapes[i], color = 'k', label = labels[i], markeredgecolor='k', markerfacecolor = 'white', alpha = 0.5, markersize = 8)
                     i+=1
         if lumi_only == True:
             ax0.plot(np.linspace(-0.1,2.5,101), np.linspace(0,0,101), '--', color = 'red')
-            ax0.set_ylabel(r'$\frac{\mathrm{Measured} - \mathrm{Fit}}{\mathrm{Measured}}$ [%]')
+            ax0.set_ylabel(r'$\frac{\mathrm{Meas.} - \mathrm{Fit}}{\mathrm{Meas.}}$ [%]')
             ax0.set_xlabel('Elapsed Time [h]')
-            ax0.set_ylim(-100,100)
-            ax0.set_xlim(-0.03,2.1)
-            handles = [Line2D([0], [0], marker=shapes[0], color='w', label=labels[0], markeredgecolor='k', markerfacecolor = 'gray', markersize=15, alpha = 0.5), Line2D([0], [0], marker=shapes[1], color='w', label=labels[1], markeredgecolor='k', markerfacecolor = 'gray', markersize=15, alpha = 0.5), Line2D([0], [0], marker=shapes[2], color='w', label=labels[2], markeredgecolor='k', markerfacecolor = 'gray', markersize=15, alpha = 0.5)]
+            ax0.set_ylim(-60,60)
+            ax0.set_yticks([-40,0,40])
+            ax0.set_xlim(-0.03,2.18)
+            handles = [Line2D([0], [0], marker=shapes[0], color='w', label=labels_bot[0], markeredgecolor='k', markerfacecolor = None, markersize=12, alpha = 0.5), Line2D([0], [0], marker=shapes[1], color='w', label=labels_bot[1], markeredgecolor='k', markerfacecolor = None, markersize=12, alpha = 0.5), Line2D([0], [0], marker=shapes[2], color='w', label=labels_bot[2], markeredgecolor='k', markerfacecolor = None, markersize=12, alpha = 0.5)]
             if tunnel.upper() == 'BWD':
-                ax0.legend(loc = 'lower left', handles=handles, ncol=3)
+                ax0.legend(loc = 'upper left', handles=handles, ncol=3)
+                ax0.text(1.72,26,'(ii)',size = 24)
+                ax.text(1.72,450,'(i)',size=24)
             else:
                 ax0.legend(loc = 'upper left', handles=handles, ncol=3)
+                ax0.text(1.72,26,'(iv)',size = 24)
+                ax.text(1.72,450,'(iii)',size=24)
             ax0.yaxis.set_minor_locator(AutoMinorLocator())
             ax0.grid(which = 'both', axis = 'y')
-            ax0.set_title('Residuals')
-        plt.tight_layout()
+            #ax0.set_title('Residuals')
+        plt.subplots_adjust(hspace=0.0)
+        plt.subplots_adjust(right=0.8)
+        #plt.tight_layout()
         if lumi_only == True:
-            plt.savefig('lumi_time_fits_%s'%(tunnel), dpi = 300)
+            plt.savefig('lumi_time_fits_%s'%(tunnel), dpi = 300, bbox_inches="tight")
+            #plt.savefig('test', dpi = 300, bbox_inches="tight")
         plt.show()
         
     def plot_all_luminosity(self, study_period = "Cont_inj", bins = 15):

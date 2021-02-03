@@ -14,11 +14,11 @@ class lepton_analysis:
         self.signal = self.get_signal()
         self.bg = self.get_background()
     
-    def load_data(self, input_file = '~/workspace/thesis_data/mc_with_deltaT.root', key = 'truth_lepton'):
+    def load_data(self, input_file = '~/data/thesis_data/truth_B_and_lepton_ntuples/all_truth_B.root', key = 'truth_lepton'):
         data = rp.read_root(input_file, key=key)
         return data
 
-    def get_data_with_cuts(self, input_file = '~/workspace/thesis_data/mc_with_deltaT.root', key = 'truth_lepton'):
+    def get_data_with_cuts(self, input_file = '~/data/thesis_data/truth_B_and_lepton_ntuples/all_truth_B.root', key = 'truth_lepton'):
         data = self.load_data()
         data_post_cut = data.loc[data['Mbc'] < 5.245]
         return data_post_cut
@@ -86,7 +86,7 @@ class truth_B_analysis:
     def __init__(self):
         self.data = self.load_data()
     
-    def load_data(self, input_file = '~/workspace/thesis_data/mc_with_deltaT.root', key = 'truthB_lab'):
+    def load_data(self, input_file = '~/data/thesis_data/truth_B_and_lepton_ntuples/all_truth_B.root', key = 'truthB_lab'):
         data = rp.read_root(input_file, key=key)
         return data
 
@@ -140,13 +140,13 @@ class truth_B_analysis:
         return d
 
 class process_lepton_data(lepton_analysis): #only call to add deltaT branches to root file. Takes a while to run
-    def __init__(self, input_data = '~/workspace/thesis_data/mc_with_reco.root', output_data = '~/workspace/thesis_data/mc_with_deltaT.root', key = 'truth_lepton'):
+    def __init__(self, input_data = '~/data/thesis_data/mc_with_reco.root', output_data = '~/data/thesis_data/truth_B_and_lepton_ntuples/all_truth_B.root', key = 'truth_lepton'):
         super().__init__()
         self.data = self.process_deltaT_and_flavor_tag(self.get_data_with_cuts(input_file=input_data, key=key))
         self.data.to_root(output_data, key = key)
 
 class process_B_data(truth_B_analysis): #only call to add deltaT branches to root file. Takes a while to run
-    def __init__(self, input_data = '~/workspace/thesis_data/mc_with_reco.root', output_data = '~/workspace/thesis_data/mc_with_deltaT.root', key = 'truthB_lab'):
+    def __init__(self, input_data = '~/data/thesis_data/mc_with_reco.root', output_data = '~/data/thesis_data/truth_B_and_lepton_ntuples/all_truth_B.root', key = 'truthB_lab'):
         super().__init__()
         self.data = self.process_deltaT_and_flavor_tag(self.load_data(input_file=input_data, key=key))
         self.data.to_root(output_data, key = key, mode = 'a')
@@ -223,7 +223,7 @@ def plot_with_fits():
     make_error_boxes(ax[1,1], B_plot_df['x'], y_B_sd_min, B_plot_df['xerr'], y_B_sd_max)
     ax[1,1].add_patch(Rectangle((B_plot_df['x'][0] - B_plot_df['xerr'][0], y_B_sd_min[0]), 2*B_plot_df['xerr'][0], y_B_sd_max[0]-y_B_sd_min[0], edgecolor = 'green', facecolor = 'yellow', alpha = 0.5, label = r'1$\sigma$ error region for SD model fit. $\Delta m_d =$ %s $\pm$ %s ps$^{-1}$'%(float('%.3g' % B_fits['SD']), float('%.3g' % B_fits['SD_err']))))
     ax[1,1].legend()
-    ax[1,0].set_title('SD model fit to truth B decay vertex results')
+    ax[1,1].set_title('SD model fit to truth B decay vertex results')
     ax[1,1].set_ylabel(r"$\mathcal{A}(\Delta t)$")
     fig.show()
     #ax[1].bar(x_data,residuals,width=2*x_err_data, fill=False)
