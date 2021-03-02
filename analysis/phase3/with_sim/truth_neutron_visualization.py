@@ -10,7 +10,7 @@ from matplotlib.lines import Line2D
 from scipy.stats import ks_2samp
 from scipy.stats import chi2_contingency
 from scipy.stats import epps_singleton_2samp
-import analysis
+#import analysis
 
 class analysis:
 
@@ -422,7 +422,7 @@ class analysis:
         plt.rc('axes', labelsize=26)
         plt.rc('axes', titlesize=26)
 
-        
+        '''
         lumi = self.get_Lumi_MC_data()
         sb = self.get_single_beam_MC_data()
         
@@ -438,7 +438,7 @@ class analysis:
         
         df_SB.index = [i for i in range(0,len(df_SB))]
         df_Lumi.index = [i for i in range(0,len(df_Lumi))]
-        
+        '''
         
         img = plt.imread("/home/jeff/Pictures/farbeamline_nocolor.png")
         fig, ax = plt.subplots(1,1,figsize = (24,7.5))
@@ -448,9 +448,9 @@ class analysis:
         ax.set_xlim(-2800,2800)
         ax.imshow(np.flipud(img), origin = 'lower', extent = [-3333,3142, -438,414], aspect = 'auto')
 
-        ax.plot(df_SB[['truthNeutronVtx_z_belle_frame','chipz']].T, df_SB[['truthNeutronVtx_x_belle_frame','chipx']].T, lw=0.15, alpha = 0.15, color = 'magenta')
+        #ax.plot(df_SB[['truthNeutronVtx_z_belle_frame','chipz']].T, df_SB[['truthNeutronVtx_x_belle_frame','chipx']].T, lw=0.15, alpha = 0.15, color = 'magenta')
 
-        ax.plot(df_Lumi[['truthNeutronVtx_z_belle_frame','chipz']].T, df_Lumi[['truthNeutronVtx_x_belle_frame','chipx']].T, lw=0.15, alpha = 0.15, color = 'cyan')
+        #ax.plot(df_Lumi[['truthNeutronVtx_z_belle_frame','chipz']].T, df_Lumi[['truthNeutronVtx_x_belle_frame','chipx']].T, lw=0.15, alpha = 0.15, color = 'cyan')
 
         ax.add_patch(Rectangle((-1415.5,196), 31, 10, facecolor = 'gold', alpha = 1.0, edgecolor = 'black', zorder=1e6)) #elepaio
         ax.add_patch(Rectangle((-815.5,191), 31, 10, facecolor = 'gold', alpha = 1.0, edgecolor = 'black', zorder=1e6+1)) #tako
@@ -458,14 +458,14 @@ class analysis:
         ax.add_patch(Rectangle((641,-199.4), 31, 10, facecolor = 'gold', alpha = 1.0, edgecolor = 'black', zorder=1e6+3)) #iiwi
         ax.add_patch(Rectangle((1385,172), 31, 10, facecolor = 'gold', alpha = 1.0, edgecolor = 'black', zorder=1e6+4)) #nene
         ax.add_patch(Rectangle((1585,170), 31, 10, facecolor = 'gold', alpha = 1.0, edgecolor = 'black', zorder=1e6+5)) #humu
-        ax.arrow(-2800, -140, 600, 22, fc='blue', ec='blue', head_width=15, head_length=75, lw=2, zorder=1e9)
-        ax.text(-2650, -170, r'HER e$^{-}$', size = 28, color = 'blue')
-        ax.arrow(2050, 46, 600, 22, fc='blue', ec='blue', head_width=15, head_length=75, lw=2, zorder=1e9)
-        ax.text(2200, 16, r'HER e$^{-}$', size = 28, color = 'blue')
-        ax.arrow(2700, -90, -600, 22, fc='red', ec='red', head_width=15, head_length=75, lw=2, zorder=1e9)
-        ax.text(2200, -130, r'LER e$^{+}$', size = 28, color = 'red')
-        ax.arrow(-2100, 105, -600, 22, fc='red', ec='red', head_width=15, head_length=75, lw=2, zorder=1e9)
-        ax.text(-2650, 70, r'LER e$^{+}$', size = 28, color = 'red')
+        #ax.arrow(-2800, -140, 600, 22, fc='blue', ec='blue', head_width=15, head_length=75, lw=2, zorder=1e9)
+        #ax.text(-2650, -170, r'HER e$^{-}$', size = 28, color = 'blue')
+        #ax.arrow(2050, 46, 600, 22, fc='blue', ec='blue', head_width=15, head_length=75, lw=2, zorder=1e9)
+        #ax.text(2200, 16, r'HER e$^{-}$', size = 28, color = 'blue')
+        #ax.arrow(2700, -90, -600, 22, fc='red', ec='red', head_width=15, head_length=75, lw=2, zorder=1e9)
+        #ax.text(2200, -130, r'LER e$^{+}$', size = 28, color = 'red')
+        #ax.arrow(-2100, 105, -600, 22, fc='red', ec='red', head_width=15, head_length=75, lw=2, zorder=1e9)
+        #ax.text(-2650, 70, r'LER e$^{+}$', size = 28, color = 'red')
 
         #ax.add_patch(Rectangle((-870,20), 120, 40, facecolor = 'lime', alpha = 0.5, edgecolor = 'black', zorder=1e6+6)) #hotspot
         #ax.add_patch(Rectangle((1390,30), 290, 50, facecolor = 'lime', alpha = 0.5, edgecolor = 'black', zorder=1e6+7)) #hotspot
@@ -477,9 +477,9 @@ class analysis:
         Line2D([0], [0], color = 'cyan', label='Luminosity', alpha = 1.0)]
     
         #plt.legend(handles=handle, bbox_to_anchor=(0.844, 1.02), framealpha=1)
-        plt.legend(handles=handle, bbox_to_anchor=(0.84, .74), framealpha=1)
-        plt.savefig("/home/jeff/Pictures/MC_tracks2.png")
-        #plt.savefig("/home/jeff/Pictures/just_tpcs.png")
+        #plt.legend(handles=handle, bbox_to_anchor=(0.84, .74), framealpha=1)
+        #plt.savefig("/home/jeff/Pictures/MC_tracks2.png")
+        plt.savefig("/home/jeff/Pictures/just_tpcs.png",dpi=400)
         #plt.show()
     
     def visualize_all_3D(self):
