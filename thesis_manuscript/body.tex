@@ -1,0 +1,212 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -*- Mode: Latex -*- %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% uhtest-body.tex -- 
+%% Author          : Robert Brewer
+%% Created On      : Fri Oct  2 16:30:37 1998
+%% Last Modified By: Robert Brewer
+%% Last Modified On: Mon Oct  5 16:01:29 1998
+%% RCS: $Id: uhtest-body.tex,v 1.1 1998/10/06 02:07:14 rbrewer Exp $
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%   Copyright (C) 1998 Robert Brewer
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 
+
+\chapter{Introduction}
+
+
+
+\chapter{Modeling decoherence}
+
+\section{An open $B\bar{B}$ system}
+
+In this section, we follow the work of ref \cite{ALOK} to come up with a parametrization of mixing induced flavor asymmetry parameter that includes contributions of decoherence.
+
+\begin{align}
+\label{eq:observable}
+\mathcal{O}_f = 
+\begin{pmatrix}
+|A_f|^2 & A_f^*\bar{A}_f & 0 \\
+A_f\bar{A}_f^* & |\bar{A}_f|^2 & 0 \\
+0 & 0 & 0
+\end{pmatrix},
+\end{align}
+where $A_f \equiv A(B^0\rightarrow f)$ and $\bar{A}_f \equiv A(\bar{B}^0\rightarrow f)$.
+
+\begin{align}
+\label{eq:density}
+\rho_{\pm}(t) = \frac{1}{2}e^{-\Gamma_d t}\begin{pmatrix}
+a_{ch} \pm e^{\lambda t}a_c & -a_{sh}\mp ie^{-\lambda t}a_s & 0 \\
+-a_{sh} \pm ie^{-\lambda t}a_s & a_{ch}\mp e^{-\lambda t}a_c & 0 \\
+0 & 0 & 2(e^{\Gamma_d t}-a_{ch})
+\end{pmatrix},
+\end{align}
+where $\rho_+(t)$ and $\rho_-(t)$ correspond to $B^0$ and $\bar{B}^0$, respectively. With this construction, the probability of a $B^0$ or $\bar{B}^0$ decaying into state $f$ at time $t$ is computed as
+\begin{align}
+\label{eq:trace}
+P_{f\pm}(t) = \Tr(\mathcal{O}_f\mathcal{\rho_\pm}),
+\end{align}
+with $P_+$ corresponding to an initial $B^0$ and $P_-$, an initial $\bar{B}^0$. An observable
+\begin{align}
+\label{eq:CP}
+\mathcal{A}_f =\frac{P_-(t)-P_+(t)}{P_-(t)+P_+(t)}
+\end{align}
+can be defined, and when $f = J/\psi K_S$, this observable represents CP violating asymmetry used to determine $\sin(2\phi_1)$ in \cite{Abe1}. To show this, we compute the probabilities in \ref{eq:CP} using \ref{eq:observable}, \ref{eq:density} and \ref{eq:trace}. Doing this, we find
+\begin{align}
+\label{eq:probs}
+P_{J/\psi K_S\pm}(t) &= \frac{1}{2}e^{-\Gamma_d t}\Bigg( \Bigg.|A_f|^2(a_{ch}\pm e^{-\lambda t}a_c)+|\bar{A}_f|^2(a_{ch}\mp e^{-\lambda t}a_c) \nonumber\\  &-A_f^*\bar{A}_f(a_{sh}\mp ie^{-\lambda t}a_s) - A_f\bar{A}_f^*(a_{sh}\pm ie^{-\lambda t}a_s)\Bigg) \Bigg. ;\quad f=J/\psi K_S.
+\end{align}
+Factoring out $|A_f|^2=A_fA_f^*$ from both the numerator and denominator of \ref{eq:CP} and defining $z\equiv A(\bar{B}^0\rightarrow J/\psi K_S)/A(B^0\rightarrow J/\psi K_S)$, we obtain
+\begin{align}
+\label{eq:cpviolation}
+\mathcal{A}_{J/\Psi K_S}(t,\lambda)&=\frac{2(|z|^2-1)a_c - 2iz a_s + 2iz^*a_s}{2(|z|^2+1)a_{ch} -2z a_{sh} -2z^*a_{sh}}e^{-\lambda t}\nonumber\\
+&=\frac{(|z|^2-1)a_c + 2\Im(z)a_s}{(|z|^2+1)a_{ch} -2\Re(z) a_{sh}}e^{-\lambda t}\nonumber\\
+&=\frac{(|z|^2-1)\cos(\Delta m_d t) + 2\Im(z)\sin(\Delta m_d t)}{(|z|^2+1)\cosh(\Delta \Gamma_d t/2) -2\Re(z) \sinh(\Delta\Gamma_d t/2)}e^{-\lambda t}.
+\end{align}
+where we used the fact that the decay amplitudes are, in general, complex numbers, so $\Re(z)=\frac{z+z^*}{2}$ and $\Im(z) = \frac{z-z^*}{2i}$. We see that \ref{eq:cpviolation} is indeed the well-known mixing and decay-induced CP asymmetry expression with $\Im(z)\approx \sin(2\phi_1)$ \cite{Abe1,Abe2}, however it includes an additional \textit{decoherence} term, $e^{-\lambda t}$, where we refer to $\lambda$ as the \textit{decoherence parameter}. We see that in the case of no decoherence ($\lambda = 0$), \ref{eq:cpviolation} is exactly the CP asymmetry expression described above.
+
+In the case where a $B^0$ decays into a state that is inaccessible from a $\bar{B}^0$ decay, it follows that $z=0$ \cite{Bevan}, which will lead us to an expression for the time dependent mixing asymmetry $\mathcal{A}_{\text{mix}}$. Indeed, if we consider \ref{eq:probs} and set the final state to $B^0$ (or $\bar{B}^0$), we can compute flavor mixing probabilities. For example, if we were to compute $P_{B^0\rightarrow \bar{B}^0}(t)$, we set $A_f = 0$ and $\bar{A}_f = 1$ in \ref{eq:probs}, leading us to
+\begin{align}
+\label{eq:prob1}
+P_{B^0\rightarrow \bar{B}^0}(t) \sim \cosh(\Delta \Gamma_d t/2)-e^{-\lambda t}\cos(\Delta m_dt).
+\end{align}
+Similarly, for the other mixing combinations, we would set $A_f = 0$ and $\bar{A}_f = 1$ for $P_{\bar{B}^0\rightarrow \bar{B}^0}(t)$, and we would set $A_f = 1$ and $\bar{A}_f = 0$ for $P_{\bar{B}^0\rightarrow B^0}(t)$ and $P_{B^0\rightarrow B^0}(t)$, giving
+\begin{align}
+P_{\bar{B}^0\rightarrow \bar{B}^0}(t) \sim \cosh(\Delta \Gamma_d t/2)+e^{-\lambda t}\cos(\Delta m_dt) \\
+P_{B^0\rightarrow B^0}(t) \sim \cosh(\Delta \Gamma_d t/2)+e^{-\lambda t}\cos(\Delta m_dt)\\
+\label{eq:prob2}
+P_{\bar{B}^0\rightarrow B^0}(t) \sim \cosh(\Delta \Gamma_d t/2)-e^{-\lambda t}\cos(\Delta m_dt).
+\end{align}
+
+Now let's consider a $B\bar{B}$ produced from the hadronization of $e^+e^-\rightarrow \Upsilon(4S)\rightarrow b\bar{b}$, which is the mechanism for $B$ production at Belle. Since the $\Upsilon(4S)$ is spin 1, it follows from conservation of angular momentum that the resulting $B\bar{B}$ pair will be in a coherent $P$-wave state, which means that at a certain time $t_0$, nominally the decay time of the first $B^0$ in the $B\bar{B}$ pair, the flavor the decaying $B$ \textit{must} be the opposite of the flavor of the other $B$. This means the probability of observing opposite flavor $P_{B^0\bar{B}^0\rightarrow B^0\bar{B}^0}$ or same flavor pairs $P_{B^0\bar{B}^0\rightarrow B^0B^0 \text{ or } \bar{B}^0\bar{B}^0}$ is determined from the proper time difference between the decays of the two $B$'s, $\Delta t\equiv t_1-t_0$. With this knowledge at our disposal, we see from equations \ref{eq:prob1}--\ref{eq:prob2} that \textit{mixing} (creation of same flavor pair) is the result of second $B$ changing flavor and thus has a minus sign in its oscillation probability, whereas an unmixed (opposite flavor) pair has a plus sign in its oscillation probability. This means we can write
+\begin{align}
+P_{B^{0}\bar{B}^0\rightarrow B^{0}\bar{B}^0}(\Delta t) \sim \cosh(\Delta \Gamma_d \Delta t/2)+e^{-\lambda \Delta t}\cos(\Delta m_d\Delta t) = P_+(\Delta t)\\
+P_{B^{0}\bar{B}^0\rightarrow B^{0}B^0\text{ or } \bar{B}^0\bar{B}^0}(\Delta t) \sim \cosh(\Delta \Gamma_d \Delta t/2)-e^{-\lambda \Delta t}\cos(\Delta m_d\Delta t) = P_-(\Delta t).
+\end{align}
+Finally, we now define the time dependent mixing asymmetry, $\mathcal{A}_\text{mix}(\Delta t)$ as
+\begin{align}
+\mathcal{A}_\text{mix}(\Delta t)\equiv \frac{P_+(\Delta t)-P_-(\Delta t)}{P_+(\Delta t)+P_-(\Delta t)} = \frac{\cos(\Delta m_d\Delta t)}{\cosh(\Delta \Gamma_d \Delta t/2)}e^{-\lambda\Delta t}.
+\end{align}
+Just like with \ref{eq:cpviolation}, we see that we now have an expression for the time-dependent asymmetry which also manifestly depends on decoherence parameter $\lambda$.
+\section{Bibliography Citations}
+Citing references to your bibliography is easy \cite{belle}
+\cite{kekb}. First you build a BibTeX file which contains the
+records for all of the works you wish to cite. This file ends with a ``{\tt
+.bib}'' extension. Then in your body you use the ``{\tt $\backslash$cite}''
+command with the label you gave to the record in question. The final steps are: 
+run LaTeX once, run BibTeX, and then run LaTeX twice more. You should now have
+a bibliography that includes those citations.
+
+\chapter{Conclusion}
+
+This is going to be the chapter where I check the length of the page to make
+sure the bottom margin works out all right.  I hope you don't mind long
+annoying and useless paragraphs because you are sure to get a lot of them here!
+
+\section{Widgets}
+
+This is going to be the chapter where I check the length of the page
+to make sure the bottom margin works out all right.  I hope you don't
+mind long annoying and useless paragraphs because you are sure to get
+a lot of them here!
+
+\subsection{Sub-Widgets}
+
+This is going to be the chapter where I check the length of the page
+to make sure the bottom margin works out all right.  I hope you don't
+mind long annoying and useless paragraphs because you are sure to get
+a lot of them here!
+
+\subsubsection{Sub-Sub-Widgets}
+
+This is going to be the chapter where I check the length of the page
+to make sure the bottom margin works out all right.  I hope you don't
+mind long annoying and useless paragraphs because you are sure to get
+a lot of them here!
+
+\paragraph{Para-Widgets}
+
+This is going to be the chapter where I check the length of the page
+to make sure the bottom margin works out all right.  I hope you don't
+mind long annoying and useless paragraphs because you are sure to get
+a lot of them here!
+
+\subparagraph{Sub-Para-Widgets}
+
+This is going to be the chapter where I check the length of the page
+to make sure the bottom margin works out all right.  I hope you don't
+mind long annoying and useless paragraphs because you are sure to get
+a lot of them here!
+
+This is going to be the chapter where I check the length of the page
+to make sure the bottom margin works out all right.  I hope you don't
+mind long annoying and useless paragraphs because you are sure to get
+a lot of them here!
+
+This is going to be the chapter where I check the length of the page
+to make sure the bottom margin works out all right.  I hope you don't
+mind long annoying and useless paragraphs because you are sure to get
+a lot of them here!
+
+This is going to be the chapter where I check the length of the page
+to make sure the bottom margin works out all right.  I hope you don't
+mind long annoying and useless paragraphs because you are sure to get
+a lot of them here!
+
+This is going to be the chapter where I check the length of the page
+to make sure the bottom margin works out all right.  I hope you don't
+mind long annoying and useless paragraphs because you are sure to get
+a lot of them here!
+
+This is going to be the chapter where I check the length of the page
+to make sure the bottom margin works out all right.  I hope you don't
+mind long annoying and useless paragraphs because you are sure to get
+a lot of them here!
+
+This is going to be the chapter where I check the length of the page
+to make sure the bottom margin works out all right.  I hope you don't
+mind long annoying and useless paragraphs because you are sure to get
+a lot of them here!
+
+This is going to be the chapter where I check the length of the page
+to make sure the bottom margin works out all right.  I hope you don't
+mind long annoying and useless paragraphs because you are sure to get
+a lot of them here!
+
+This is going to be the chapter where I check the length of the page
+to make sure the bottom margin works out all right.  I hope you don't
+mind long annoying and useless paragraphs because you are sure to get
+a lot of them here!
+
+This is going to be the chapter where I check the length of the page
+to make sure the bottom margin works out all right.  I hope you don't
+mind long annoying and useless paragraphs because you are sure to get
+a lot of them here!
+
+This is going to be the chapter where I check the length of the page
+to make sure the bottom margin works out all right.  I hope you don't
+mind long annoying and useless paragraphs because you are sure to get
+a lot of them here!
+
+This is going to be the chapter where I check the length of the page
+to make sure the bottom margin works out all right.  I hope you don't
+mind long annoying and useless paragraphs because you are sure to get
+a lot of them here!
+
+This is going to be the chapter where I check the length of the page
+to make sure the bottom margin works out all right.  I hope you don't
+mind long annoying and useless paragraphs because you are sure to get
+a lot of them here!
+
+This is going to be the chapter where I check the length of the page
+to make sure the bottom margin works out all right.  I hope you don't
+mind long annoying and useless paragraphs because you are sure to get
+a lot of them here!
+
+This is going to be the chapter where I check the length of the page
+to make sure the bottom margin works out all right.  I hope you don't
+mind long annoying and useless paragraphs because you are sure to get
+a lot of them here!
+
+This is going to be the chapter where I check the length of the page
+to make sure the bottom margin works out all right.  I hope you don't
+mind long annoying and useless paragraphs because you are sure to get
+a lot of them here!

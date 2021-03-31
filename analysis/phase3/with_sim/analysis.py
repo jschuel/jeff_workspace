@@ -31,7 +31,8 @@ class analysis:
         data = {}
         tpcs = ['iiwi', 'humu', 'nene', 'tako', 'palila', 'elepaio']
         for tpc in tpcs:
-            data[tpc] = ur.open(input_dir + "%s_all_newester6.root"%(tpc))[ur.open(input_dir + "%s_all_newester6.root"%(tpc)).keys()[0]].pandas.df(flatten=False)
+            #data[tpc] = ur.open(input_dir + "%s_all_newester6.root"%(tpc))[ur.open(input_dir + "%s_all_newester6.root"%(tpc)).keys()[0]].pandas.df(flatten=False)
+            data[tpc] = rp.read_root(input_dir + "%s_all_newester6.root"%(tpc))
             ### For flexibility between passing in dictionaries and numbers
             if isinstance(E_cut,dict) and isinstance(E_cut_err,dict):
                 data[tpc] = data[tpc].loc[data[tpc]['track_energy']>=(E_cut[tpc]+E_cut_err[tpc])]
@@ -48,7 +49,8 @@ class analysis:
         return data
     
     def get_raw_study_data(self, input_file= "/home/jeff/data/phase3/spring_2020/05-09-20/combined_ntuples/05-09_whole_study_even_newerest.root", E_cut = {'palila': 9.0, 'iiwi': 8.8, 'tako': 4.6, 'nene': 5.6, 'elepaio': 6.4, 'humu': 6.4}, E_cut_err = 0):
-        study_data = ur.open(input_file)[ur.open(input_file).keys()[0]].pandas.df(flatten=False)
+        #study_data = ur.open(input_file)[ur.open(input_file).keys()[0]].pandas.df(flatten=False)
+        study_data = rp.read_root(input_file)
         tpc_data = self.raw_tpc_data
         tpcs = tpc_data.keys()
         dfs = {}
@@ -928,5 +930,5 @@ class analysis:
         data_MC_ratio = pd.concat([data_MC,data_MC_err],axis = 1)
         data_MC_ratio = data_MC_ratio[['LER_bg_base',  'LER_bg_base_err', 'LER_bg_dynamic', 'LER_bg_dynamic_err', 'LER_T', 'LER_T_err', 'HER_bg_base', 'HER_bg_base_err', 'HER_bg_dynamic', 'HER_bg_dynamic_err', 'HER_T', 'HER_T_err', 'Lumi', 'Lumi_err']]
         return df, MC, data_MC_ratio
-E_cut = {'palila': 9.0, 'iiwi': 8.8, 'tako': 4.6, 'nene': 5.6, 'elepaio': 6.4, 'humu': 6.4}
-a = analysis(E_cut = E_cut, E_cut_err = 0)
+#E_cut = {'palila': 9.0, 'iiwi': 8.8, 'tako': 4.6, 'nene': 5.6, 'elepaio': 6.4, 'humu': 6.4}
+#a = analysis(E_cut = E_cut, E_cut_err = 0)

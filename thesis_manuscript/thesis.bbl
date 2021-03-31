@@ -1,0 +1,278 @@
+\begin{thebibliography}{10}
+
+\bibitem{EPICS}
+Experimental physics and industrial control system.
+\newblock Available at https://epics.anl.gov.
+
+\bibitem{gagun}
+{\em Pearson's Chi-Square Test Modifications for Comparison of Unweighted and
+  Weighted Histograms and Two Weighted Histograms}. PoS(ACAT)060.
+
+\bibitem{sad}
+Strategic accelerator design.
+\newblock Available at http://acc-physics.kek.jp/SAD/.
+
+\bibitem{giantres2}
+Giant dipole resonance neutron yields produced by electrons as a function of
+  target material and thickness.
+\newblock {\em Health Phys}, 70:207 -- 214, 1996.
+
+\bibitem{klm2}
+K.~{Abe}, Y.~{Hoshi}, T.~{Nagamine}, K.~{Neichi}, K.~{Onodera}, T.~{Takahashi},
+  A.~{Yamaguchi}, and H.~{Yuta}.
+\newblock Neutron sensitivity of the endcap rpc modules in belle detector.
+\newblock {\em IEEE Transactions on Nuclear Science}, 50(4):831--835, 2003.
+
+\bibitem{Abe1}
+Kazuo Abe et~al.
+\newblock {Observation of large CP violation in the neutral $B$ meson system}.
+\newblock {\em Phys. Rev. Lett.}, 87:091802, 2001.
+
+\bibitem{Abe2}
+Kazuo Abe et~al.
+\newblock {Improved measurement of CP-violation parameters sin 2phi(1) and
+  |lambda|, B meson lifetimes, and B0 - anti-B0 mixing parameter Delta m(d)}.
+\newblock {\em Phys. Rev. D}, 71:072003, 2005.
+\newblock [Erratum: Phys.Rev.D 71, 079903 (2005)].
+
+\bibitem{ALOK}
+Ashutosh~Kumar Alok, Subhashish Banerjee, and S.~Uma~Sankar.
+\newblock {Re-examining sin2$\beta$ and $\Delta m_d$ from evolution of $B_d^0$
+  mesons with decoherence}.
+\newblock {\em Phys. Lett. B}, 749:94--97, 2015.
+
+\bibitem{klm3}
+T.~Aushev, D.Z. Besson, K.~Chilikin, R.~Chistov, M.~Danilov, P.~Katrenko,
+  R.~Mizuk, G.~Pakhlova, P.~Pakhlov, V.~Rusinov, and et~al.
+\newblock A scintillator based endcap kl and muon detector for the belle ii
+  experiment.
+\newblock {\em Nuclear Instruments and Methods in Physics Research Section A:
+  Accelerators, Spectrometers, Detectors and Associated Equipment},
+  789:134?142, Jul 2015.
+
+\bibitem{Bevan}
+A.~J. Bevan et~al.
+\newblock {The Physics of the B Factories}.
+\newblock {\em Eur. Phys. J. C}, 74:3026, 2014.
+
+\bibitem{Magboltz}
+Stephen Biagi.
+\newblock Magboltz-transport of electrons in gas mixtures.
+\newblock Available at https://magboltz.web.cern.ch/magboltz/.
+
+\bibitem{giantres1}
+Broglia~R.A. Bortignon~P.F., Bracco~A.
+\newblock {\em Giant Resonances, in: Contemporary Concepts in Physics},
+  volume~10.
+\newblock CRC Press, 1998.
+
+\bibitem{coordinate}
+Belle~II Collaboration.
+\newblock {Belle II Coordinate System and Guideline of Belle II Numbering
+  Scheme}, 2011.
+
+\bibitem{nanobeam}
+SuperB Collaboration.
+\newblock Superb: A high-luminosity asymmetric e+ e- super flavor factory.
+  conceptual design report, 2007.
+
+\bibitem{ATLAS1}
+The ATLAS~IBL collaboration.
+\newblock Prototype {ATLAS} {IBL} modules using the {FE}-i4a front-end readout
+  chip.
+\newblock {\em Journal of Instrumentation}, 7(11):P11010--P11010, nov 2012.
+
+\bibitem{ATLAS2}
+The ATLAS~IBL collaboration.
+\newblock Production and integration of the {ATLAS} insertable b-layer.
+\newblock {\em Journal of Instrumentation}, 13(05):T05008--T05008, may 2018.
+
+\bibitem{belle}
+The Belle~II Collaboration.
+\newblock {Belle II Technical Design Report}.
+\newblock Technical Report arXiv:1011.0352. KEK REPORT 2010-1, Nov 2010.
+\newblock Comments: Edited by: Z. Dole\v{z}al and S. Uno.
+
+\bibitem{deJong}
+Samuel de~Jong.
+\newblock {\em Study of Thermal Neutron Flux from SuperKEKB in the Belle II
+  Commissioning Detector}.
+\newblock PhD thesis, University of Victoria,
+  https://dspace.library.uvic.ca//handle/1828/8203, 2017.
+
+\bibitem{geant2}
+J.~Allison et~al.
+\newblock Geant4 developments and applications.
+\newblock {\em IEEE Transactions on Nuclear Science}, 53(1):270--278, 2006.
+
+\bibitem{geant3}
+J.~Allison et~al.
+\newblock Recent developments in geant4.
+\newblock {\em Nuclear Instruments and Methods in Physics Research Section A:
+  Accelerators, Spectrometers, Detectors and Associated Equipment}, 835:186 --
+  225, 2016.
+
+\bibitem{geant}
+S.~Agostinelli et~al.
+\newblock Geant4—a simulation toolkit.
+\newblock {\em Nuclear Instruments and Methods in Physics Research Section A:
+  Accelerators, Spectrometers, Detectors and Associated Equipment}, 506(3):250
+  -- 303, 2003.
+
+\bibitem{Berends}
+Berends F.A., et~al.
+\newblock Complete lowest-order calculations for four-lepton final states in
+  electron-positron collisions.
+\newblock {\em Nuclear Physics B}, 253:441--463, 1985.
+
+\bibitem{Torben}
+Torben Ferber and Phillip Urquijo.
+\newblock Overview of the belle ii physics generators.
+\newblock Jun 2015.
+
+\bibitem{skb1}
+Yoshihiro Funakoshi and Yukiyoshi Ohnishi.
+\newblock {Highlights from SuperKEKB Commissioning Phase 1 and Plan for Phase
+  2}.
+\newblock {\em ICFA Beam Dyn. Newslett.}, 72:11--19, 2017.
+
+\bibitem{hedges}
+Michael Hedges.
+\newblock {\em Performance and First Deployment of Novel 3D Nuclear Recoil
+  Detectors}.
+\newblock PhD thesis, University of Hawaii, http://hdl.handle.net/10125/62684,
+  12 2018.
+
+\bibitem{klm1}
+Y.~Hoshi, N.~Kikuchi, T.~Nagamine, K.~Neichi, and A.~Yamaguchi.
+\newblock Performance of the endcap rpc in the belle detector under high
+  luminosity operation of the kekb accelerator.
+\newblock {\em Nuclear Physics B - Proceedings Supplements}, 158:190 -- 194,
+  2006.
+\newblock Proceedings of the 8th International Workshop on Resistive Plate
+  Chambers and Related Detectors.
+
+\bibitem{Jaegle}
+I.~Jaegle et~al.
+\newblock Compact, directional neutron detectors capable of high-resolution
+  nuclear recoil imaging.
+\newblock {\em Nucl. Instrum. Methods Phys. Res., A}, 945:162296, Nov 2019.
+
+\bibitem{pybar}
+J.~Janssen and D.L. Pohl.
+\newblock pybar - bonn atlas readout in python.
+
+\bibitem{basf2}
+T.~Kuhr, C.~Pulvermacher, M.~Ritter, T.~Hauth, and N.~Braun.
+\newblock The belle ii core software.
+\newblock {\em Computing and Software for Big Science}, 3, Nov 2018.
+
+\bibitem{lewis}
+P.~M. Lewis et~al.
+\newblock {First Measurements of Beam Backgrounds at SuperKEKB}.
+\newblock {\em Nucl. Instrum. Meth.}, A914:69--144, 2019.
+
+\bibitem{liptak}
+Z.~J. Liptak et~al.
+\newblock {Phase 2 forthcoming paper}.
+\newblock 2021.
+
+\bibitem{ENDF}
+Chadwick M.B., et~al.
+\newblock Endf/b-vii.1 nuclear data for science and technology: Cross sections,
+  covariances, fission product yields and decay data.
+\newblock {\em Nuclear Data Sheets}, 112(12):2887 -- 2996, 2011.
+\newblock Special Issue on ENDF/B-VII.1 Library.
+
+\bibitem{JEFF}
+E.~Mendoza and D.~Cano-Ott.
+\newblock Update of the evaluated neutron cross section libraries for the
+  geant4 code, June 2018.
+
+\bibitem{natochii}
+A.~Natochii et~al.
+\newblock {Phase 3 forthcoming paper}.
+\newblock 2021.
+
+\bibitem{natochii2}
+A.~Natochii, S.E. Vahsen, H.~Nakayama, T.~Ishibashi, and S.~Terui.
+\newblock {Improved simulation of beam backgrounds and collimation at
+  SuperKEKB}.
+\newblock 2021.
+\newblock Forthcoming publication.
+
+\bibitem{nygren}
+David~R. Nygren and Jay~N. Marx.
+\newblock The time projection chamber.
+\newblock {\em Physics Today}, 31(10):46--53, 1978.
+
+\bibitem{ohnishi}
+Yukiyoshi Ohnishi, et~al.
+\newblock {Accelerator design at SuperKEKB}.
+\newblock {\em Progress of Theoretical and Experimental Physics}, 2013(3), 03
+  2013.
+\newblock 03A011.
+
+\bibitem{park}
+Seokhee Park, Youngjoon Kwon, Mikihiko Nakao, Uehara Sadaharu, and Tomoyuki
+  Konno.
+\newblock {Environmental Monitoring for Belle II}.
+\newblock In {\em {21st IEEE Real Time Conference}}, 6 2018.
+
+\bibitem{Ahlburg}
+Ahlburg Patrick.
+\newblock {Development of a FE-I4-based module for radiation monitoring with
+  BEAST II during the commissioning phase of the Belle II detector}.
+\newblock Master's thesis, Universit\"{a}t Bonn, 2016.
+
+\bibitem{piwinski}
+A.~Piwinski.
+\newblock The touschek effect in strong focusing storage rings, 1999.
+
+\bibitem{Kleiss}
+Kleiss R., et~al.
+\newblock \texttt{BBBREM}---monte carlo simulation of radiative bhabha
+  scattering in the very forward direction.
+\newblock {\em Computer Physics Communications}, 81(3):372--380, 1994.
+
+\bibitem{Jadach}
+Jadach S., et~al.
+\newblock \texttt{BHWIDE} 1.00:$\mathcal{O}(\alpha)$ yfs exponentiated monte
+  carlo for bhabha scattering at wide angles for lep1/slc and lep2.
+\newblock {\em Physics Letters B}, 390(1-4):298--308, 1997.
+
+\bibitem{suetsugu}
+Y.~Suetsugu, K.~Shibata, T.~Ishibashi, K.~Kanazawa, M.~Shirai, S.~Terui, and
+  H.~Hisamatsu.
+\newblock First commissioning of the superkekb vacuum system.
+\newblock {\em Phys. Rev. Accel. Beams}, 19:121001, Dec 2016.
+
+\bibitem{kekb}
+N~Toge.
+\newblock {KEK B-factory Design Report}.
+\newblock Technical Report KEK-Report-95-7, KEK, Tsukuba, 1995.
+
+\bibitem{vahsenD3}
+S.E. Vahsen et~al.
+\newblock The directional dark matter detector (d3).
+\newblock {\em EAS Publications Series}, 53:43--50, 2012.
+
+\bibitem{vahsen3d}
+Sven Vahsen, M.T. Hedges, Igal Jaegle, S.J. Ross, I.S. Seong, Tom Thorpe,
+  J.~Yamaoka, J.A. Kadyk, and M.~Garcia-Sciveres.
+\newblock 3-d tracking in a miniature time projection chamber.
+\newblock {\em Nuclear Instruments and Methods in Physics Research Section A
+  Accelerators Spectrometers Detectors and Associated Equipment}, 788, 03 2015.
+
+\bibitem{garfield}
+Rob Veenhof and H.~Schindler.
+\newblock Garfield++, 2018.
+
+\bibitem{SRIM}
+James~F. Ziegler, M.D. Ziegler, and J.P. Biersack.
+\newblock Srim--the stopping and range of ions in matter (2010).
+\newblock {\em Nuclear Instruments and Methods in Physics Research Section B:
+  Beam Interactions with Materials and Atoms}, 268(11):1818 -- 1823, 2010.
+\newblock 19th International Conference on Ion Beam Analysis.
+
+\end{thebibliography}

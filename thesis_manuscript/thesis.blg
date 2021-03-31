@@ -1,0 +1,73 @@
+This is BibTeX, Version 0.99d (TeX Live 2019/Debian)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: thesis.aux
+A level-1 auxiliary file: dedication.aux
+A level-1 auxiliary file: acknowledgments.aux
+A level-1 auxiliary file: abstract.aux
+A level-1 auxiliary file: body.aux
+A level-1 auxiliary file: appendix.aux
+The style file: plain.bst
+Database file #1: thesis.bib
+I was expecting a `,' or a `}'---line 442 of file thesis.bib
+ :   
+ :   venue =        {Amsterdam},
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+Warning--I didn't find a database entry for "Abe"
+Warning--to sort, need author or key in giantres2
+Warning--to sort, need author or key in sad
+Name 1 in "Veenhof, Rob, and H. Schindler" has a comma at the end for entry garfield
+while executing---line 1049 of file plain.bst
+Warning--to sort, need author or key in EPICS
+Warning--to sort, need editor, organization, or key in gagun
+Warning--empty year in gagun
+Warning--empty author in giantres2
+Warning--empty institution in belle
+Warning--empty journal in Torben
+Warning--empty journal in liptak
+Warning--empty journal in natochii
+Warning--empty journal in natochii2
+Name 1 in "Veenhof, Rob, and H. Schindler" has a comma at the end for entry garfield
+while executing---line 1090 of file plain.bst
+You've used 48 entries,
+            2118 wiz_defined-function locations,
+            795 strings with 11315 characters,
+and the built_in function-call counts, 13907 in all, are:
+= -- 1327
+> -- 661
+< -- 3
++ -- 271
+- -- 218
+* -- 962
+:= -- 2393
+add.period$ -- 141
+call.type$ -- 48
+change.case$ -- 241
+chr.to.int$ -- 0
+cite$ -- 59
+duplicate$ -- 478
+empty$ -- 1113
+format.name$ -- 218
+if$ -- 2847
+int.to.chr$ -- 0
+int.to.str$ -- 48
+missing$ -- 34
+newline$ -- 239
+num.names$ -- 88
+pop$ -- 249
+preamble$ -- 1
+purify$ -- 197
+quote$ -- 0
+skip$ -- 355
+stack$ -- 0
+substring$ -- 801
+swap$ -- 45
+text.length$ -- 3
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 189
+warning$ -- 11
+while$ -- 116
+width$ -- 50
+write$ -- 501
+(There were 3 error messages)
