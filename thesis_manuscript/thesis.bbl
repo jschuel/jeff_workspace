@@ -50,6 +50,34 @@ T.~Aushev, D.Z. Besson, K.~Chilikin, R.~Chistov, M.~Danilov, P.~Katrenko,
   Accelerators, Spectrometers, Detectors and Associated Equipment},
   789:134?142, Jul 2015.
 
+\bibitem{Banerjee}
+Subhashish Banerjee, Ashutosh~Kumar Alok, and Richard MacKenzie.
+\newblock {Quantum correlations in B and K meson systems}.
+\newblock {\em Eur. Phys. J. Plus}, 131(5):129, 2016.
+
+\bibitem{Benatti}
+F.~Benatti, R.~Floreanini, S.~Marcantoni, P.~Pinotti, and K.~Zimmermann.
+\newblock {Bound on dissipative effects from semileptonic neutral B-meson
+  decays}.
+\newblock {\em Eur. Phys. J. C}, 77(9):651, 2017.
+
+\bibitem{BertlmannGrimus}
+R.~A. Bertlmann and W.~Grimus.
+\newblock {Quantum mechanical interference over macroscopic distances in the B0
+  anti-B0 system}.
+\newblock {\em Phys. Lett. B}, 392:426--432, 1997.
+
+\bibitem{BertlmannGrimusBell}
+R.~A. Bertlmann, W.~Grimus, and B.~C. Hiesmayr.
+\newblock {Bell inequality and CP violation in the neutral kaon system}.
+\newblock {\em Phys. Lett. A}, 289:21--26, 2001.
+
+\bibitem{Bertlmann}
+Reinhold~A. Bertlmann, Katharina Durstberger, and Beatrix~C. Hiesmayr.
+\newblock {Decoherence of entangled kaons and its connection to entanglement
+  measures}.
+\newblock {\em Phys. Rev. A}, 68:012111, 2003.
+
 \bibitem{Bevan}
 A.~J. Bevan et~al.
 \newblock {The Physics of the B Factories}.
@@ -100,6 +128,11 @@ Samuel de~Jong.
 \newblock PhD thesis, University of Victoria,
   https://dspace.library.uvic.ca//handle/1828/8203, 2017.
 
+\bibitem{Dixit}
+Khushboo Dixit, Javid Naikoo, Subhashish Banerjee, and Ashutosh Kumar~Alok.
+\newblock {Study of coherence and mixedness in meson and neutrino systems}.
+\newblock {\em Eur. Phys. J. C}, 79(2):96, 2019.
+
 \bibitem{geant2}
 J.~Allison et~al.
 \newblock Geant4 developments and applications.
@@ -136,6 +169,17 @@ Yoshihiro Funakoshi and Yukiyoshi Ohnishi.
   2}.
 \newblock {\em ICFA Beam Dyn. Newslett.}, 72:11--19, 2017.
 
+\bibitem{Go}
+A.~Go et~al.
+\newblock {Measurement of EPR-type flavour entanglement in Upsilon(4S)
+  ---\ensuremath{>} B0 anti-B0 decays}.
+\newblock {\em Phys. Rev. Lett.}, 99:131802, 2007.
+
+\bibitem{Gorini}
+Vittorio Gorini, Andrzej Kossakowski, and E.~C.~G. Sudarshan.
+\newblock {Completely Positive Dynamical Semigroups of N Level Systems}.
+\newblock {\em J. Math. Phys.}, 17:821, 1976.
+
 \bibitem{hedges}
 Michael Hedges.
 \newblock {\em Performance and First Deployment of Novel 3D Nuclear Recoil
@@ -162,6 +206,12 @@ I.~Jaegle et~al.
 J.~Janssen and D.L. Pohl.
 \newblock pybar - bonn atlas readout in python.
 
+\bibitem{Kraus}
+Karl {Kraus}, A.~{B{\"o}hm}, J.~D. {Dollard}, and W.~H. {Wootters}.
+\newblock {\em {States, Effects, and Operations Fundamental Notions of Quantum
+  Theory}}, volume 190.
+\newblock 1983.
+
 \bibitem{basf2}
 T.~Kuhr, C.~Pulvermacher, M.~Ritter, T.~Hauth, and N.~Braun.
 \newblock The belle ii core software.
@@ -171,6 +221,11 @@ T.~Kuhr, C.~Pulvermacher, M.~Ritter, T.~Hauth, and N.~Braun.
 P.~M. Lewis et~al.
 \newblock {First Measurements of Beam Backgrounds at SuperKEKB}.
 \newblock {\em Nucl. Instrum. Meth.}, A914:69--144, 2019.
+
+\bibitem{Lindblad}
+Goran Lindblad.
+\newblock {On the Generators of Quantum Dynamical Semigroups}.
+\newblock {\em Commun. Math. Phys.}, 48:119, 1976.
 
 \bibitem{liptak}
 Z.~J. Liptak et~al.
@@ -188,6 +243,12 @@ Chadwick M.B., et~al.
 E.~Mendoza and D.~Cano-Ott.
 \newblock Update of the evaluated neutron cross section libraries for the
   geant4 code, June 2018.
+
+\bibitem{Naikoo}
+Javid Naikoo, Ashutosh~Kumar Alok, and Subhashish Banerjee.
+\newblock {Study of temporal quantum correlations in decohering B and K meson
+  systems}.
+\newblock {\em Phys. Rev. D}, 97(5):053008, 2018.
 
 \bibitem{natochii}
 A.~Natochii et~al.

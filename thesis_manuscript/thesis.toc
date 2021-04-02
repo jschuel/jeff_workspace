@@ -5,11 +5,13 @@
 \contentsline {chapter}{\numberline {1}Introduction}{1}{chapter.1}%
 \contentsline {chapter}{\numberline {2}Modeling decoherence}{2}{chapter.2}%
 \contentsline {section}{\numberline {2.1}An open $B\bar {B}$ system}{2}{section.2.1}%
-\contentsline {section}{\numberline {2.2}Bibliography Citations}{4}{section.2.2}%
-\contentsline {chapter}{\numberline {3}Conclusion}{5}{chapter.3}%
-\contentsline {section}{\numberline {3.1}Widgets}{5}{section.3.1}%
-\contentsline {subsection}{\numberline {3.1.1}Sub-Widgets}{5}{subsection.3.1.1}%
-\contentsline {subsubsection}{Sub-Sub-Widgets}{5}{section*.6}%
-\contentsline {paragraph}{Para-Widgets}{5}{section*.7}%
-\contentsline {subparagraph}{Sub-Para-Widgets}{5}{section*.8}%
-\contentsline {chapter}{Bibliography}{8}{appendix*.9}%
+\contentsline {subsection}{\numberline {2.1.1}Kraus' Theorem}{2}{subsection.2.1.1}%
+\contentsline {subsection}{\numberline {2.1.2}Open system $B\bar {B}$ dynamics}{3}{subsection.2.1.2}%
+\contentsline {section}{\numberline {2.2}Bibliography Citations}{11}{section.2.2}%
+\contentsline {chapter}{\numberline {3}Conclusion}{12}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Widgets}{12}{section.3.1}%
+\contentsline {subsection}{\numberline {3.1.1}Sub-Widgets}{12}{subsection.3.1.1}%
+\contentsline {subsubsection}{Sub-Sub-Widgets}{12}{section*.6}%
+\contentsline {paragraph}{Para-Widgets}{12}{section*.7}%
+\contentsline {subparagraph}{Sub-Para-Widgets}{12}{section*.8}%
+\contentsline {chapter}{Bibliography}{15}{appendix*.9}%

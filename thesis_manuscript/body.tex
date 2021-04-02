@@ -16,9 +16,175 @@
 
 \chapter{Modeling decoherence}
 
+In this section, we follow the work of refs \cite{ALOK, Naikoo} to come up with a parametrization of the mixing induced flavor asymmetry parameter, $\mathcal{A}_\text{mix}(\Delta t)$, that includes contributions of decoherence.
+
 \section{An open $B\bar{B}$ system}
 
-In this section, we follow the work of ref \cite{ALOK} to come up with a parametrization of mixing induced flavor asymmetry parameter that includes contributions of decoherence.
+\subsection{Kraus' Theorem}
+
+The notion of closed systems with a single observer is not a realistic representation of the conditions present in $B$ factory experiments. In order to properly model the time evolution of $B$ meson pairs, we must then treat the $B\bar{B}$ system as an \textit{open} system and allow it to interact with its surroundings. These surroundings may include [write more here]
+
+Kraus representations \cite{Kraus} are a convenient way of modeling open system dynamics. The general idea is as follows: Consider a Hilbert space $\mathcal{H}$ composed of two subsystems $\mathcal{H}_a$ and $\mathcal{H}_b$ such that $\mathcal{H}=\mathcal{H}_a\otimes \mathcal{H}_b$. If at a given time, $t$, we represent quantum states by density matrices $\rho(t)$, $\rho_a(t)$, and $\rho_b(t)$, respectively for $\mathcal{H}$, $\mathcal{H}_a$, and $\mathcal{H}_b$, then $\rho_{a}(t)$ ($\rho_b(t)$) is related to $\rho(t)$ by a partial trace over $b$ ($a$), that is,
+\begin{align}
+\rho_a(t) &= \Tr_b(\rho(t))\nonumber \\
+\label{eq:partialtrace}
+\rho_b(t) &= \Tr_a(\rho(t)).
+\end{align}
+Now, since $\mathcal{H}$ is unitary, $\rho(t)$ is simply a unitary transformation of $\rho(0)$:
+\begin{align}
+\label{eq:unitary}
+\rho(t) = U(t)\rho(0)U^\dagger(t),
+\end{align} 
+for some unitary operator $U(t)$. Plugging \ref{eq:partialtrace} into \ref{eq:unitary} gives us the time evolution of states in $\mathcal{H}_a$
+\begin{align}
+\rho_a(t) = \Tr_b\left(U(t)\rho(0)U^\dagger(t)\right).
+\end{align}
+Kraus' theorem states that if $\rho_a(t)$ can be also be written as
+\begin{align}
+\rho_a(t) = \sum_iK_i(t)\rho(0)K_i^\dagger(t),
+\end{align}
+with
+\begin{align}
+\sum_iK_i(t)K_i^\dagger(t)=\mathds{1},
+\end{align}
+then $K_i(t)$ is a Kraus operator, and $\rho_a(t)$ is completely positive and has a Kraus representation.
+
+\subsection{Open system $B\bar{B}$ dynamics}
+To consider the effects of decoherence on the time evolution of neutral $B\bar{B}$ pairs, we start with an orthonormal basis of states
+\begin{align}
+\ket{B^0}\doteq\begin{pmatrix} 1\\0\\0 \end{pmatrix},\quad \ket{\bar{B}^0}\doteq\begin{pmatrix} 0\\1\\0 \end{pmatrix},\quad \ket{0}\doteq\begin{pmatrix} 0\\0\\1 \end{pmatrix}.
+\end{align}
+Here, $\ket{B^0}$ ($\ket{\bar{B}^0}$) represent flavor eigenstates for neutral (anti) $B$-mesons, and $\ket{0}$ is the vacuum state used to describe decays. In this basis, initial meson flavor states are written as $\rho_{B^0}(0)=\ket{B^0}\bra{B^0}$ and $\rho_{\bar{B}^0}(0)=\ket{\bar{B}^0}\bra{\bar{B}^0}$. The time evolution of $\rho_{B^0}(0)$ and $\rho_{\bar{B}^0}(0)$ are governed by Kraus operators $\{K_i(t)\}_{i=0}^{5}$ that encode decoherence. In particular
+\begin{align}
+\label{eq:timeevolution}
+\rho_{B^0,\bar{B}^0}(t) = \sum_{i=0}^5K_i(t)\rho^{(i)}_{B^0,\bar{B}^0}(0)K_i^\dagger(t),
+\end{align}
+with
+\begin{align}
+\label{eq:firstkraus}
+K_0 &= \ket{0}\bra{0} \\
+K_1 &= \mathcal{K}_{1+}\left(\ket{B^0}\bra{B^0} + \ket{\bar{B}^0}\bra{\bar{B}^0}\right) +\mathcal{K}_{1-}\left(\frac{p}{q}\ket{B^0}\bra{\bar{B}^0}+\frac{q}{p} \ket{\bar{B}^0}\bra{B^0}\right) \\
+K_2 &= \mathcal{K}_2\left(\frac{p+q}{2p}\ket{0}\bra{\bar{B}^0}+\frac{p+q}{2q}\ket{0}\bra{\bar{B}^0}\right) \\
+K_3 &= \mathcal{K}_{3+}\frac{p+q}{2p}\ket{0}\bra{\bar{B}^0}+\mathcal{K}_{3-}\frac{p+q}{2q}\ket{0}\bra{\bar{B}^0} \\
+K_4 &= \mathcal{K}_{4}\left(\ket{B^0}\bra{B^0} + \ket{\bar{B}^0}\bra{\bar{B}^0} +\frac{p}{q}\ket{B^0}\bra{\bar{B}^0}+\frac{q}{p} \ket{\bar{B}^0}\bra{B^0}\right) \\
+\label{eq:lastkraus}
+K_5 &= \mathcal{K}_{5}\left(\ket{B^0}\bra{B^0} + \ket{\bar{B}^0}\bra{\bar{B}^0} -\frac{p}{q}\ket{B^0}\bra{\bar{B}^0}-\frac{q}{p} \ket{\bar{B}^0}\bra{B^0}\right).
+\end{align}
+[Define $p$ and $q$ here]. Substituting equations \ref{eq:firstkraus}--\ref{eq:lastkraus} into \ref{eq:timeevolution}, we find
+\begin{align}
+\label{eq:firstterm}
+\rho_{B^0}^{(0)}(t) &= \ket{0}\braket{0}{B^0}\braket{B^0}{0}\bra{0} = \mathbf{0} \\
+\rho_{B^0}^{(1)}(t) &= \left(\mathcal{K}_{1+}\left(\ket{B^0}\bra{B^0} + \ket{\bar{B}^0}\bra{\bar{B}^0}\right) +\mathcal{K}_{1-}\left(\frac{p}{q}\ket{B^0}\bra{\bar{B}^0}+\frac{q}{p} \ket{\bar{B}^0}\bra{B^0}\right)\right)\ket{B^0}\bra{B^0}\nonumber\\
+& \times \mathcal{K}^*_{1+}\left(\ket{B^0}\bra{B^0} + \ket{\bar{B}^0}\bra{\bar{B}^0}\right) +\mathcal{K}^*_{1-}\left(\left(\frac{p}{q}\right)^*\ket{\bar{B}^0}\bra{B^0}+\left(\frac{q}{p}\right)^* \ket{B^0}\bra{\bar{B}^0}\right) \nonumber\\
+&= \left(\mathcal{K}_{1+}\ket{B^0}\bra{B^0}+\mathcal{K}_{1-}\frac{q}{p}\ket{\bar{B}^0}\bra{B^0}\right)\nonumber \\
+& \times \left(\mathcal{K}_{1+}^*\left(\ket{B^0}\bra{B^0}+\ket{\bar{B}^0}\bra{\bar{B}^0}\right)+\mathcal{K}_{1-}^*\left(\left(\frac{p}{q}\right)^*\ket{\bar{B}^0}\bra{B^0}+\left(\frac{q}{p}\right)^*\ket{B^0}\bra{\bar{B}^0}\right)\right)\nonumber\\
+&=|\mathcal{K}_{1+}|^2\ket{B^0}\bra{B^0}+\mathcal{K}_{1+}\mathcal{K}_{1-}^*\left(\frac{q}{p}\right)^*\ket{B^0}\bra{\bar{B}^0}\nonumber\\
+&+\mathcal{K}_{1-}\mathcal{K}_{1+}^*\frac{q}{p}\ket{\bar{B}^0}\bra{B^0}+|\mathcal{K}_{1-}|^2\left|\frac{q}{p}\right|^2\ket{\bar{B}^0}\bra{\bar{B}^0}\\
+\rho_{B^0}^{(2)}(t) &= \mathcal{K}_2\left(\frac{p+q}{2p}\ket{0}\bra{B^0}+\frac{p+q}{2q}\ket{0}\bra{\bar{B}^0}\right)\ket{B^0}\bra{B^0}\nonumber \\
+&\times \mathcal{K}_2^*\left(\left(\frac{p+q}{2p}\right)^*\ket{B^0}\bra{0}+\left(\frac{p+q}{2q}\right)^*\ket{\bar{B}^0}\bra{0}\right) \nonumber \\
+&= |\mathcal{K}_2|^2\left|\frac{p+q}{2p}\right|^2\ket{0}\bra{0} \\
+\rho_{B^0}^{(3)}(t) &= \left(\mathcal{K}_{3+}\frac{p+q}{2p}\ket{0}\bra{B^0}+\mathcal{K}_{3-}\frac{p+q}{2q}\ket{0}\bra{\bar{B}^0}\right)\ket{B^0}\bra{B^0}\nonumber \\
+&\times \left(\mathcal{K}_{3+}^*\left(\frac{p+q}{2p}\right)^*\ket{B^0}\bra{0}+\mathcal{K}_{3-}^*\left(\frac{p+q}{2q}\right)^*\ket{\bar{B}^0}\bra{0}\right) \nonumber \\
+&= |\mathcal{K}_{3+}|^2\left|\frac{p+q}{2p}\right|^2\ket{0}\bra{0} \\
+\rho_{B^0}^{(4)}(t) &= \mathcal{K}_{4}\left(\ket{B^0}\bra{B^0} + \ket{\bar{B}^0}\bra{\bar{B}^0} + \frac{p}{q}\ket{B^0}\bra{\bar{B}^0}+\frac{q}{p} \ket{\bar{B}^0}\bra{B^0}\right)\ket{B^0}\bra{B^0}\nonumber\\
+& \times \mathcal{K}^*_{4}\left(\ket{B^0}\bra{B^0} + \ket{\bar{B}^0}\bra{\bar{B}^0} + \left(\frac{p}{q}\right)^*\ket{\bar{B}^0}\bra{B^0}+\left(\frac{q}{p}\right)^* \ket{B^0}\bra{\bar{B}^0}\right) \nonumber\\
+&= \mathcal{K}_{4}\left(\ket{B^0}\bra{B^0}+\frac{q}{p}\ket{\bar{B}^0}\bra{B^0}\right)\nonumber \\
+& \times \mathcal{K}_{4}^*\left(\ket{B^0}\bra{B^0}+\ket{\bar{B}^0}\bra{\bar{B}^0}+\left(\frac{p}{q}\right)^*\ket{\bar{B}^0}\bra{B^0}+\left(\frac{q}{p}\right)^*\ket{B^0}\bra{\bar{B}^0}\right)\nonumber\\
+&=|\mathcal{K}_{4}|^2\ket{B^0}\bra{B^0}+|\mathcal{K}_{4}|^2\left(\frac{q}{p}\right)^*\ket{B^0}\bra{\bar{B}^0} +|\mathcal{K}_{4}|^2\frac{q}{p}\ket{\bar{B}^0}\bra{B^0}+|\mathcal{K}_{4}|^2\left|\frac{q}{p}\right|^2\ket{\bar{B}^0}\bra{\bar{B}^0}
+\end{align}
+\begin{align}
+\rho_{B^0}^{(5)}(t) &= \mathcal{K}_{5}\left(\ket{B^0}\bra{B^0} + \ket{\bar{B}^0}\bra{\bar{B}^0} - \frac{p}{q}\ket{B^0}\bra{\bar{B}^0}-\frac{q}{p} \ket{\bar{B}^0}\bra{B^0}\right)\ket{B^0}\bra{B^0}\nonumber\\
+& \times \mathcal{K}^*_{5}\left(\ket{B^0}\bra{B^0} + \ket{\bar{B}^0}\bra{\bar{B}^0} - \left(\frac{p}{q}\right)^*\ket{\bar{B}^0}\bra{B^0}-\left(\frac{q}{p}\right)^* \ket{B^0}\bra{\bar{B}^0}\right) \nonumber\\
+&= \mathcal{K}_{5}\left(\ket{B^0}\bra{B^0}-\frac{q}{p}\ket{\bar{B}^0}\bra{B^0}\right)\nonumber \\
+& \times \mathcal{K}_{5}^*\left(\ket{B^0}\bra{B^0}+\ket{\bar{B}^0}\bra{\bar{B}^0}-\left(\frac{p}{q}\right)^*\ket{\bar{B}^0}\bra{B^0}-\left(\frac{q}{p}\right)^*\ket{B^0}\bra{\bar{B}^0}\right)\nonumber\\
+\label{eq:lastterm}
+&=|\mathcal{K}_{5}|^2\ket{B^0}\bra{B^0}-|\mathcal{K}_{5}|^2\left(\frac{q}{p}\right)^*\ket{B^0}\bra{\bar{B}^0} -|\mathcal{K}_{5}|^2\frac{q}{p}\ket{\bar{B}^0}\bra{B^0}+|\mathcal{K}_{5}|^2\left|\frac{q}{p}\right|^2\ket{\bar{B}^0}\bra{\bar{B}^0}
+\end{align}
+Summing everything up in equations \ref{eq:firstterm}-\ref{eq:lastterm} and writing in matrix form, we find
+\begin{align}
+\label{eq:bstate}
+\rho_{B^0}(t) = \begin{pmatrix} |\mathcal{K}_{1+}|^2 + |\mathcal{K}_4|^2 + |\mathcal{K}_5|^2 & \left(\frac{q}{p}\right)^*\left(\mathcal{K}_{1+}\mathcal{K}_{1-}^*+|\mathcal{K}_4|^2-|\mathcal{K}_5|^2\right) & 0 \\
+\left(\frac{q}{p}\right)\left(\mathcal{K}_{1+}^*\mathcal{K}_{1-}+|\mathcal{K}_4|^2-|\mathcal{K}_5|^2\right) & \left|\frac{q}{p}\right|^2\left(|\mathcal{K}_{1-}|^2 + |\mathcal{K}_4|^2 + |\mathcal{K}_5|^2 \right) & 0 \\
+0 & 0 & \left|\frac{p+q}{2p}\right|^2(|\mathcal{K}_2|^2 + |\mathcal{K}_3|^2) \end{pmatrix}.
+\end{align}
+
+The $\mathcal{K}$ coefficients in equations \ref{eq:firstkraus}-\ref{eq:bstate} are defined as follows \cite{Naikoo}:
+\begin{align}
+\mathcal{K}_{1\pm} &= \frac{1}{2}\left(e^{-(2im_L+\Gamma_L+\lambda)t/2}\pm e^{-(2im_H+\Gamma_H+\lambda)t/2}\right) \nonumber \\
+\mathcal{K}_2 &= \sqrt{\frac{\Re\left[\frac{p-q}{p+q}\right]}{|p|^2-|q|^2}\left(1-e^{-\Gamma_L t}-\frac{(|p|^2-|q|^2)^2 |1-e^{-(\Gamma+\lambda-i\Delta m)t}|^2}{1-e^{-\Gamma_H t}}\right)} \nonumber \\
+\mathcal{K}_{3\pm} &= \sqrt{\frac{\Re\left[\frac{p-q}{p+q}\right]}{(|p|^2-|q|^2)(1-e^{-\Gamma_H t})}}\left[1-e^{-\Gamma_H t}\pm(1-e^{-(\Gamma + \lambda-i\Delta m)t})(|p|^2-|q|^2)\right] \nonumber \\
+\mathcal{K}_4 &= \frac{e^{-\Gamma_L t/2}}{2}\sqrt{1-e^{-\lambda t}} \nonumber \\
+\mathcal{K}_5 &= \frac{e^{-\Gamma_H t/2}}{2}\sqrt{1-e^{-\lambda t}},
+\end{align}
+where $\lambda$ is a decoherence parameter, $\Gamma = \frac{1}{2}(\Gamma_L+\Gamma_H)$ is the decay width, $\Delta m = m_H-m_L$ is the mass difference between the $B$ mass eigenstates $\ket{B^0_L}$ and $\ket{B^0_H}$, related to the $B$ flavor eigenstates by
+\begin{align}
+\ket{B^0_L}=p\ket{B^0}+q\ket{\bar{B}^0}, \quad \ket{B_H^0}=p\ket{B^0}-q\ket{\bar{B}^0},
+\end{align}
+with $|p|^2 + |q|^2 = 1$. Substituting the expressions for $\mathcal{K}_{1\pm}$, $\mathcal{K}_4$ and $\mathcal{K}_5$\footnote{We leave $\mathcal{K}_{2,3\pm}$ as is because as we'll soon see, they don't have an effect on our calculations of interest.} into \ref{eq:bstate}, we first find:
+\begin{align}
+\rho_{B^0}(t)_{00} &= |\mathcal{K}_{1+}|^2 + |\mathcal{K}_4|^2 + |\mathcal{K}_5|^2 \nonumber \\
+&= \frac{1}{4}\left(e^{-(2im_L+\Gamma_L +\lambda)t/2}+e^{-(2im_H+\Gamma_H +\lambda)t/2}\right)\left(e^{-(-2im_L+\Gamma_L +\lambda)t/2}+e^{-(-2im_H+\Gamma_H +\lambda)t/2}\right) \nonumber \\
+&+ \left(\frac{1-e^{-\lambda t}}{4}\right)(e^{-\Gamma_L t} + e^{-\Gamma_H t}) \nonumber \\
+&= \frac{1}{4}\left(e^{-(\Gamma_L + \lambda)t} + e^{-(\Gamma_H + \lambda)t} + e^{-(\Gamma+\lambda)t}\left(e^{i\Delta m t}+e^{-i\Delta m t}\right)\right)+ \left(\frac{1-e^{-\lambda t}}{4}\right)(e^{-\Gamma_L t} + e^{-\Gamma_H t}) \nonumber \\
+&= \frac{1}{4}(e^{-\Gamma_L t} + e^{-\Gamma_H t})+\frac{e^{-(\Gamma + \lambda) t}}{2}\cos(\Delta m t) \nonumber \\
+&= \frac{e^{\Delta \Gamma t}+1}{4e^{\Gamma_L t}} + \frac{e^{-(\Gamma + \lambda) t}}{2}\cos(\Delta m t) \nonumber \\
+&= \frac{e^{\frac{\Delta \Gamma t}{2}}+e^{-\frac{\Delta \Gamma t}{2}}}{4e^{\Gamma_L t}e^{-\frac{\Delta \Gamma t}{2}}} + \frac{e^{-(\Gamma + \lambda) t}}{2}\cos(\Delta m t) \nonumber \\
+&= \frac{\cosh\left(\frac{\Delta \Gamma t}{2}\right)}{2e^{(\Gamma_L+\Gamma_H)t/2}} + \frac{e^{-(\Gamma + \lambda) t}}{2}\cos(\Delta m t) \nonumber \\
+&= \frac{e^{-\Gamma t}}{2}\left(\cosh\left(\frac{\Delta \Gamma t}{2}\right) + \cos(\Delta m t)e^{-\lambda t}\right) \nonumber \\
+&= \frac{e^{-\Gamma t}}{2}\left(a_{ch} + a_c e^{-\lambda t}\right),
+\end{align}
+where $a_{ch}\equiv \cosh\left(\frac{\Delta \Gamma t}{2}\right)$ and $a_c\equiv \cos(\Delta m t)$. Doing the same for $\rho_{B^0}(t)_{01}$, $\rho_{B^0}(t)_{10}$, and $\rho_{B^0}(t)_{11}$:
+\begin{align}
+\rho_{B^0}(t)_{01} &= \left(\frac{q}{p}\right)^*(\mathcal{K}_{1+}\mathcal{K}_{1-}^* + |\mathcal{K}_4|^2 - |\mathcal{K}_5|^2) \nonumber \\
+&= \frac{1}{4}\left(\frac{q}{p}\right)^*\left(e^{-(2im_L+\Gamma_L +\lambda)t/2}+e^{-(2im_H+\Gamma_H +\lambda)t/2}\right)\left(e^{-(-2im_L+\Gamma_L +\lambda)t/2}-e^{-(-2im_H+\Gamma_H +\lambda)t/2}\right) \nonumber \\
+&+ \left(\frac{q}{p}\right)^*\left(\frac{1-e^{-\lambda t}}{4}\right)(e^{-\Gamma_L t} - e^{-\Gamma_H t}) \nonumber \\
+&= \frac{1}{4}\left(\frac{q}{p}\right)^*\left(e^{-(\Gamma_L+\lambda)t}-e^{-(\Gamma_H+\lambda)t}+e^{-(\Gamma+\lambda)t}\left( e^{-i\Delta m t}-e^{i\Delta m t}\right)\right) + \left(\frac{q}{p}\right)^*\left(\frac{1-e^{-\lambda t}}{4}\right)(e^{-\Gamma_L t} - e^{-\Gamma_H t}) \nonumber \\
+&= \left(\frac{q}{p}\right)^*\frac{e^{-\Gamma_L t}-e^{-\Gamma_H t}}{4}-\left(\frac{q}{p}\right)^*\frac{ie^{-(\Gamma + \lambda)t}}{2}\sin(\Delta m t) \nonumber \\
+&= \left(\frac{q}{p}\right)^*\frac{1-e^{\Delta \Gamma t}}{4e^{\Gamma_2 t}}-\left(\frac{q}{p}\right)^*\frac{ie^{-(\Gamma + \lambda)t}}{2}\sin(\Delta m t) \nonumber \\
+&= \left(\frac{q}{p}\right)^*\frac{e^{-\frac{\Delta \Gamma t}{2}}-e^{\frac{\Delta \Gamma t}{2}}}{4e^{\Gamma_2 t}e^{-\frac{\Delta \Gamma t}{2}}}-\left(\frac{q}{p}\right)^*\frac{ie^{-(\Gamma + \lambda)t}}{2}\sin(\Delta m t) \nonumber \\
+&= \left(\frac{q}{p}\right)^*\frac{-2\sinh\left(\frac{\Delta \Gamma t}{2}\right)}{4e^{\Gamma t}}-\left(\frac{q}{p}\right)^*\frac{ie^{-(\Gamma + \lambda)t}}{2}\sin(\Delta m t) \nonumber \\
+&=-\left(\frac{q}{p}\right)^*\frac{e^{-\Gamma t}}{2}\left(a_{sh}+ia_s e^{-\lambda t}\right), \\
+\rho_{B^0}(t)_{10} &= \left(\frac{q}{p}\right)(\mathcal{K}_{1+}^*\mathcal{K}_{1-} + |\mathcal{K}_4|^2 - |\mathcal{K}_5|^2) \nonumber \\
+&= \frac{1}{4}\left(\frac{q}{p}\right)\left(e^{-(-2im_L+\Gamma_L +\lambda)t/2}+e^{-(-2im_H+\Gamma_H +\lambda)t/2}\right)\left(e^{-(2im_L+\Gamma_L +\lambda)t/2}-e^{-(2im_H+\Gamma_H +\lambda)t/2}\right) \nonumber \\
+&+ \left(\frac{q}{p}\right)\left(\frac{1-e^{-\lambda t}}{4}\right)(e^{-\Gamma_L t} - e^{-\Gamma_H t}) \nonumber \\
+&= \frac{1}{4}\left(\frac{q}{p}\right)\left(e^{-(\Gamma_L+\lambda)t}-e^{-(\Gamma_H+\lambda)t}+e^{-(\Gamma+\lambda)t}\left( e^{i\Delta m t}-e^{-i\Delta m t}\right)\right) + \left(\frac{q}{p}\right)\left(\frac{1-e^{-\lambda t}}{4}\right)(e^{-\Gamma_L t} - e^{-\Gamma_H t}) \nonumber \\
+&= \left(\frac{q}{p}\right)\frac{e^{-\Gamma_L t}-e^{-\Gamma_H t}}{4}+\left(\frac{q}{p}\right)\frac{ie^{-(\Gamma + \lambda)t}}{2}\sin(\Delta m t) \nonumber \\
+&= \left(\frac{q}{p}\right)\frac{1-e^{\Delta \Gamma t}}{4e^{\Gamma_2 t}}+\left(\frac{q}{p}\right)\frac{ie^{-(\Gamma + \lambda)t}}{2}\sin(\Delta m t) \nonumber \\
+&= \left(\frac{q}{p}\right)\frac{e^{-\frac{\Delta \Gamma t}{2}}-e^{\frac{\Delta \Gamma t}{2}}}{4e^{\Gamma_2 t}e^{-\frac{\Delta \Gamma t}{2}}}+\left(\frac{q}{p}\right)\frac{ie^{-(\Gamma + \lambda)t}}{2}\sin(\Delta m t) \nonumber \\
+&= \left(\frac{q}{p}\right)\frac{-2\sinh\left(\frac{\Delta \Gamma t}{2}\right)}{4e^{\Gamma t}}+\left(\frac{q}{p}\right)\frac{ie^{-(\Gamma + \lambda)t}}{2}\sin(\Delta m t) \nonumber \\
+&=\left(\frac{q}{p}\right)\frac{e^{-\Gamma t}}{2}\left(-a_{sh}+ia_s e^{-\lambda t}\right),
+\end{align}
+\begin{align}
+\rho_{B^0}(t)_{11} &= \left|\frac{q}{p}\right|^2(|\mathcal{K}_{1-}|^2 + |\mathcal{K}_4|^2 + |\mathcal{K}_5|^2) \nonumber \\
+&= \frac{1}{4}\left|\frac{q}{p}\right|^2\left(e^{-(2im_L+\Gamma_L +\lambda)t/2}-e^{-(2im_H+\Gamma_H +\lambda)t/2}\right)\left(e^{-(-2im_L+\Gamma_L +\lambda)t/2}-e^{-(-2im_H+\Gamma_H +\lambda)t/2}\right) \nonumber \\
+&+ \left|\frac{q}{p}\right|^2\left(\frac{1-e^{-\lambda t}}{4}\right)(e^{-\Gamma_L t} + e^{-\Gamma_H t}) \nonumber \\
+&= \frac{1}{4}\left|\frac{q}{p}\right|^2\left(e^{-(\Gamma_L + \lambda)t} + e^{-(\Gamma_H + \lambda)t} - e^{-(\Gamma+\lambda)t}\left(e^{i\Delta m t}+e^{-i\Delta m t}\right)\right)+ \left|\frac{q}{p}\right|^2\left(\frac{1-e^{-\lambda t}}{4}\right)(e^{-\Gamma_L t} + e^{-\Gamma_H t}) \nonumber \\
+&= \frac{1}{4}\left|\frac{q}{p}\right|^2(e^{-\Gamma_L t} + e^{-\Gamma_H t})-\left|\frac{q}{p}\right|^2\frac{e^{-(\Gamma + \lambda) t}}{2}\cos(\Delta m t) \nonumber \\
+&= \left|\frac{q}{p}\right|^2\frac{e^{\Delta \Gamma t}+1}{4e^{\Gamma_L t}} -\left|\frac{q}{p}\right|^2 \frac{e^{-(\Gamma + \lambda) t}}{2}\cos(\Delta m t) \nonumber \\
+&= \left|\frac{q}{p}\right|^2\frac{e^{\frac{\Delta \Gamma t}{2}}+e^{-\frac{\Delta \Gamma t}{2}}}{4e^{\Gamma_L t}e^{-\frac{\Delta \Gamma t}{2}}} -\left|\frac{q}{p}\right|^2 \frac{e^{-(\Gamma + \lambda) t}}{2}\cos(\Delta m t) \nonumber \\
+&= \left|\frac{q}{p}\right|^2\frac{\cosh\left(\frac{\Delta \Gamma t}{2}\right)}{2e^{(\Gamma_L+\Gamma_H)t/2}} -\left|\frac{q}{p}\right|^2 \frac{e^{-(\Gamma + \lambda) t}}{2}\cos(\Delta m t) \nonumber \\
+&= \left|\frac{q}{p}\right|^2\frac{e^{-\Gamma t}}{2}\left(\cosh\left(\frac{\Delta \Gamma t}{2}\right) - \cos(\Delta m t)e^{-\lambda t}\right) \nonumber \\
+&= \left|\frac{q}{p}\right|^2\frac{e^{-\Gamma t}}{2}\left(a_{ch} - a_c e^{-\lambda t}\right),
+\end{align}
+where $a_{sh}\equiv \sinh\left(\frac{\Delta \Gamma t}{2}\right)$ and $a_s\equiv \sin(\Delta m t)$. Plugging this all into \ref{eq:bstate} we find
+\begin{align}
+\rho_{B^0}(t) = \frac{e^{-\Gamma t}}{2}\begin{pmatrix}
+a_{ch} + e^{-\lambda t}a_c & -\left(\frac{q}{p}\right)^*\left(a_{sh}+ ie^{-\lambda t}a_s\right) & 0 \\ 
+\left(\frac{q}{p}\right)\left(-a_{sh} + ie^{-\lambda t}a_s \right) & \left|\frac{q}{p}\right|^2 \left(a_{ch}- e^{-\lambda t}a_c\right) & 0 \\
+0 & 0 & \rho_{B^0}(t)_{22}
+\end{pmatrix}.
+\end{align}
+We can perform this same procedure and time evolve $\rho_{\bar{B}^0}(0)$ using these same six Kraus operators $\{K_i(t)\}_{i=1}^{6}$ to get $\rho_{\bar{B}^0}(t)$. We summarize the results after doing so as follows
+
+\begin{align}
+\label{eq:density}
+\rho_{\pm}(t) = \frac{e^{-\Gamma t}}{2}\begin{pmatrix}
+a_{ch} \pm e^{-\lambda t}a_c & -\left(\frac{q}{p}\right)^*\left(a_{sh}\pm ie^{-\lambda t}a_s\right) & 0 \\
+\left(\frac{q}{p}\right)\left(-a_{sh} \pm ie^{-\lambda t}a_s \right) & \left|\frac{q}{p}\right|^2 \left(a_{ch}\mp e^{-\lambda t}a_c\right)  & 0 \\
+0 & 0 & \rho_{\pm}(t)_{22})
+\end{pmatrix},
+\end{align}
+where $\rho_+(t)$ and $\rho_-(t)$ correspond to $B^0$ and $\bar{B}^0$, respectively.
 
 \begin{align}
 \label{eq:observable}
@@ -31,15 +197,7 @@ A_f\bar{A}_f^* & |\bar{A}_f|^2 & 0 \\
 \end{align}
 where $A_f \equiv A(B^0\rightarrow f)$ and $\bar{A}_f \equiv A(\bar{B}^0\rightarrow f)$.
 
-\begin{align}
-\label{eq:density}
-\rho_{\pm}(t) = \frac{1}{2}e^{-\Gamma_d t}\begin{pmatrix}
-a_{ch} \pm e^{\lambda t}a_c & -a_{sh}\mp ie^{-\lambda t}a_s & 0 \\
--a_{sh} \pm ie^{-\lambda t}a_s & a_{ch}\mp e^{-\lambda t}a_c & 0 \\
-0 & 0 & 2(e^{\Gamma_d t}-a_{ch})
-\end{pmatrix},
-\end{align}
-where $\rho_+(t)$ and $\rho_-(t)$ correspond to $B^0$ and $\bar{B}^0$, respectively. With this construction, the probability of a $B^0$ or $\bar{B}^0$ decaying into state $f$ at time $t$ is computed as
+With this construction, the probability of a $B^0$ or $\bar{B}^0$ decaying into state $f$ at time $t$ is computed as
 \begin{align}
 \label{eq:trace}
 P_{f\pm}(t) = \Tr(\mathcal{O}_f\mathcal{\rho_\pm}),
@@ -49,7 +207,7 @@ with $P_+$ corresponding to an initial $B^0$ and $P_-$, an initial $\bar{B}^0$. 
 \label{eq:CP}
 \mathcal{A}_f =\frac{P_-(t)-P_+(t)}{P_-(t)+P_+(t)}
 \end{align}
-can be defined, and when $f = J/\psi K_S$, this observable represents CP violating asymmetry used to determine $\sin(2\phi_1)$ in \cite{Abe1}. To show this, we compute the probabilities in \ref{eq:CP} using \ref{eq:observable}, \ref{eq:density} and \ref{eq:trace}. Doing this, we find
+can be defined, and when we set $f$ to correspond to the golden mode, that is, $f = J/\psi K_S$, this observable represents CP violating asymmetry used to determine $\sin(2\phi_1)$ in \cite{Abe1}. To show this, we compute the probabilities in \ref{eq:CP} using \ref{eq:observable}, \ref{eq:density} and \ref{eq:trace}. Doing this, we find
 \begin{align}
 \label{eq:probs}
 P_{J/\psi K_S\pm}(t) &= \frac{1}{2}e^{-\Gamma_d t}\Bigg( \Bigg.|A_f|^2(a_{ch}\pm e^{-\lambda t}a_c)+|\bar{A}_f|^2(a_{ch}\mp e^{-\lambda t}a_c) \nonumber\\  &-A_f^*\bar{A}_f(a_{sh}\mp ie^{-\lambda t}a_s) - A_f\bar{A}_f^*(a_{sh}\pm ie^{-\lambda t}a_s)\Bigg) \Bigg. ;\quad f=J/\psi K_S.
@@ -86,6 +244,8 @@ Finally, we now define the time dependent mixing asymmetry, $\mathcal{A}_\text{m
 \mathcal{A}_\text{mix}(\Delta t)\equiv \frac{P_+(\Delta t)-P_-(\Delta t)}{P_+(\Delta t)+P_-(\Delta t)} = \frac{\cos(\Delta m_d\Delta t)}{\cosh(\Delta \Gamma_d \Delta t/2)}e^{-\lambda\Delta t}.
 \end{align}
 Just like with \ref{eq:cpviolation}, we see that we now have an expression for the time-dependent asymmetry which also manifestly depends on decoherence parameter $\lambda$.
+
+Note: Make sure to cite \cite{Bertlmann} for the construction of the decoherence parameter in the Kaon system, \cite{Banerjee} for the explicit treatment of $B$ mesons as an open system, \cite{Benatti} and \cite{Dixit} and \cite{ALOK} for their explicit usage of Go's dataset to show how updates using Belle I data can still be helpful. And of course, cite Go \cite{Go}. Also, also, it looks like \cite{Naikoo} explicitly constructs $\rho(t)$ and $\mathcal{O}$ that I use in this chapter. \cite{Lindblad} and \cite{Gorini} when bringing up dynamical positive semigroup formalism. 
 \section{Bibliography Citations}
 Citing references to your bibliography is easy \cite{belle}
 \cite{kekb}. First you build a BibTeX file which contains the
