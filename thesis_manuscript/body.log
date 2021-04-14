@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex 2020.12.6)  1 APR 2021 19:21
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex 2020.12.6)  8 APR 2021 12:38
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -45,8 +45,8 @@ Overfull \hbox (20.0pt too wide) in paragraph at lines 13--14
  []
 
 ! Undefined control sequence.
-l.17 \chapter
-             {Modeling decoherence}
+l.15 \chapter
+             {Decoherence and EPR correlations}
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
 misspelled it (e.g., `\hobx'), type `I' and the correct
@@ -60,20 +60,12 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.17 \chapter{M
-               odeling decoherence}
+l.15 \chapter{D
+               ecoherence and EPR correlations}
 You're in trouble here.  Try typing  <return>  to proceed.
 If that doesn't work, type  X <return>  to quit.
 
-Missing character: There is no M in font nullfont!
-Missing character: There is no o in font nullfont!
-Missing character: There is no d in font nullfont!
-Missing character: There is no e in font nullfont!
-Missing character: There is no l in font nullfont!
-Missing character: There is no i in font nullfont!
-Missing character: There is no n in font nullfont!
-Missing character: There is no g in font nullfont!
-Missing character: There is no d in font nullfont!
+Missing character: There is no D in font nullfont!
 Missing character: There is no e in font nullfont!
 Missing character: There is no c in font nullfont!
 Missing character: There is no o in font nullfont!
@@ -84,8 +76,157 @@ Missing character: There is no e in font nullfont!
 Missing character: There is no n in font nullfont!
 Missing character: There is no c in font nullfont!
 Missing character: There is no e in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no d in font nullfont!
+Missing character: There is no E in font nullfont!
+Missing character: There is no P in font nullfont!
+Missing character: There is no R in font nullfont!
+Missing character: There is no c in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no r in font nullfont!
+Missing character: There is no r in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no l in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no i in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no s in font nullfont!
+! Undefined control sequence.
+l.16 \section
+             {Introduction}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
 
-Overfull \hbox (20.0pt too wide) in paragraph at lines 17--18
+Missing character: There is no I in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no r in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no d in font nullfont!
+Missing character: There is no u in font nullfont!
+Missing character: There is no c in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no i in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no n in font nullfont!
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 15--17
+[]
+ []
+
+! Undefined control sequence.
+l.18 \chapter
+             {B physics concepts}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+! LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.18 \chapter{B
+                physics concepts}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Missing character: There is no B in font nullfont!
+Missing character: There is no p in font nullfont!
+Missing character: There is no h in font nullfont!
+Missing character: There is no y in font nullfont!
+Missing character: There is no s in font nullfont!
+Missing character: There is no i in font nullfont!
+Missing character: There is no c in font nullfont!
+Missing character: There is no s in font nullfont!
+Missing character: There is no c in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no c in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no p in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no s in font nullfont!
+! Undefined control sequence.
+l.19 \section
+             {Introduction}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+Missing character: There is no I in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no r in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no d in font nullfont!
+Missing character: There is no u in font nullfont!
+Missing character: There is no c in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no i in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no n in font nullfont!
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 18--20
+[]
+ []
+
+! Undefined control sequence.
+l.21 \section
+             {Decoherence in B physics}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+! LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.21 \section{D
+               ecoherence in B physics}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Missing character: There is no D in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no c in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no h in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no r in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no c in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no i in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no B in font nullfont!
+Missing character: There is no p in font nullfont!
+Missing character: There is no h in font nullfont!
+Missing character: There is no y in font nullfont!
+Missing character: There is no s in font nullfont!
+Missing character: There is no i in font nullfont!
+Missing character: There is no c in font nullfont!
+Missing character: There is no s in font nullfont!
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 21--22
 []
  []
 
@@ -96,7 +237,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.19 I
+l.23 I
       n this section, we follow the work of refs \cite{ALOK, Naikoo} to come...
 
 You're in trouble here.  Try typing  <return>  to proceed.
@@ -142,7 +283,7 @@ Missing character: There is no [ in font nullfont!
 ! Undefined control sequence.
 <write> ...: Citation `\@citeb ' on page \thepage 
                                                   \space undefined\on@line .
-l.19 ...ollow the work of refs \cite{ALOK, Naikoo}
+l.23 ...ollow the work of refs \cite{ALOK, Naikoo}
                                                    to come up with a paramet...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -151,14 +292,14 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 
-LaTeX Warning: Citation `ALOK' on page  undefined on input line 19.
+LaTeX Warning: Citation `ALOK' on page  undefined on input line 23.
 
 Missing character: There is no , in font nullfont!
 \citation{Naikoo}
 ! Undefined control sequence.
 <write> ...: Citation `\@citeb ' on page \thepage 
                                                   \space undefined\on@line .
-l.19 ...ollow the work of refs \cite{ALOK, Naikoo}
+l.23 ...ollow the work of refs \cite{ALOK, Naikoo}
                                                    to come up with a paramet...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -167,7 +308,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 
-LaTeX Warning: Citation `Naikoo' on page  undefined on input line 19.
+LaTeX Warning: Citation `Naikoo' on page  undefined on input line 23.
 
 Missing character: There is no ] in font nullfont!
 Missing character: There is no t in font nullfont!
@@ -242,11 +383,11 @@ Missing character: There is no e in font nullfont!
 Missing character: There is no r in font nullfont!
 Missing character: There is no , in font nullfont!
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <7> on input line 19.
+(Font)              <7> on input line 23.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <5> on input line 19.
+(Font)              <5> on input line 23.
 ! Undefined control sequence.
-l.19 ...or asymmetry parameter, $\mathcal{A}_\text
+l.23 ...or asymmetry parameter, $\mathcal{A}_\text
                                                   {mix}(\Delta t)$, that inc...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -295,28 +436,28 @@ Missing character: There is no c in font nullfont!
 Missing character: There is no e in font nullfont!
 Missing character: There is no . in font nullfont!
 
-Overfull \hbox (20.0pt too wide) in paragraph at lines 19--20
+Overfull \hbox (20.0pt too wide) in paragraph at lines 23--24
 []
  []
 
 
-Overfull \hbox (5.43053pt too wide) in paragraph at lines 19--20
+Overfull \hbox (5.43053pt too wide) in paragraph at lines 23--24
 []
  []
 
 
-Overfull \hbox (5.43053pt too wide) in paragraph at lines 19--20
+Overfull \hbox (5.43053pt too wide) in paragraph at lines 23--24
 []
  []
 
 
-Overfull \hbox (42.66711pt too wide) in paragraph at lines 19--20
+Overfull \hbox (42.66711pt too wide) in paragraph at lines 23--24
 \OMS/cmsy/m/n/10 A[]\OT1/cmr/m/n/10 (^^A\OML/cmm/m/it/10 t\OT1/cmr/m/n/10 )$
  []
 
 ! Undefined control sequence.
-l.21 \section
-             {An open $B\bar{B}$ system}
+l.25 \subsection
+                {An open $B\bar{B}$ system}
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
 misspelled it (e.g., `\hobx'), type `I' and the correct
@@ -330,8 +471,8 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.21 \section{A
-               n open $B\bar{B}$ system}
+l.25 \subsection{A
+                  n open $B\bar{B}$ system}
 You're in trouble here.  Try typing  <return>  to proceed.
 If that doesn't work, type  X <return>  to quit.
 
@@ -348,18 +489,18 @@ Missing character: There is no t in font nullfont!
 Missing character: There is no e in font nullfont!
 Missing character: There is no m in font nullfont!
 
-Overfull \hbox (20.0pt too wide) in paragraph at lines 21--22
+Overfull \hbox (20.0pt too wide) in paragraph at lines 25--26
 []
  []
 
 
-Overfull \hbox (16.17361pt too wide) in paragraph at lines 21--22
+Overfull \hbox (16.17361pt too wide) in paragraph at lines 25--26
 \OML/cmm/m/it/10 B[]$
  []
 
 ! Undefined control sequence.
-l.23 \subsection
-                {Kraus' Theorem}
+l.27 \subsubsection
+                   {Kraus' Theorem}
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
 misspelled it (e.g., `\hobx'), type `I' and the correct
@@ -373,8 +514,8 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.23 \subsection{K
-                  raus' Theorem}
+l.27 \subsubsection{K
+                     raus' Theorem}
 You're in trouble here.  Try typing  <return>  to proceed.
 If that doesn't work, type  X <return>  to quit.
 
@@ -392,7 +533,7 @@ Missing character: There is no r in font nullfont!
 Missing character: There is no e in font nullfont!
 Missing character: There is no m in font nullfont!
 
-Overfull \hbox (20.0pt too wide) in paragraph at lines 23--24
+Overfull \hbox (20.0pt too wide) in paragraph at lines 27--28
 []
  []
 
@@ -403,7 +544,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.25 T
+l.29 T
       he notion of closed systems with a single observer is not a realistic ...
 
 You're in trouble here.  Try typing  <return>  to proceed.
@@ -692,27 +833,27 @@ Missing character: There is no r in font nullfont!
 Missing character: There is no e in font nullfont!
 Missing character: There is no ] in font nullfont!
 
-Overfull \hbox (20.0pt too wide) in paragraph at lines 25--26
+Overfull \hbox (20.0pt too wide) in paragraph at lines 29--30
 []
  []
 
 
-Overfull \hbox (8.0868pt too wide) in paragraph at lines 25--26
+Overfull \hbox (8.0868pt too wide) in paragraph at lines 29--30
 \OML/cmm/m/it/10 B$
  []
 
 
-Overfull \hbox (8.0868pt too wide) in paragraph at lines 25--26
+Overfull \hbox (8.0868pt too wide) in paragraph at lines 29--30
 \OML/cmm/m/it/10 B$
  []
 
 
-Overfull \hbox (16.17361pt too wide) in paragraph at lines 25--26
+Overfull \hbox (16.17361pt too wide) in paragraph at lines 29--30
 \OML/cmm/m/it/10 B[]$
  []
 
 
-Overfull \hbox (19.9332pt too wide) in paragraph at lines 25--26
+Overfull \hbox (19.9332pt too wide) in paragraph at lines 29--30
 \OT1/cmr/m/it/10 open
  []
 
@@ -723,7 +864,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.27 K
+l.31 K
       raus representations \cite{Kraus} are a convenient way of modeling ope...
 
 You're in trouble here.  Try typing  <return>  to proceed.
@@ -754,7 +895,7 @@ Missing character: There is no [ in font nullfont!
 ! Undefined control sequence.
 <write> ...: Citation `\@citeb ' on page \thepage 
                                                   \space undefined\on@line .
-l.27 Kraus representations \cite{Kraus}
+l.31 Kraus representations \cite{Kraus}
                                         are a convenient way of modeling ope...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -763,7 +904,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 
-LaTeX Warning: Citation `Kraus' on page  undefined on input line 27.
+LaTeX Warning: Citation `Kraus' on page  undefined on input line 31.
 
 Missing character: There is no ] in font nullfont!
 Missing character: There is no a in font nullfont!
@@ -1031,7 +1172,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.28 \begin{align}
+l.32 \begin{align}
                   
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
@@ -1040,13 +1181,13 @@ or  <return>  to continue without it.
 ! Missing $ inserted.
 <inserted text> 
                 $
-l.29 \rho
+l.33 \rho
          _a(t) &= \Tr_b(\rho(t))\nonumber \\
 I've inserted a begin-math/end-math symbol since I think
 you left one out. Proceed, with fingers crossed.
 
 ! Misplaced alignment tab character &.
-l.29 \rho_a(t) &
+l.33 \rho_a(t) &
                 = \Tr_b(\rho(t))\nonumber \\
 I can't figure out why you would want to use a tab mark
 here. If you just want an ampersand, the remedy is
@@ -1056,7 +1197,7 @@ you're probably due for more error messages, and you
 might try typing `S' now just to see what is salvageable.
 
 ! Undefined control sequence.
-l.29 \rho_a(t) &= \Tr
+l.33 \rho_a(t) &= \Tr
                      _b(\rho(t))\nonumber \\
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -1065,7 +1206,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Misplaced alignment tab character &.
-l.31 \rho_b(t) &
+l.35 \rho_b(t) &
                 = \Tr_a(\rho(t)).
 I can't figure out why you would want to use a tab mark
 here. If you just want an ampersand, the remedy is
@@ -1075,7 +1216,7 @@ you're probably due for more error messages, and you
 might try typing `S' now just to see what is salvageable.
 
 ! Undefined control sequence.
-l.31 \rho_b(t) &= \Tr
+l.35 \rho_b(t) &= \Tr
                      _a(\rho(t)).
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -1090,7 +1231,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.32 \end{align}
+l.36 \end{align}
                 
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
@@ -1099,7 +1240,7 @@ or  <return>  to continue without it.
 ! Missing $ inserted.
 <inserted text> 
                 $
-l.32 \end{align}
+l.36 \end{align}
                 
 I've inserted something that you may have forgotten.
 (See the <inserted text> above.)
@@ -1166,7 +1307,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.34 \begin{align}
+l.38 \begin{align}
                   
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
@@ -1175,7 +1316,7 @@ or  <return>  to continue without it.
 ! Missing $ inserted.
 <inserted text> 
                 $
-l.36 \rho
+l.40 \rho
          (t) = U(t)\rho(0)U^\dagger(t),
 I've inserted a begin-math/end-math symbol since I think
 you left one out. Proceed, with fingers crossed.
@@ -1187,7 +1328,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.37 \end{align}
+l.41 \end{align}
                 
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
@@ -1196,7 +1337,7 @@ or  <return>  to continue without it.
 ! Missing $ inserted.
 <inserted text> 
                 $
-l.37 \end{align}
+l.41 \end{align}
                 
 I've inserted something that you may have forgotten.
 (See the <inserted text> above.)
@@ -1238,7 +1379,7 @@ Missing character: There is no g in font nullfont!
 ! Undefined control sequence.
 <write> ...nce `eq:partialtrace' on page \thepage 
                                                   \space undefined\on@line .
-l.38 ...tor $U(t)$. Plugging \ref{eq:partialtrace}
+l.42 ...tor $U(t)$. Plugging \ref{eq:partialtrace}
                                                    into \ref{eq:unitary} giv...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -1247,7 +1388,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 
-LaTeX Warning: Reference `eq:partialtrace' on page  undefined on input line 38.
+LaTeX Warning: Reference `eq:partialtrace' on page  undefined on input line 42.
 
 
 Missing character: There is no i in font nullfont!
@@ -1257,7 +1398,7 @@ Missing character: There is no o in font nullfont!
 ! Undefined control sequence.
 <write> ...eference `eq:unitary' on page \thepage 
                                                   \space undefined\on@line .
-l.38 ...ref{eq:partialtrace} into \ref{eq:unitary}
+l.42 ...ref{eq:partialtrace} into \ref{eq:unitary}
                                                    gives us the time evoluti...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -1266,7 +1407,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 
-LaTeX Warning: Reference `eq:unitary' on page  undefined on input line 38.
+LaTeX Warning: Reference `eq:unitary' on page  undefined on input line 42.
 
 Missing character: There is no g in font nullfont!
 Missing character: There is no i in font nullfont!
@@ -1308,7 +1449,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.39 \begin{align}
+l.43 \begin{align}
                   
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
@@ -1317,13 +1458,13 @@ or  <return>  to continue without it.
 ! Missing $ inserted.
 <inserted text> 
                 $
-l.40 \rho
+l.44 \rho
          _a(t) = \Tr_b\left(U(t)\rho(0)U^\dagger(t)\right).
 I've inserted a begin-math/end-math symbol since I think
 you left one out. Proceed, with fingers crossed.
 
 ! Undefined control sequence.
-l.40 \rho_a(t) = \Tr
+l.44 \rho_a(t) = \Tr
                     _b\left(U(t)\rho(0)U^\dagger(t)\right).
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -1338,7 +1479,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.41 \end{align}
+l.45 \end{align}
                 
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
@@ -1347,7 +1488,7 @@ or  <return>  to continue without it.
 ! Missing $ inserted.
 <inserted text> 
                 $
-l.41 \end{align}
+l.45 \end{align}
                 
 I've inserted something that you may have forgotten.
 (See the <inserted text> above.)
@@ -1407,7 +1548,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.43 \begin{align}
+l.47 \begin{align}
                   
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
@@ -1416,7 +1557,7 @@ or  <return>  to continue without it.
 ! Missing $ inserted.
 <inserted text> 
                 $
-l.44 \rho
+l.48 \rho
          _a(t) = \sum_iK_i(t)\rho(0)K_i^\dagger(t),
 I've inserted a begin-math/end-math symbol since I think
 you left one out. Proceed, with fingers crossed.
@@ -1428,7 +1569,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.45 \end{align}
+l.49 \end{align}
                 
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
@@ -1437,7 +1578,7 @@ or  <return>  to continue without it.
 ! Missing $ inserted.
 <inserted text> 
                 $
-l.45 \end{align}
+l.49 \end{align}
                 
 I've inserted something that you may have forgotten.
 (See the <inserted text> above.)
@@ -1456,7 +1597,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.47 \begin{align}
+l.51 \begin{align}
                   
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
@@ -1465,13 +1606,13 @@ or  <return>  to continue without it.
 ! Missing $ inserted.
 <inserted text> 
                 $
-l.48 \sum
+l.52 \sum
          _iK_i(t)K_i^\dagger(t)=\mathds{1},
 I've inserted a begin-math/end-math symbol since I think
 you left one out. Proceed, with fingers crossed.
 
 ! Undefined control sequence.
-l.48 \sum_iK_i(t)K_i^\dagger(t)=\mathds
+l.52 \sum_iK_i(t)K_i^\dagger(t)=\mathds
                                        {1},
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -1486,7 +1627,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.49 \end{align}
+l.53 \end{align}
                 
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
@@ -1495,7 +1636,7 @@ or  <return>  to continue without it.
 ! Missing $ inserted.
 <inserted text> 
                 $
-l.49 \end{align}
+l.53 \end{align}
                 
 I've inserted something that you may have forgotten.
 (See the <inserted text> above.)
@@ -1575,226 +1716,226 @@ Missing character: There is no o in font nullfont!
 Missing character: There is no n in font nullfont!
 Missing character: There is no . in font nullfont!
 
-Overfull \hbox (20.0pt too wide) in paragraph at lines 27--51
+Overfull \hbox (20.0pt too wide) in paragraph at lines 31--55
 []
  []
 
 
-Overfull \hbox (5.43053pt too wide) in paragraph at lines 27--51
+Overfull \hbox (5.43053pt too wide) in paragraph at lines 31--55
 []
  []
 
 
-Overfull \hbox (8.5417pt too wide) in paragraph at lines 27--51
+Overfull \hbox (8.5417pt too wide) in paragraph at lines 31--55
 \OMS/cmsy/m/n/10 H$
  []
 
 
-Overfull \hbox (13.28282pt too wide) in paragraph at lines 27--51
+Overfull \hbox (13.28282pt too wide) in paragraph at lines 31--55
 \OMS/cmsy/m/n/10 H[]$
  []
 
 
-Overfull \hbox (12.46184pt too wide) in paragraph at lines 27--51
+Overfull \hbox (12.46184pt too wide) in paragraph at lines 31--55
 \OMS/cmsy/m/n/10 H[]$
  []
 
 
-Overfull \hbox (19.09721pt too wide) in paragraph at lines 27--51
+Overfull \hbox (19.09721pt too wide) in paragraph at lines 31--55
 \OMS/cmsy/m/n/10 H \OT1/cmr/m/n/10 =
  []
 
 
-Overfull \hbox (21.06062pt too wide) in paragraph at lines 27--51
+Overfull \hbox (21.06062pt too wide) in paragraph at lines 31--55
 \OMS/cmsy/m/n/10 H[] 
 
  []
 
 
-Overfull \hbox (12.46184pt too wide) in paragraph at lines 27--51
+Overfull \hbox (12.46184pt too wide) in paragraph at lines 31--55
 \OMS/cmsy/m/n/10 H[]$
  []
 
 
-Overfull \hbox (3.61111pt too wide) in paragraph at lines 27--51
+Overfull \hbox (3.61111pt too wide) in paragraph at lines 31--55
 \OML/cmm/m/it/10 t$
  []
 
 
-Overfull \hbox (16.55907pt too wide) in paragraph at lines 27--51
+Overfull \hbox (16.55907pt too wide) in paragraph at lines 31--55
 \OML/cmm/m/it/10 ^^Z\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 t\OT1/cmr/m/n/10 )$
  []
 
 
-Overfull \hbox (21.39671pt too wide) in paragraph at lines 27--51
+Overfull \hbox (21.39671pt too wide) in paragraph at lines 31--55
 \OML/cmm/m/it/10 ^^Z[]\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 t\OT1/cmr/m/n/10 )$
  []
 
 
-Overfull \hbox (20.57573pt too wide) in paragraph at lines 27--51
+Overfull \hbox (20.57573pt too wide) in paragraph at lines 31--55
 \OML/cmm/m/it/10 ^^Z[]\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 t\OT1/cmr/m/n/10 )$
  []
 
 
-Overfull \hbox (8.5417pt too wide) in paragraph at lines 27--51
+Overfull \hbox (8.5417pt too wide) in paragraph at lines 31--55
 \OMS/cmsy/m/n/10 H$
  []
 
 
-Overfull \hbox (13.28282pt too wide) in paragraph at lines 27--51
+Overfull \hbox (13.28282pt too wide) in paragraph at lines 31--55
 \OMS/cmsy/m/n/10 H[]$
  []
 
 
-Overfull \hbox (12.46184pt too wide) in paragraph at lines 27--51
+Overfull \hbox (12.46184pt too wide) in paragraph at lines 31--55
 \OMS/cmsy/m/n/10 H[]$
  []
 
 
-Overfull \hbox (21.39671pt too wide) in paragraph at lines 27--51
+Overfull \hbox (21.39671pt too wide) in paragraph at lines 31--55
 \OML/cmm/m/it/10 ^^Z[]\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 t\OT1/cmr/m/n/10 )$
  []
 
 
-Overfull \hbox (20.57573pt too wide) in paragraph at lines 27--51
+Overfull \hbox (20.57573pt too wide) in paragraph at lines 31--55
 \OML/cmm/m/it/10 ^^Z[]\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 t\OT1/cmr/m/n/10 )$
  []
 
 
-Overfull \hbox (16.55907pt too wide) in paragraph at lines 27--51
+Overfull \hbox (16.55907pt too wide) in paragraph at lines 31--55
 \OML/cmm/m/it/10 ^^Z\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 t\OT1/cmr/m/n/10 )$
  []
 
 
-Overfull \hbox (4.29166pt too wide) in paragraph at lines 27--51
+Overfull \hbox (4.29166pt too wide) in paragraph at lines 31--55
 \OML/cmm/m/it/10 b$
  []
 
 
-Overfull \hbox (5.28589pt too wide) in paragraph at lines 27--51
+Overfull \hbox (5.28589pt too wide) in paragraph at lines 31--55
 \OML/cmm/m/it/10 a$
  []
 
 
-Overfull \hbox (35.96889pt too wide) in paragraph at lines 27--51
+Overfull \hbox (35.96889pt too wide) in paragraph at lines 31--55
 \OML/cmm/m/it/10 ^^Z[]\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 t\OT1/cmr/m/n/10 ) =[]
  []
 
 
-Overfull \hbox (24.33687pt too wide) in paragraph at lines 27--51
+Overfull \hbox (24.33687pt too wide) in paragraph at lines 31--55
 \OT1/cmr/m/n/10 (\OML/cmm/m/it/10 ^^Z\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 t\OT1/cm
 r/m/n/10 ))[] 
  []
 
 
-Overfull \hbox (35.96889pt too wide) in paragraph at lines 27--51
+Overfull \hbox (35.96889pt too wide) in paragraph at lines 31--55
 []\OML/cmm/m/it/10 ^^Z[]\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 t\OT1/cmr/m/n/10 ) =[
 ]
  []
 
 
-Overfull \hbox (27.11465pt too wide) in paragraph at lines 27--51
+Overfull \hbox (27.11465pt too wide) in paragraph at lines 31--55
 \OT1/cmr/m/n/10 (\OML/cmm/m/it/10 ^^Z\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 t\OT1/cm
 r/m/n/10 ))\OML/cmm/m/it/10 :$
  []
 
 
-Overfull \hbox (8.5417pt too wide) in paragraph at lines 27--51
+Overfull \hbox (8.5417pt too wide) in paragraph at lines 31--55
 \OMS/cmsy/m/n/10 H$
  []
 
 
-Overfull \hbox (16.55907pt too wide) in paragraph at lines 27--51
+Overfull \hbox (16.55907pt too wide) in paragraph at lines 31--55
 \OML/cmm/m/it/10 ^^Z\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 t\OT1/cmr/m/n/10 )$
  []
 
 
-Overfull \hbox (17.94797pt too wide) in paragraph at lines 27--51
+Overfull \hbox (17.94797pt too wide) in paragraph at lines 31--55
 \OML/cmm/m/it/10 ^^Z\OT1/cmr/m/n/10 (0)$
  []
 
 
-Overfull \hbox (27.11458pt too wide) in paragraph at lines 27--51
+Overfull \hbox (27.11458pt too wide) in paragraph at lines 31--55
 \OML/cmm/m/it/10 ^^Z\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 t\OT1/cmr/m/n/10 ) =
  []
 
 
-Overfull \hbox (63.50632pt too wide) in paragraph at lines 27--51
+Overfull \hbox (63.50632pt too wide) in paragraph at lines 31--55
 \OML/cmm/m/it/10 U\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 t\OT1/cmr/m/n/10 )\OML/cmm/
 m/it/10 ^^Z\OT1/cmr/m/n/10 (0)\OML/cmm/m/it/10 U[]\OT1/cmr/m/n/10 (\OML/cmm/m/i
 t/10 t\OT1/cmr/m/n/10 )\OML/cmm/m/it/10 ;$
  []
 
 
-Overfull \hbox (19.30695pt too wide) in paragraph at lines 27--51
+Overfull \hbox (19.30695pt too wide) in paragraph at lines 31--55
 \OML/cmm/m/it/10 U\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 t\OT1/cmr/m/n/10 )$
  []
 
 
-Overfull \hbox (10.86105pt too wide) in paragraph at lines 27--51
+Overfull \hbox (10.86105pt too wide) in paragraph at lines 31--55
 []
  []
 
 
-Overfull \hbox (10.86105pt too wide) in paragraph at lines 27--51
+Overfull \hbox (10.86105pt too wide) in paragraph at lines 31--55
 []
  []
 
 
-Overfull \hbox (13.28282pt too wide) in paragraph at lines 27--51
+Overfull \hbox (13.28282pt too wide) in paragraph at lines 31--55
 \OMS/cmsy/m/n/10 H[]$
  []
 
 
-Overfull \hbox (35.96889pt too wide) in paragraph at lines 27--51
+Overfull \hbox (35.96889pt too wide) in paragraph at lines 31--55
 \OML/cmm/m/it/10 ^^Z[]\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 t\OT1/cmr/m/n/10 ) =[]
  []
 
 
-Overfull \hbox (74.33966pt too wide) in paragraph at lines 27--51
+Overfull \hbox (74.33966pt too wide) in paragraph at lines 31--55
 [] \OML/cmm/m/it/10 :$
  []
 
 
-Overfull \hbox (21.39671pt too wide) in paragraph at lines 27--51
+Overfull \hbox (21.39671pt too wide) in paragraph at lines 31--55
 \OML/cmm/m/it/10 ^^Z[]\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 t\OT1/cmr/m/n/10 )$
  []
 
 
-Overfull \hbox (31.95222pt too wide) in paragraph at lines 27--51
+Overfull \hbox (31.95222pt too wide) in paragraph at lines 31--55
 \OML/cmm/m/it/10 ^^Z[]\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 t\OT1/cmr/m/n/10 ) =
  []
 
 
-Overfull \hbox (84.25243pt too wide) in paragraph at lines 27--51
+Overfull \hbox (84.25243pt too wide) in paragraph at lines 31--55
 [][] \OML/cmm/m/it/10 K[]\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 t\OT1/cmr/m/n/10 )\O
 ML/cmm/m/it/10 ^^Z\OT1/cmr/m/n/10 (0)\OML/cmm/m/it/10 K[]\OT1/cmr/m/n/10 (\OML/
 cmm/m/it/10 t\OT1/cmr/m/n/10 )\OML/cmm/m/it/10 ;$
  []
 
 
-Overfull \hbox (74.08218pt too wide) in paragraph at lines 27--51
+Overfull \hbox (74.08218pt too wide) in paragraph at lines 31--55
 [][] \OML/cmm/m/it/10 K[]\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 t\OT1/cmr/m/n/10 )\O
 ML/cmm/m/it/10 K[]\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 t\OT1/cmr/m/n/10 ) =
  []
 
 
-Overfull \hbox (7.7778pt too wide) in paragraph at lines 27--51
+Overfull \hbox (7.7778pt too wide) in paragraph at lines 31--55
 \OT1/cmr/m/n/10 1\OML/cmm/m/it/10 ;$
  []
 
 
-Overfull \hbox (23.21126pt too wide) in paragraph at lines 27--51
+Overfull \hbox (23.21126pt too wide) in paragraph at lines 31--55
 \OML/cmm/m/it/10 K[]\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 t\OT1/cmr/m/n/10 )$
  []
 
 
-Overfull \hbox (21.39671pt too wide) in paragraph at lines 27--51
+Overfull \hbox (21.39671pt too wide) in paragraph at lines 31--55
 \OML/cmm/m/it/10 ^^Z[]\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 t\OT1/cmr/m/n/10 )$
  []
 
 ! Undefined control sequence.
-l.52 \subsection
+l.56 \subsection
                 {Open system $B\bar{B}$ dynamics}
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -1809,7 +1950,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.52 \subsection{O
+l.56 \subsection{O
                   pen system $B\bar{B}$ dynamics}
 You're in trouble here.  Try typing  <return>  to proceed.
 If that doesn't work, type  X <return>  to quit.
@@ -1942,14 +2083,14 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.54 \begin{align}
+l.58 \begin{align}
                   
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
 or  <return>  to continue without it.
 
 ! Undefined control sequence.
-l.55 \ket
+l.59 \ket
          {B^0}\doteq\begin{pmatrix} 1\\0\\0 \end{pmatrix},\quad \ket{\bar{B}...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -1961,13 +2102,13 @@ Missing character: There is no B in font nullfont!
 ! Missing $ inserted.
 <inserted text> 
                 $
-l.55 \ket{B^
+l.59 \ket{B^
             0}\doteq\begin{pmatrix} 1\\0\\0 \end{pmatrix},\quad \ket{\bar{B}...
 I've inserted a begin-math/end-math symbol since I think
 you left one out. Proceed, with fingers crossed.
 
 ! Extra }, or forgotten $.
-l.55 \ket{B^0}
+l.59 \ket{B^0}
               \doteq\begin{pmatrix} 1\\0\\0 \end{pmatrix},\quad \ket{\bar{B}...
 I've deleted a group-closing symbol because it seems to be
 spurious, as in `$x}$'. But perhaps the } is legitimate and
@@ -1976,7 +2117,7 @@ the way to recover is to insert both the forgotten and the
 deleted material, e.g., by typing `I$}'.
 
 ! Undefined control sequence.
-l.55 ...{pmatrix} 1\\0\\0 \end{pmatrix},\quad \ket
+l.59 ...{pmatrix} 1\\0\\0 \end{pmatrix},\quad \ket
                                                   {\bar{B}^0}\doteq\begin{pm...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -1985,7 +2126,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.55 ...{pmatrix} 0\\1\\0 \end{pmatrix},\quad \ket
+l.59 ...{pmatrix} 0\\1\\0 \end{pmatrix},\quad \ket
                                                   {0}\doteq\begin{pmatrix} 0...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2000,7 +2141,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.56 \end{align}
+l.60 \end{align}
                 
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
@@ -2009,7 +2150,7 @@ or  <return>  to continue without it.
 ! Missing $ inserted.
 <inserted text> 
                 $
-l.56 \end{align}
+l.60 \end{align}
                 
 I've inserted something that you may have forgotten.
 (See the <inserted text> above.)
@@ -2020,7 +2161,7 @@ my insertion and my current dilemma will both disappear.
 ! Missing } inserted.
 <inserted text> 
                 }
-l.56 \end{align}
+l.60 \end{align}
                 
 I've inserted something that you may have forgotten.
 (See the <inserted text> above.)
@@ -2036,7 +2177,7 @@ Missing character: There is no , in font nullfont!
 ! Undefined control sequence.
 <recently read> \ket 
                      
-l.57 Here, $\ket
+l.61 Here, $\ket
                 {B^0}$ ($\ket{\bar{B}^0}$) represent flavor eigenstates for ...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2048,7 +2189,7 @@ Missing character: There is no ( in font nullfont!
 ! Undefined control sequence.
 <recently read> \ket 
                      
-l.57 Here, $\ket{B^0}$ ($\ket
+l.61 Here, $\ket{B^0}$ ($\ket
                              {\bar{B}^0}$) represent flavor eigenstates for ...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2113,7 +2254,7 @@ Missing character: There is no d in font nullfont!
 ! Undefined control sequence.
 <recently read> \ket 
                      
-l.57 ...s for neutral (anti) $B$-mesons, and $\ket
+l.61 ...s for neutral (anti) $B$-mesons, and $\ket
                                                   {0}$ is the vacuum state u...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2207,7 +2348,7 @@ Missing character: There is no n in font nullfont!
 Missing character: There is no a in font nullfont!
 Missing character: There is no s in font nullfont!
 ! Undefined control sequence.
-l.57 ... states are written as $\rho_{B^0}(0)=\ket
+l.61 ... states are written as $\rho_{B^0}(0)=\ket
                                                   {B^0}\bra{B^0}$ and $\rho_...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2216,7 +2357,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.57 ...re written as $\rho_{B^0}(0)=\ket{B^0}\bra
+l.61 ...re written as $\rho_{B^0}(0)=\ket{B^0}\bra
                                                   {B^0}$ and $\rho_{\bar{B}^...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2228,7 +2369,7 @@ Missing character: There is no a in font nullfont!
 Missing character: There is no n in font nullfont!
 Missing character: There is no d in font nullfont!
 ! Undefined control sequence.
-l.57 ...0}\bra{B^0}$ and $\rho_{\bar{B}^0}(0)=\ket
+l.61 ...0}\bra{B^0}$ and $\rho_{\bar{B}^0}(0)=\ket
                                                   {\bar{B}^0}\bra{\bar{B}^0}...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2237,7 +2378,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.57 ...d $\rho_{\bar{B}^0}(0)=\ket{\bar{B}^0}\bra
+l.61 ...d $\rho_{\bar{B}^0}(0)=\ket{\bar{B}^0}\bra
                                                   {\bar{B}^0}$. The time evo...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2335,7 +2476,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.58 \begin{align}
+l.62 \begin{align}
                   
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
@@ -2344,7 +2485,7 @@ or  <return>  to continue without it.
 ! Missing $ inserted.
 <inserted text> 
                 $
-l.60 \rho
+l.64 \rho
          _{B^0,\bar{B}^0}(t) = \sum_{i=0}^5K_i(t)\rho^{(i)}_{B^0,\bar{B}^0}(...
 I've inserted a begin-math/end-math symbol since I think
 you left one out. Proceed, with fingers crossed.
@@ -2356,7 +2497,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.61 \end{align}
+l.65 \end{align}
                 
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
@@ -2365,7 +2506,7 @@ or  <return>  to continue without it.
 ! Missing $ inserted.
 <inserted text> 
                 $
-l.61 \end{align}
+l.65 \end{align}
                 
 I've inserted something that you may have forgotten.
 (See the <inserted text> above.)
@@ -2384,7 +2525,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.63 \begin{align}
+l.67 \begin{align}
                   
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
@@ -2394,13 +2535,13 @@ Missing character: There is no K in font nullfont!
 ! Missing $ inserted.
 <inserted text> 
                 $
-l.65 K_
+l.69 K_
        0 &= \ket{0}\bra{0} \\
 I've inserted a begin-math/end-math symbol since I think
 you left one out. Proceed, with fingers crossed.
 
 ! Misplaced alignment tab character &.
-l.65 K_0 &
+l.69 K_0 &
           = \ket{0}\bra{0} \\
 I can't figure out why you would want to use a tab mark
 here. If you just want an ampersand, the remedy is
@@ -2410,7 +2551,7 @@ you're probably due for more error messages, and you
 might try typing `S' now just to see what is salvageable.
 
 ! Undefined control sequence.
-l.65 K_0 &= \ket
+l.69 K_0 &= \ket
                 {0}\bra{0} \\
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2419,7 +2560,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.65 K_0 &= \ket{0}\bra
+l.69 K_0 &= \ket{0}\bra
                        {0} \\
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2428,7 +2569,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Misplaced alignment tab character &.
-l.66 K_1 &
+l.70 K_1 &
           = \mathcal{K}_{1+}\left(\ket{B^0}\bra{B^0} + \ket{\bar{B}^0}\bra{\...
 I can't figure out why you would want to use a tab mark
 here. If you just want an ampersand, the remedy is
@@ -2438,7 +2579,7 @@ you're probably due for more error messages, and you
 might try typing `S' now just to see what is salvageable.
 
 ! Undefined control sequence.
-l.66 K_1 &= \mathcal{K}_{1+}\left(\ket
+l.70 K_1 &= \mathcal{K}_{1+}\left(\ket
                                       {B^0}\bra{B^0} + \ket{\bar{B}^0}\bra{\...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2447,7 +2588,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.66 K_1 &= \mathcal{K}_{1+}\left(\ket{B^0}\bra
+l.70 K_1 &= \mathcal{K}_{1+}\left(\ket{B^0}\bra
                                                {B^0} + \ket{\bar{B}^0}\bra{\...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2456,7 +2597,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.66 ...cal{K}_{1+}\left(\ket{B^0}\bra{B^0} + \ket
+l.70 ...cal{K}_{1+}\left(\ket{B^0}\bra{B^0} + \ket
                                                   {\bar{B}^0}\bra{\bar{B}^0}...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2465,7 +2606,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.66 ...t(\ket{B^0}\bra{B^0} + \ket{\bar{B}^0}\bra
+l.70 ...t(\ket{B^0}\bra{B^0} + \ket{\bar{B}^0}\bra
                                                   {\bar{B}^0}\right) +\mathc...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2474,7 +2615,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.66 ...ht) +\mathcal{K}_{1-}\left(\frac{p}{q}\ket
+l.70 ...ht) +\mathcal{K}_{1-}\left(\frac{p}{q}\ket
                                                   {B^0}\bra{\bar{B}^0}+\frac...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2483,7 +2624,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.66 ...hcal{K}_{1-}\left(\frac{p}{q}\ket{B^0}\bra
+l.70 ...hcal{K}_{1-}\left(\frac{p}{q}\ket{B^0}\bra
                                                   {\bar{B}^0}+\frac{q}{p} \k...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2492,7 +2633,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.66 ...}\ket{B^0}\bra{\bar{B}^0}+\frac{q}{p} \ket
+l.70 ...}\ket{B^0}\bra{\bar{B}^0}+\frac{q}{p} \ket
                                                   {\bar{B}^0}\bra{B^0}\right...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2501,7 +2642,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.66 ...\bar{B}^0}+\frac{q}{p} \ket{\bar{B}^0}\bra
+l.70 ...\bar{B}^0}+\frac{q}{p} \ket{\bar{B}^0}\bra
                                                   {B^0}\right) \\
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2510,7 +2651,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Misplaced alignment tab character &.
-l.67 K_2 &
+l.71 K_2 &
           = \mathcal{K}_2\left(\frac{p+q}{2p}\ket{0}\bra{\bar{B}^0}+\frac{p+...
 I can't figure out why you would want to use a tab mark
 here. If you just want an ampersand, the remedy is
@@ -2520,7 +2661,7 @@ you're probably due for more error messages, and you
 might try typing `S' now just to see what is salvageable.
 
 ! Undefined control sequence.
-l.67 K_2 &= \mathcal{K}_2\left(\frac{p+q}{2p}\ket
+l.71 K_2 &= \mathcal{K}_2\left(\frac{p+q}{2p}\ket
                                                  {0}\bra{\bar{B}^0}+\frac{p+...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2529,7 +2670,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.67 ...athcal{K}_2\left(\frac{p+q}{2p}\ket{0}\bra
+l.71 ...athcal{K}_2\left(\frac{p+q}{2p}\ket{0}\bra
                                                   {\bar{B}^0}+\frac{p+q}{2q}...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2538,7 +2679,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.67 ...}\ket{0}\bra{\bar{B}^0}+\frac{p+q}{2q}\ket
+l.71 ...}\ket{0}\bra{\bar{B}^0}+\frac{p+q}{2q}\ket
                                                   {0}\bra{\bar{B}^0}\right) \\
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2547,7 +2688,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.67 ...}\bra{\bar{B}^0}+\frac{p+q}{2q}\ket{0}\bra
+l.71 ...}\bra{\bar{B}^0}+\frac{p+q}{2q}\ket{0}\bra
                                                   {\bar{B}^0}\right) \\
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2556,7 +2697,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Misplaced alignment tab character &.
-l.68 K_3 &
+l.72 K_3 &
           = \mathcal{K}_{3+}\frac{p+q}{2p}\ket{0}\bra{\bar{B}^0}+\mathcal{K}...
 I can't figure out why you would want to use a tab mark
 here. If you just want an ampersand, the remedy is
@@ -2566,7 +2707,7 @@ you're probably due for more error messages, and you
 might try typing `S' now just to see what is salvageable.
 
 ! Undefined control sequence.
-l.68 K_3 &= \mathcal{K}_{3+}\frac{p+q}{2p}\ket
+l.72 K_3 &= \mathcal{K}_{3+}\frac{p+q}{2p}\ket
                                               {0}\bra{\bar{B}^0}+\mathcal{K}...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2575,7 +2716,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.68 ... \mathcal{K}_{3+}\frac{p+q}{2p}\ket{0}\bra
+l.72 ... \mathcal{K}_{3+}\frac{p+q}{2p}\ket{0}\bra
                                                   {\bar{B}^0}+\mathcal{K}_{3...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2584,7 +2725,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.68 ...r{B}^0}+\mathcal{K}_{3-}\frac{p+q}{2q}\ket
+l.72 ...r{B}^0}+\mathcal{K}_{3-}\frac{p+q}{2q}\ket
                                                   {0}\bra{\bar{B}^0} \\
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2593,7 +2734,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.68 ...+\mathcal{K}_{3-}\frac{p+q}{2q}\ket{0}\bra
+l.72 ...+\mathcal{K}_{3-}\frac{p+q}{2q}\ket{0}\bra
                                                   {\bar{B}^0} \\
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2602,7 +2743,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Misplaced alignment tab character &.
-l.69 K_4 &
+l.73 K_4 &
           = \mathcal{K}_{4}\left(\ket{B^0}\bra{B^0} + \ket{\bar{B}^0}\bra{\b...
 I can't figure out why you would want to use a tab mark
 here. If you just want an ampersand, the remedy is
@@ -2612,7 +2753,7 @@ you're probably due for more error messages, and you
 might try typing `S' now just to see what is salvageable.
 
 ! Undefined control sequence.
-l.69 K_4 &= \mathcal{K}_{4}\left(\ket
+l.73 K_4 &= \mathcal{K}_{4}\left(\ket
                                      {B^0}\bra{B^0} + \ket{\bar{B}^0}\bra{\b...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2621,7 +2762,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.69 K_4 &= \mathcal{K}_{4}\left(\ket{B^0}\bra
+l.73 K_4 &= \mathcal{K}_{4}\left(\ket{B^0}\bra
                                               {B^0} + \ket{\bar{B}^0}\bra{\b...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2630,7 +2771,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.69 ...hcal{K}_{4}\left(\ket{B^0}\bra{B^0} + \ket
+l.73 ...hcal{K}_{4}\left(\ket{B^0}\bra{B^0} + \ket
                                                   {\bar{B}^0}\bra{\bar{B}^0}...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2639,7 +2780,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.69 ...t(\ket{B^0}\bra{B^0} + \ket{\bar{B}^0}\bra
+l.73 ...t(\ket{B^0}\bra{B^0} + \ket{\bar{B}^0}\bra
                                                   {\bar{B}^0} +\frac{p}{q}\k...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2648,7 +2789,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.69 ...\bar{B}^0}\bra{\bar{B}^0} +\frac{p}{q}\ket
+l.73 ...\bar{B}^0}\bra{\bar{B}^0} +\frac{p}{q}\ket
                                                   {B^0}\bra{\bar{B}^0}+\frac...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2657,7 +2798,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.69 ...}\bra{\bar{B}^0} +\frac{p}{q}\ket{B^0}\bra
+l.73 ...}\bra{\bar{B}^0} +\frac{p}{q}\ket{B^0}\bra
                                                   {\bar{B}^0}+\frac{q}{p} \k...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2666,7 +2807,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.69 ...}\ket{B^0}\bra{\bar{B}^0}+\frac{q}{p} \ket
+l.73 ...}\ket{B^0}\bra{\bar{B}^0}+\frac{q}{p} \ket
                                                   {\bar{B}^0}\bra{B^0}\right...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2675,7 +2816,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.69 ...\bar{B}^0}+\frac{q}{p} \ket{\bar{B}^0}\bra
+l.73 ...\bar{B}^0}+\frac{q}{p} \ket{\bar{B}^0}\bra
                                                   {B^0}\right) \\
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2684,7 +2825,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Misplaced alignment tab character &.
-l.71 K_5 &
+l.75 K_5 &
           = \mathcal{K}_{5}\left(\ket{B^0}\bra{B^0} + \ket{\bar{B}^0}\bra{\b...
 I can't figure out why you would want to use a tab mark
 here. If you just want an ampersand, the remedy is
@@ -2694,7 +2835,7 @@ you're probably due for more error messages, and you
 might try typing `S' now just to see what is salvageable.
 
 ! Undefined control sequence.
-l.71 K_5 &= \mathcal{K}_{5}\left(\ket
+l.75 K_5 &= \mathcal{K}_{5}\left(\ket
                                      {B^0}\bra{B^0} + \ket{\bar{B}^0}\bra{\b...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2703,7 +2844,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.71 K_5 &= \mathcal{K}_{5}\left(\ket{B^0}\bra
+l.75 K_5 &= \mathcal{K}_{5}\left(\ket{B^0}\bra
                                               {B^0} + \ket{\bar{B}^0}\bra{\b...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2712,7 +2853,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.71 ...hcal{K}_{5}\left(\ket{B^0}\bra{B^0} + \ket
+l.75 ...hcal{K}_{5}\left(\ket{B^0}\bra{B^0} + \ket
                                                   {\bar{B}^0}\bra{\bar{B}^0}...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2721,7 +2862,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.71 ...t(\ket{B^0}\bra{B^0} + \ket{\bar{B}^0}\bra
+l.75 ...t(\ket{B^0}\bra{B^0} + \ket{\bar{B}^0}\bra
                                                   {\bar{B}^0} -\frac{p}{q}\k...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2730,7 +2871,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.71 ...\bar{B}^0}\bra{\bar{B}^0} -\frac{p}{q}\ket
+l.75 ...\bar{B}^0}\bra{\bar{B}^0} -\frac{p}{q}\ket
                                                   {B^0}\bra{\bar{B}^0}-\frac...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2739,7 +2880,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.71 ...}\bra{\bar{B}^0} -\frac{p}{q}\ket{B^0}\bra
+l.75 ...}\bra{\bar{B}^0} -\frac{p}{q}\ket{B^0}\bra
                                                   {\bar{B}^0}-\frac{q}{p} \k...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2748,7 +2889,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.71 ...}\ket{B^0}\bra{\bar{B}^0}-\frac{q}{p} \ket
+l.75 ...}\ket{B^0}\bra{\bar{B}^0}-\frac{q}{p} \ket
                                                   {\bar{B}^0}\bra{B^0}\right).
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2757,7 +2898,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.71 ...\bar{B}^0}-\frac{q}{p} \ket{\bar{B}^0}\bra
+l.75 ...\bar{B}^0}-\frac{q}{p} \ket{\bar{B}^0}\bra
                                                   {B^0}\right).
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2772,7 +2913,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.72 \end{align}
+l.76 \end{align}
                 
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
@@ -2781,7 +2922,7 @@ or  <return>  to continue without it.
 ! Missing $ inserted.
 <inserted text> 
                 $
-l.72 \end{align}
+l.76 \end{align}
                 
 I've inserted something that you may have forgotten.
 (See the <inserted text> above.)
@@ -2829,7 +2970,7 @@ Missing character: There is no s in font nullfont!
 ! Undefined control sequence.
 <write> ...rence `eq:firstkraus' on page \thepage 
                                                   \space undefined\on@line .
-l.73 ...Substituting equations \ref{eq:firstkraus}
+l.77 ...Substituting equations \ref{eq:firstkraus}
                                                   --\ref{eq:lastkraus} into ...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2838,14 +2979,14 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 
-LaTeX Warning: Reference `eq:firstkraus' on page  undefined on input line 73.
+LaTeX Warning: Reference `eq:firstkraus' on page  undefined on input line 77.
 
 Missing character: There is no - in font nullfont!
 Missing character: There is no - in font nullfont!
 ! Undefined control sequence.
 <write> ...erence `eq:lastkraus' on page \thepage 
                                                   \space undefined\on@line .
-l.73 ...ns \ref{eq:firstkraus}--\ref{eq:lastkraus}
+l.77 ...ns \ref{eq:firstkraus}--\ref{eq:lastkraus}
                                                    into \ref{eq:timeevolutio...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2854,7 +2995,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 
-LaTeX Warning: Reference `eq:lastkraus' on page  undefined on input line 73.
+LaTeX Warning: Reference `eq:lastkraus' on page  undefined on input line 77.
 
 Missing character: There is no i in font nullfont!
 Missing character: There is no n in font nullfont!
@@ -2863,7 +3004,7 @@ Missing character: There is no o in font nullfont!
 ! Undefined control sequence.
 <write> ...ce `eq:timeevolution' on page \thepage 
                                                   \space undefined\on@line .
-l.73 ...{eq:lastkraus} into \ref{eq:timeevolution}
+l.77 ...{eq:lastkraus} into \ref{eq:timeevolution}
                                                   , we find
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2872,7 +3013,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 
-LaTeX Warning: Reference `eq:timeevolution' on page  undefined on input line 73
+LaTeX Warning: Reference `eq:timeevolution' on page  undefined on input line 77
 .
 
 Missing character: There is no , in font nullfont!
@@ -2889,7 +3030,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.74 \begin{align}
+l.78 \begin{align}
                   
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
@@ -2898,13 +3039,13 @@ or  <return>  to continue without it.
 ! Missing $ inserted.
 <inserted text> 
                 $
-l.76 \rho
+l.80 \rho
          _{B^0}^{(0)}(t) &= \ket{0}\braket{0}{B^0}\braket{B^0}{0}\bra{0} = \...
 I've inserted a begin-math/end-math symbol since I think
 you left one out. Proceed, with fingers crossed.
 
 ! Misplaced alignment tab character &.
-l.76 \rho_{B^0}^{(0)}(t) &
+l.80 \rho_{B^0}^{(0)}(t) &
                           = \ket{0}\braket{0}{B^0}\braket{B^0}{0}\bra{0} = \...
 I can't figure out why you would want to use a tab mark
 here. If you just want an ampersand, the remedy is
@@ -2914,7 +3055,7 @@ you're probably due for more error messages, and you
 might try typing `S' now just to see what is salvageable.
 
 ! Undefined control sequence.
-l.76 \rho_{B^0}^{(0)}(t) &= \ket
+l.80 \rho_{B^0}^{(0)}(t) &= \ket
                                 {0}\braket{0}{B^0}\braket{B^0}{0}\bra{0} = \...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2923,7 +3064,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.76 \rho_{B^0}^{(0)}(t) &= \ket{0}\braket
+l.80 \rho_{B^0}^{(0)}(t) &= \ket{0}\braket
                                           {0}{B^0}\braket{B^0}{0}\bra{0} = \...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2932,7 +3073,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.76 ...^{(0)}(t) &= \ket{0}\braket{0}{B^0}\braket
+l.80 ...^{(0)}(t) &= \ket{0}\braket{0}{B^0}\braket
                                                   {B^0}{0}\bra{0} = \mathbf{...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2941,7 +3082,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.76 ... \ket{0}\braket{0}{B^0}\braket{B^0}{0}\bra
+l.80 ... \ket{0}\braket{0}{B^0}\braket{B^0}{0}\bra
                                                   {0} = \mathbf{0} \\
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2950,7 +3091,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Misplaced alignment tab character &.
-l.77 \rho_{B^0}^{(1)}(t) &
+l.81 \rho_{B^0}^{(1)}(t) &
                           = \left(\mathcal{K}_{1+}\left(\ket{B^0}\bra{B^0} +...
 I can't figure out why you would want to use a tab mark
 here. If you just want an ampersand, the remedy is
@@ -2960,7 +3101,7 @@ you're probably due for more error messages, and you
 might try typing `S' now just to see what is salvageable.
 
 ! Undefined control sequence.
-l.77 ...1)}(t) &= \left(\mathcal{K}_{1+}\left(\ket
+l.81 ...1)}(t) &= \left(\mathcal{K}_{1+}\left(\ket
                                                   {B^0}\bra{B^0} + \ket{\bar...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2969,7 +3110,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.77 ... \left(\mathcal{K}_{1+}\left(\ket{B^0}\bra
+l.81 ... \left(\mathcal{K}_{1+}\left(\ket{B^0}\bra
                                                   {B^0} + \ket{\bar{B}^0}\br...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2978,7 +3119,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.77 ...cal{K}_{1+}\left(\ket{B^0}\bra{B^0} + \ket
+l.81 ...cal{K}_{1+}\left(\ket{B^0}\bra{B^0} + \ket
                                                   {\bar{B}^0}\bra{\bar{B}^0}...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2987,7 +3128,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.77 ...t(\ket{B^0}\bra{B^0} + \ket{\bar{B}^0}\bra
+l.81 ...t(\ket{B^0}\bra{B^0} + \ket{\bar{B}^0}\bra
                                                   {\bar{B}^0}\right) +\mathc...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2996,7 +3137,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.77 ...ht) +\mathcal{K}_{1-}\left(\frac{p}{q}\ket
+l.81 ...ht) +\mathcal{K}_{1-}\left(\frac{p}{q}\ket
                                                   {B^0}\bra{\bar{B}^0}+\frac...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -3005,7 +3146,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.77 ...hcal{K}_{1-}\left(\frac{p}{q}\ket{B^0}\bra
+l.81 ...hcal{K}_{1-}\left(\frac{p}{q}\ket{B^0}\bra
                                                   {\bar{B}^0}+\frac{q}{p} \k...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -3014,7 +3155,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.77 ...}\ket{B^0}\bra{\bar{B}^0}+\frac{q}{p} \ket
+l.81 ...}\ket{B^0}\bra{\bar{B}^0}+\frac{q}{p} \ket
                                                   {\bar{B}^0}\bra{B^0}\right...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -3023,7 +3164,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.77 ...\bar{B}^0}+\frac{q}{p} \ket{\bar{B}^0}\bra
+l.81 ...\bar{B}^0}+\frac{q}{p} \ket{\bar{B}^0}\bra
                                                   {B^0}\right)\right)\ket{B^...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -3032,7 +3173,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.77 ...\ket{\bar{B}^0}\bra{B^0}\right)\right)\ket
+l.81 ...\ket{\bar{B}^0}\bra{B^0}\right)\right)\ket
                                                   {B^0}\bra{B^0}\nonumber\\
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -3041,7 +3182,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.77 ...{B}^0}\bra{B^0}\right)\right)\ket{B^0}\bra
+l.81 ...{B}^0}\bra{B^0}\right)\right)\ket{B^0}\bra
                                                   {B^0}\nonumber\\
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -3052,7 +3193,7 @@ and I'll forget about whatever was undefined.
 ! Misplaced alignment tab character &.
 <recently read> &
                  
-l.78 &
+l.82 &
        \times \mathcal{K}^*_{1+}\left(\ket{B^0}\bra{B^0} + \ket{\bar{B}^0}\b...
 I can't figure out why you would want to use a tab mark
 here. If you just want an ampersand, the remedy is
@@ -3062,7 +3203,7 @@ you're probably due for more error messages, and you
 might try typing `S' now just to see what is salvageable.
 
 ! Undefined control sequence.
-l.78 & \times \mathcal{K}^*_{1+}\left(\ket
+l.82 & \times \mathcal{K}^*_{1+}\left(\ket
                                           {B^0}\bra{B^0} + \ket{\bar{B}^0}\b...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -3071,7 +3212,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.78 ...imes \mathcal{K}^*_{1+}\left(\ket{B^0}\bra
+l.82 ...imes \mathcal{K}^*_{1+}\left(\ket{B^0}\bra
                                                   {B^0} + \ket{\bar{B}^0}\br...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -3080,7 +3221,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.78 ...l{K}^*_{1+}\left(\ket{B^0}\bra{B^0} + \ket
+l.82 ...l{K}^*_{1+}\left(\ket{B^0}\bra{B^0} + \ket
                                                   {\bar{B}^0}\bra{\bar{B}^0}...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -3089,7 +3230,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.78 ...t(\ket{B^0}\bra{B^0} + \ket{\bar{B}^0}\bra
+l.82 ...t(\ket{B^0}\bra{B^0} + \ket{\bar{B}^0}\bra
                                                   {\bar{B}^0}\right) +\mathc...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -3098,7 +3239,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.78 ...*_{1-}\left(\left(\frac{p}{q}\right)^*\ket
+l.82 ...*_{1-}\left(\left(\frac{p}{q}\right)^*\ket
                                                   {\bar{B}^0}\bra{B^0}+\left...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -3107,7 +3248,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.78 ...ft(\frac{p}{q}\right)^*\ket{\bar{B}^0}\bra
+l.82 ...ft(\frac{p}{q}\right)^*\ket{\bar{B}^0}\bra
                                                   {B^0}+\left(\frac{q}{p}\ri...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -3116,7 +3257,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.78 ...}\bra{B^0}+\left(\frac{q}{p}\right)^* \ket
+l.82 ...}\bra{B^0}+\left(\frac{q}{p}\right)^* \ket
                                                   {B^0}\bra{\bar{B}^0}\right...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -3125,7 +3266,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.78 ...}+\left(\frac{q}{p}\right)^* \ket{B^0}\bra
+l.82 ...}+\left(\frac{q}{p}\right)^* \ket{B^0}\bra
                                                   {\bar{B}^0}\right) \nonumb...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -3136,7 +3277,7 @@ and I'll forget about whatever was undefined.
 ! Misplaced alignment tab character &.
 <recently read> &
                  
-l.79 &
+l.83 &
       = \left(\mathcal{K}_{1+}\ket{B^0}\bra{B^0}+\mathcal{K}_{1-}\frac{q}{p}...
 I can't figure out why you would want to use a tab mark
 here. If you just want an ampersand, the remedy is
@@ -3146,7 +3287,7 @@ you're probably due for more error messages, and you
 might try typing `S' now just to see what is salvageable.
 
 ! Undefined control sequence.
-l.79 &= \left(\mathcal{K}_{1+}\ket
+l.83 &= \left(\mathcal{K}_{1+}\ket
                                   {B^0}\bra{B^0}+\mathcal{K}_{1-}\frac{q}{p}...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -3155,7 +3296,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.79 &= \left(\mathcal{K}_{1+}\ket{B^0}\bra
+l.83 &= \left(\mathcal{K}_{1+}\ket{B^0}\bra
                                            {B^0}+\mathcal{K}_{1-}\frac{q}{p}...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -3164,7 +3305,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.79 ...}\bra{B^0}+\mathcal{K}_{1-}\frac{q}{p}\ket
+l.83 ...}\bra{B^0}+\mathcal{K}_{1-}\frac{q}{p}\ket
                                                   {\bar{B}^0}\bra{B^0}\right...
 (That makes 100 errors; please try again.) 
 Here is how much of TeX's memory you used:

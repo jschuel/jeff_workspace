@@ -41,13 +41,16 @@ class extract:
         dfs = {}
         for tpc in tpcs:
             if tpc == 'iiwi' or tpc == 'nene' or tpc =='humu':
-                dfs[tpc] = data[tpc].loc[(data[tpc]['truthNeutronVtx_z_belle_frame']>1350) & (data[tpc]['truthNeutronVtx_z_belle_frame']<1900) 
-                & (data[tpc]['truthNeutronVtx_x_belle_frame']<95) & (data[tpc]['truthNeutronVtx_x_belle_frame']>37) 
-                & (np.abs(data[tpc]['truthNeutronVtx_y_belle_frame'])<20)]
+                #dfs[tpc] = data[tpc].loc[(data[tpc]['truthNeutronVtx_z_belle_frame']>1350) & (data[tpc]['truthNeutronVtx_z_belle_frame']<1900) 
+                #& (data[tpc]['truthNeutronVtx_x_belle_frame']<95) & (data[tpc]['truthNeutronVtx_x_belle_frame']>37) 
+                #& (np.abs(data[tpc]['truthNeutronVtx_y_belle_frame'])<20)]
+                dfs[tpc] = data[tpc].loc[(data[tpc]['truthNeutronVtx_z_belle_frame']>=1350) & (data[tpc]['truthNeutronVtx_z_belle_frame']<=1650) 
+                & (data[tpc]['truthNeutronVtx_x_belle_frame']<=80) & (data[tpc]['truthNeutronVtx_x_belle_frame']>=40) 
+                & (np.abs(data[tpc]['truthNeutronVtx_y_belle_frame'])<=20)]
             else:
-                dfs[tpc] = data[tpc].loc[(data[tpc]['truthNeutronVtx_z_belle_frame']>-900) & 
-               (data[tpc]['truthNeutronVtx_z_belle_frame']<-750) & (data[tpc]['truthNeutronVtx_x_belle_frame']>20) & 
-               (data[tpc]['truthNeutronVtx_x_belle_frame']<60) & (np.abs(data[tpc]['truthNeutronVtx_y_belle_frame'])<20)]
+                dfs[tpc] = data[tpc].loc[(data[tpc]['truthNeutronVtx_z_belle_frame']>=-900) & 
+               (data[tpc]['truthNeutronVtx_z_belle_frame']<=-750) & (data[tpc]['truthNeutronVtx_x_belle_frame']>=16) & 
+               (data[tpc]['truthNeutronVtx_x_belle_frame']<=60) & (np.abs(data[tpc]['truthNeutronVtx_y_belle_frame'])<=20)]
             dfs[tpc].index = [i for i in range(0, len(dfs[tpc]))]
         return dfs
 
@@ -62,9 +65,11 @@ class extract:
             for bg in bgtype:
                 try:
                     try:
-                        truth[tpc+'_'+bg] = ur.open(dir+bg+'_'+tpc+'_all.root')['recoils'].pandas.df(flatten=False)
+                        #truth[tpc+'_'+bg] = ur.open(dir+bg+'_'+tpc+'_all.root')['recoils'].pandas.df(flatten=False)
+                        truth[tpc+'_'+bg] = rp.read_root(dir+bg+'_'+tpc+'_all.root', key='recoils')
                     except KeyError:
-                        truth[tpc+'_'+bg] = ur.open(dir+bg+'_'+tpc+'_all.root')['my_ttree'].pandas.df(flatten=False)
+                        #truth[tpc+'_'+bg] = ur.open(dir+bg+'_'+tpc+'_all.root')['my_ttree'].pandas.df(flatten=False)
+                        truth[tpc+'_'+bg] = rp.read_root(dir+bg+'_'+tpc+'_all.root', key='my_ttree')
                     try:
                         truth[tpc+'_'+bg]['chipx'] = truth[tpc+'_'+bg]['chipx'].apply(lambda x: x[0])
                         truth[tpc+'_'+bg]['chipy'] = truth[tpc+'_'+bg]['chipy'].apply(lambda x: x[0])
@@ -84,9 +89,12 @@ class extract:
             for bg in bgtype:
                 try:
                     try:
-                        truth[tpc+'_'+bg] = ur.open(dir+bg+'_'+tpc+'_all.root')['recoils'].pandas.df(flatten=False)
+                        #truth[tpc+'_'+bg] = ur.open(dir+bg+'_'+tpc+'_all.root')['recoils'].pandas.df(flatten=False)
+                        truth[tpc+'_'+bg] = rp.read_root(dir+bg+'_'+tpc+'_all.root',key='recoils')
                     except KeyError:
-                        truth[tpc+'_'+bg] = ur.open(dir+bg+'_'+tpc+'_all.root')['my_ttree'].pandas.df(flatten=False)
+                        #truth[tpc+'_'+bg] = ur.open(dir+bg+'_'+tpc+'_all.root')['my_ttree'].pandas.df(flatten=False)
+                        truth[tpc+'_'+bg] = rp.read_root(dir+bg+'_'+tpc+'_all.root',key='my_ttree')
+
                     try:
                         truth[tpc+'_'+bg]['chipx'] = truth[tpc+'_'+bg]['chipx'].apply(lambda x: x[0])
                         truth[tpc+'_'+bg]['chipy'] = truth[tpc+'_'+bg]['chipy'].apply(lambda x: x[0])
@@ -138,8 +146,8 @@ class extract:
         ax.add_patch(Rectangle((1385,172), 31, 10, facecolor = 'gold', alpha = 1.0, edgecolor = 'black', zorder=1e6+4)) #nene
         ax.add_patch(Rectangle((1585,170), 31, 10, facecolor = 'gold', alpha = 1.0, edgecolor = 'black', zorder=1e6+5)) #humu
 
-        #ax.add_patch(Rectangle((-870,20), 120, 40, facecolor = 'lime', alpha = 0.5, edgecolor = 'black', zorder=1e6+6)) #hotspot
-        #ax.add_patch(Rectangle((1390,30), 290, 50, facecolor = 'lime', alpha = 0.5, edgecolor = 'black', zorder=1e6+7)) #hotspot
+        ax.add_patch(Rectangle((-900,18), 150, 40, facecolor = 'lime', alpha = 0.7, edgecolor = 'black', zorder=1e6+6)) #hotspot
+        ax.add_patch(Rectangle((1350,40), 300, 40, facecolor = 'lime', alpha = 0.7, edgecolor = 'black', zorder=1e6+7)) #hotspot
 
         handle = [Line2D([0], [0], marker='s', color='black', label='TPC',
                           markerfacecolor='gold', alpha = 1.0, markersize=15, lw=0),
@@ -147,7 +155,7 @@ class extract:
         Line2D([0], [0], color = 'cyan', label='Luminosity', alpha = 1.0)]
     
         plt.legend(handles=handle, bbox_to_anchor=(0.84, 0.8), framealpha=1)
-        plt.savefig("/home/jeff/Pictures/MC_tracks.png")
+        plt.savefig("/home/jeff/Pictures/MC_tracks_update.png")
         plt.show()
         
 a = extract()

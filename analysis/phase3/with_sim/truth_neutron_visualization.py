@@ -1,4 +1,5 @@
 import uproot as ur
+import root_pandas as rp
 import ROOT
 import numpy as np
 import pandas as pd
@@ -41,7 +42,7 @@ class analysis:
                 elif (bg == 'Touschek_LER_all'):
                     t = 0.4
                 try:
-                    rates[tpc][bg] = len(ur.open(dir+bg+'_%s.root'%(tpc))[tree].pandas.df(flatten=False))/(t*100.) #100 compensates for modified cross section
+                    rates[tpc][bg] = len(rp.read_root(dir+bg+'_%s.root'%(tpc)))/(t*100.) #100 compensates for modified cross section
                 except FileNotFoundError:
                     rates[tpc][bg] = 0
             df = df.append(pd.DataFrame.from_dict(rates[tpc], 'index').T)
@@ -57,9 +58,11 @@ class analysis:
             dir = '/home/jeff/data/phase3/spring_2020/05-09-20/geant4_simulation/truth_neutrons_only/%s/'%(tpc)
             try:
                 try:
-                    truth[tpc+'_'+bgtype] = ur.open(dir+bgtype+'_'+tpc+'_all.root')['recoils'].pandas.df(flatten=False)
+                    #truth[tpc+'_'+bgtype] = ur.open(dir+bgtype+'_'+tpc+'_all.root')['recoils'].pandas.df(flatten=False)
+                    truth[tpc+'_'+bgtype] = rp.read_root(dir+bgtype+'_'+tpc+'_all.root')
                 except KeyError:
-                    truth[tpc+'_'+bgtype] = ur.open(dir+bgtype+'_'+tpc+'_all.root')['my_ttree'].pandas.df(flatten=False)
+                    #truth[tpc+'_'+bgtype] = ur.open(dir+bgtype+'_'+tpc+'_all.root')['my_ttree'].pandas.df(flatten=False)
+                    truth[tpc+'_'+bgtype] = rp.read_root(dir+bgtype+'_'+tpc+'_all.root')
                 try:
                     truth[tpc+'_'+bgtype]['chipx'] = truth[tpc+'_'+bgtype]['chipx'].apply(lambda x: x[0])
                     truth[tpc+'_'+bgtype]['chipy'] = truth[tpc+'_'+bgtype]['chipy'].apply(lambda x: x[0])
@@ -293,9 +296,11 @@ class analysis:
             for bg in bgtype:
                 try:
                     try:
-                        truth[tpc+'_'+bg] = ur.open(dir+bg+'_'+tpc+'_all.root')['recoils'].pandas.df(flatten=False)
+                        #truth[tpc+'_'+bg] = ur.open(dir+bg+'_'+tpc+'_all.root')['recoils'].pandas.df(flatten=False)
+                        truth[tpc+'_'+bg] = rp.read_root(dir+bg+'_'+tpc+'_all.root')
                     except KeyError:
-                        truth[tpc+'_'+bg] = ur.open(dir+bg+'_'+tpc+'_all.root')['my_ttree'].pandas.df(flatten=False)
+                        #truth[tpc+'_'+bg] = ur.open(dir+bg+'_'+tpc+'_all.root')['my_ttree'].pandas.df(flatten=False)
+                        truth[tpc+'_'+bg] = rp.read_root(dir+bg+'_'+tpc+'_all.root')
                     try:
                         truth[tpc+'_'+bg]['chipx'] = truth[tpc+'_'+bg]['chipx'].apply(lambda x: x[0])
                         truth[tpc+'_'+bg]['chipy'] = truth[tpc+'_'+bg]['chipy'].apply(lambda x: x[0])
@@ -315,9 +320,11 @@ class analysis:
             for bg in bgtype:
                 try:
                     try:
-                        truth[tpc+'_'+bg] = ur.open(dir+bg+'_'+tpc+'_all.root')['recoils'].pandas.df(flatten=False)
+                        #truth[tpc+'_'+bg] = ur.open(dir+bg+'_'+tpc+'_all.root')['recoils'].pandas.df(flatten=False)
+                        truth[tpc+'_'+bg] = rp.read_root(dir+bg+'_'+tpc+'_all.root')
                     except KeyError:
-                        truth[tpc+'_'+bg] = ur.open(dir+bg+'_'+tpc+'_all.root')['my_ttree'].pandas.df(flatten=False)
+                        #truth[tpc+'_'+bg] = ur.open(dir+bg+'_'+tpc+'_all.root')['my_ttree'].pandas.df(flatten=False)
+                        truth[tpc+'_'+bg] = rp.read_root(dir+bg+'_'+tpc+'_all.root')
                     try:
                         truth[tpc+'_'+bg]['chipx'] = truth[tpc+'_'+bg]['chipx'].apply(lambda x: x[0])
                         truth[tpc+'_'+bg]['chipy'] = truth[tpc+'_'+bg]['chipy'].apply(lambda x: x[0])
@@ -337,9 +344,11 @@ class analysis:
             for bg in bgtype:
                 try:
                     try:
-                        truth[tpc+'_'+bg] = ur.open(dir+bg+'_'+tpc+'_all.root')['recoils'].pandas.df(flatten=False)
+                        #truth[tpc+'_'+bg] = ur.open(dir+bg+'_'+tpc+'_all.root')['recoils'].pandas.df(flatten=False)
+                        truth[tpc+'_'+bg] = rp.read_root(dir+bg+'_'+tpc+'_all.root')
                     except KeyError:
-                        truth[tpc+'_'+bg] = ur.open(dir+bg+'_'+tpc+'_all.root')['my_ttree'].pandas.df(flatten=False)
+                        #truth[tpc+'_'+bg] = ur.open(dir+bg+'_'+tpc+'_all.root')['my_ttree'].pandas.df(flatten=False)
+                        truth[tpc+'_'+bg] = rp.read_root(dir+bg+'_'+tpc+'_all.root')
                     try:
                         truth[tpc+'_'+bg]['chipx'] = truth[tpc+'_'+bg]['chipx'].apply(lambda x: x[0])
                         truth[tpc+'_'+bg]['chipy'] = truth[tpc+'_'+bg]['chipy'].apply(lambda x: x[0])
@@ -422,7 +431,7 @@ class analysis:
         plt.rc('axes', labelsize=26)
         plt.rc('axes', titlesize=26)
 
-        '''
+        
         lumi = self.get_Lumi_MC_data()
         sb = self.get_single_beam_MC_data()
         
@@ -438,7 +447,7 @@ class analysis:
         
         df_SB.index = [i for i in range(0,len(df_SB))]
         df_Lumi.index = [i for i in range(0,len(df_Lumi))]
-        '''
+        
         
         img = plt.imread("/home/jeff/Pictures/farbeamline_nocolor.png")
         fig, ax = plt.subplots(1,1,figsize = (24,7.5))
@@ -448,9 +457,9 @@ class analysis:
         ax.set_xlim(-2800,2800)
         ax.imshow(np.flipud(img), origin = 'lower', extent = [-3333,3142, -438,414], aspect = 'auto')
 
-        #ax.plot(df_SB[['truthNeutronVtx_z_belle_frame','chipz']].T, df_SB[['truthNeutronVtx_x_belle_frame','chipx']].T, lw=0.15, alpha = 0.15, color = 'magenta')
+        ax.plot(df_SB[['truthNeutronVtx_z_belle_frame','chipz']].T, df_SB[['truthNeutronVtx_x_belle_frame','chipx']].T, lw=0.15, alpha = 0.15, color = 'magenta')
 
-        #ax.plot(df_Lumi[['truthNeutronVtx_z_belle_frame','chipz']].T, df_Lumi[['truthNeutronVtx_x_belle_frame','chipx']].T, lw=0.15, alpha = 0.15, color = 'cyan')
+        ax.plot(df_Lumi[['truthNeutronVtx_z_belle_frame','chipz']].T, df_Lumi[['truthNeutronVtx_x_belle_frame','chipx']].T, lw=0.15, alpha = 0.15, color = 'cyan')
 
         ax.add_patch(Rectangle((-1415.5,196), 31, 10, facecolor = 'gold', alpha = 1.0, edgecolor = 'black', zorder=1e6)) #elepaio
         ax.add_patch(Rectangle((-815.5,191), 31, 10, facecolor = 'gold', alpha = 1.0, edgecolor = 'black', zorder=1e6+1)) #tako
@@ -458,18 +467,21 @@ class analysis:
         ax.add_patch(Rectangle((641,-199.4), 31, 10, facecolor = 'gold', alpha = 1.0, edgecolor = 'black', zorder=1e6+3)) #iiwi
         ax.add_patch(Rectangle((1385,172), 31, 10, facecolor = 'gold', alpha = 1.0, edgecolor = 'black', zorder=1e6+4)) #nene
         ax.add_patch(Rectangle((1585,170), 31, 10, facecolor = 'gold', alpha = 1.0, edgecolor = 'black', zorder=1e6+5)) #humu
-        #ax.arrow(-2800, -140, 600, 22, fc='blue', ec='blue', head_width=15, head_length=75, lw=2, zorder=1e9)
-        #ax.text(-2650, -170, r'HER e$^{-}$', size = 28, color = 'blue')
-        #ax.arrow(2050, 46, 600, 22, fc='blue', ec='blue', head_width=15, head_length=75, lw=2, zorder=1e9)
-        #ax.text(2200, 16, r'HER e$^{-}$', size = 28, color = 'blue')
-        #ax.arrow(2700, -90, -600, 22, fc='red', ec='red', head_width=15, head_length=75, lw=2, zorder=1e9)
-        #ax.text(2200, -130, r'LER e$^{+}$', size = 28, color = 'red')
-        #ax.arrow(-2100, 105, -600, 22, fc='red', ec='red', head_width=15, head_length=75, lw=2, zorder=1e9)
-        #ax.text(-2650, 70, r'LER e$^{+}$', size = 28, color = 'red')
+        ax.arrow(-2800, -140, 600, 22, fc='blue', ec='blue', head_width=15, head_length=75, lw=2, zorder=1e9)
+        ax.text(-2650, -170, r'HER e$^{-}$', size = 28, color = 'blue')
+        ax.arrow(2050, 46, 600, 22, fc='blue', ec='blue', head_width=15, head_length=75, lw=2, zorder=1e9)
+        ax.text(2200, 16, r'HER e$^{-}$', size = 28, color = 'blue')
+        ax.arrow(2700, -90, -600, 22, fc='red', ec='red', head_width=15, head_length=75, lw=2, zorder=1e9)
+        ax.text(2200, -130, r'LER e$^{+}$', size = 28, color = 'red')
+        ax.arrow(-2100, 105, -600, 22, fc='red', ec='red', head_width=15, head_length=75, lw=2, zorder=1e9)
+        ax.text(-2650, 70, r'LER e$^{+}$', size = 28, color = 'red')
+        ax.add_patch(Rectangle((-900,18), 150, 40, facecolor = 'lime', alpha = 0.7, edgecolor = 'black', zorder=1e6+6)) #hotspot
+        ax.add_patch(Rectangle((1350,40), 300, 40, facecolor = 'lime', alpha = 0.7, edgecolor = 'black', zorder=1e6+7)) #hotspot
 
         #ax.add_patch(Rectangle((-870,20), 120, 40, facecolor = 'lime', alpha = 0.5, edgecolor = 'black', zorder=1e6+6)) #hotspot
         #ax.add_patch(Rectangle((1390,30), 290, 50, facecolor = 'lime', alpha = 0.5, edgecolor = 'black', zorder=1e6+7)) #hotspot
-        ax.text(-50,20,r'IP',size = 28, color='yellow')
+        
+        ax.text(-50,40,r'IR',size = 34, color='yellow')
 
         handle = [Line2D([0], [0], marker='s', color='black', label='TPC',
                           markerfacecolor='gold', alpha = 1.0, markersize=15, lw=0),
@@ -477,9 +489,9 @@ class analysis:
         Line2D([0], [0], color = 'cyan', label='Luminosity', alpha = 1.0)]
     
         #plt.legend(handles=handle, bbox_to_anchor=(0.844, 1.02), framealpha=1)
-        #plt.legend(handles=handle, bbox_to_anchor=(0.84, .74), framealpha=1)
-        #plt.savefig("/home/jeff/Pictures/MC_tracks2.png")
-        plt.savefig("/home/jeff/Pictures/just_tpcs.png",dpi=400)
+        plt.legend(handles=handle, bbox_to_anchor=(0.84, .74), framealpha=1)
+        plt.savefig("/home/jeff/Pictures/MC_tracks_newest.png")
+        #plt.savefig("/home/jeff/Pictures/just_tpcs.png",dpi=400)
         #plt.show()
     
     def visualize_all_3D(self):

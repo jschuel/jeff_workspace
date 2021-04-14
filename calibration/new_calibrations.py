@@ -20,7 +20,7 @@ class tpc_calibration:
         self.updated_recoils, self.updated_alphas = self.determine_new_angles_and_lengths()
         self.calibrated_alphas, self.scale_factor, self.scale_factor_err = self.calibrate_alphas()
         self.calibrated_recoils = self.calibrate_recoils()
-        #self.write_to_root_file()
+        self.write_to_root_file()
         #pass
         
     def get_tpc_list(self, tpc_list = ['iiwi', 'humu', 'nene', 'tako', 'palila', 'elepaio']):
@@ -30,7 +30,8 @@ class tpc_calibration:
         tpcs = self.get_tpc_list()
         df = {}
         for tpc in tpcs:
-            df[tpc] = ur.open('~/data/phase3/spring_2020/maintenance_day_test/%s_alphas_all.root'%(tpc))[ur.open('~/data/phase3/spring_2020/maintenance_day_test/%s_alphas_all.root'%(tpc)).keys()[0]].pandas.df(flatten=False)
+            #df[tpc] = ur.open('~/data/phase3/spring_2020/maintenance_day_test/%s_alphas_all.root'%(tpc))[ur.open('~/data/phase3/spring_2020/maintenance_day_test/%s_alphas_all.root'%(tpc)).keys()[0]].pandas.df(flatten=False)
+            df[tpc] = rp.read_root('~/data/phase3/spring_2020/maintenance_day_test/%s_alphas_all.root'%(tpc))
             df[tpc]['track_energy'] = df[tpc]['track_charge']*34.4525/2000*1e-3 # "uncalibrates" energy to start fresh
             df[tpc]['pixel_energy'] = df[tpc]['pixel_charge']*34.4525/2000*1e-3 # "uncalibrates" energy to start fresh
         return df #returns dictionary of horizontal alphas
@@ -39,7 +40,8 @@ class tpc_calibration:
         tpcs = self.get_tpc_list()
         df = {}
         for tpc in tpcs:
-            df[tpc] = ur.open('~/data/phase3/spring_2020/05-09-20/tpc_root_files/%s_all_new.root'%(tpc))[ur.open('~/data/phase3/spring_2020/05-09-20/tpc_root_files/%s_all_new.root'%(tpc)).keys()[0]].pandas.df(flatten=False)
+            #df[tpc] = ur.open('~/data/phase3/spring_2020/05-09-20/tpc_root_files/%s_all_new.root'%(tpc))[ur.open('~/data/phase3/spring_2020/05-09-20/tpc_root_files/%s_all_new.root'%(tpc)).keys()[0]].pandas.df(flatten=False)
+            df[tpc] = rp.read_root('~/data/phase3/spring_2020/05-09-20/tpc_root_files/%s_all_new.root'%(tpc))
             df[tpc]['track_energy'] = df[tpc]['track_charge']*34.4525/2000*1e-3 # "uncalibrates" energy to start fresh
             df[tpc]['pixel_energy'] = df[tpc]['pixel_charge']*34.4525/2000*1e-3 # "uncalibrates" energy to start fresh
         return df
@@ -237,15 +239,18 @@ class tpc_calibration:
         
     def apply_recoil_cuts(self): #Cuts without xray veto
         recoils = self.calibrated_recoils
-        x = {'iiwi': np.array([850, 2500, 15000]), 'nene': np.array([950, 2500, 16000]), 'humu': np.array([1950, 3000, 20000]),
-             'palila': np.array([900, 2350, 15000]), 'tako': np.array([1400, 2500, 15000]), 'elepaio': np.array([1050, 2500, 15000])}
-        y = np.array([6,20,800])
-        cut = {}
+        #x = {'iiwi': np.array([850, 2500, 15000]), 'nene': np.array([950, 2500, 16000]), 'humu': np.array([1950, 3000, 20000]),
+        #     'palila': np.array([900, 2350, 15000]), 'tako': np.array([1400, 2500, 15000]), 'elepaio': np.array([1050, 2500, 15000])}
+        #y = np.array([6,20,800])
+        #cut = {}
+        xs = np.array([1200, 4000,10000])
+        ys = np.array([7,50,280])
+        cut = np.polyfit(xs,ys,2)
         tpcs = recoils.keys()
         for tpc in tpcs:
-            cut[tpc] = np.polyfit(x[tpc],y,2)
+            #cut[tpc] = np.polyfit(x[tpc],y,2)
             recoils[tpc]['is_recoil'] = 0
-            index = recoils[tpc].loc[(recoils[tpc]['track_energy']>=(cut[tpc][0]*recoils[tpc]['new_length']**2 + cut[tpc][1]*recoils[tpc]['new_length'] + cut[tpc][2]))].index.to_numpy()
+            index = recoils[tpc].loc[(recoils[tpc]['track_energy']>=(cut[0]*recoils[tpc]['new_length']**2 + cut[1]*recoils[tpc]['new_length'] + cut[2]))].index.to_numpy()
             recoils[tpc]['is_recoil'][index]=1
         
         ''' ###old###
@@ -284,7 +289,7 @@ class tpc_calibration:
             #if recoils_only == True:
             #    output = ROOT.TFile(outdir + '%s_all_recoils_only_even_newester2.root'%(tpc), 'new')
             #else:
-            output = ROOT.TFile(outdir + '%s_all_newester6.root'%(tpc), 'recreate')
+            output = ROOT.TFile(outdir + '%s_all_newester7.root'%(tpc), 'recreate')
             tout = ROOT.TTree('data','data')
             branches = {}
             data={}

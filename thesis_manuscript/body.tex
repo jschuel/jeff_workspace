@@ -12,15 +12,19 @@
 
 \chapter{Introduction}
 
+\chapter{Decoherence and EPR correlations}
+\section{Introduction}
 
+\chapter{B physics concepts}
+\section{Introduction}
 
-\chapter{Modeling decoherence}
+\section{Decoherence in B physics}
 
 In this section, we follow the work of refs \cite{ALOK, Naikoo} to come up with a parametrization of the mixing induced flavor asymmetry parameter, $\mathcal{A}_\text{mix}(\Delta t)$, that includes contributions of decoherence.
 
-\section{An open $B\bar{B}$ system}
+\subsection{An open $B\bar{B}$ system}
 
-\subsection{Kraus' Theorem}
+\subsubsection{Kraus' Theorem}
 
 The notion of closed systems with a single observer is not a realistic representation of the conditions present in $B$ factory experiments. In order to properly model the time evolution of $B$ meson pairs, we must then treat the $B\bar{B}$ system as an \textit{open} system and allow it to interact with its surroundings. These surroundings may include [write more here]
 
@@ -116,7 +120,7 @@ The $\mathcal{K}$ coefficients in equations \ref{eq:firstkraus}-\ref{eq:bstate} 
 \mathcal{K}_4 &= \frac{e^{-\Gamma_L t/2}}{2}\sqrt{1-e^{-\lambda t}} \nonumber \\
 \mathcal{K}_5 &= \frac{e^{-\Gamma_H t/2}}{2}\sqrt{1-e^{-\lambda t}},
 \end{align}
-where $\lambda$ is a decoherence parameter, $\Gamma = \frac{1}{2}(\Gamma_L+\Gamma_H)$ is the decay width, $\Delta m = m_H-m_L$ is the mass difference between the $B$ mass eigenstates $\ket{B^0_L}$ and $\ket{B^0_H}$, related to the $B$ flavor eigenstates by
+where $\lambda$ is a decoherence parameter that takes into account the evolution of the system under the influence of the surrounding environment, $\Gamma = \frac{1}{2}(\Gamma_L+\Gamma_H)$ is the mean decay width between mass eigenstates, $\Delta m = m_H-m_L$ is the mass difference between the $B$ mass eigenstates $\ket{B^0_L}$ and $\ket{B^0_H}$, related to the $B$ flavor eigenstates by
 \begin{align}
 \ket{B^0_L}=p\ket{B^0}+q\ket{\bar{B}^0}, \quad \ket{B_H^0}=p\ket{B^0}-q\ket{\bar{B}^0},
 \end{align}
@@ -186,47 +190,58 @@ a_{ch} \pm e^{-\lambda t}a_c & -\left(\frac{q}{p}\right)^*\left(a_{sh}\pm ie^{-\
 \end{align}
 where $\rho_+(t)$ and $\rho_-(t)$ correspond to $B^0$ and $\bar{B}^0$, respectively.
 
+In the $\{\ket{B^0},\ket{\bar{B}^0},\ket{0}\}$ basis, we're interested in observables that encode the information about a $B$ decaying into final state $f$. If we define $A_f \equiv A(B^0\rightarrow f)$ and $\bar{A}_f \equiv A(\bar{B}^0\rightarrow f)$ to be the amplitudes of a $B^0$ and $\bar{B}^0$, respectively, decaying into a final state $f$, we can construct an observable as follows:
+
 \begin{align}
 \label{eq:observable}
-\mathcal{O}_f = 
+\mathcal{O}_f(t) = 
 \begin{pmatrix}
 |A_f|^2 & A_f^*\bar{A}_f & 0 \\
 A_f\bar{A}_f^* & |\bar{A}_f|^2 & 0 \\
 0 & 0 & 0
-\end{pmatrix},
+\end{pmatrix}.
 \end{align}
-where $A_f \equiv A(B^0\rightarrow f)$ and $\bar{A}_f \equiv A(\bar{B}^0\rightarrow f)$.
 
-With this construction, the probability of a $B^0$ or $\bar{B}^0$ decaying into state $f$ at time $t$ is computed as
+In the formalism of density operators, the time dependent expectation value of this observable is a physical quantity that characterizes the probability of a $B^0$ or $\bar{B}^0$ decaying into state $f$ at time $t$
 \begin{align}
 \label{eq:trace}
-P_{f\pm}(t) = \Tr(\mathcal{O}_f\mathcal{\rho_\pm}),
+\langle\mathcal{O}_f\rangle(t) = \Tr(\mathcal{O}_f \rho_\pm(t)) = P_{f\pm}(t),
 \end{align}
-with $P_+$ corresponding to an initial $B^0$ and $P_-$, an initial $\bar{B}^0$. An observable
+with $P_+$ corresponding to $B^0\rightarrow f$ and $P_-$, corresponding to $\bar{B}^0\rightarrow f$. \ref{eq:trace} is enough to compute asymmetries that are measurable at $B$-factory experiments, and since our construction of $\rho_\pm(t)$ explicitly includes decoherence effects of neutral B-mesons interacting with their surrounding environment, these asymmetries will depend on decoherence parameter $\lambda$.
+
+\subsection{Observable for $\sin(2\phi_1)$}
+If we let our final state $f$ be the golden mode, $J/\psi K_S$, we can, from \ref{eq:trace}, immediately construct the CP violating observable used to measure $\sin(2\phi_1)$ in \cite{Abe1}:
 \begin{align}
 \label{eq:CP}
-\mathcal{A}_f =\frac{P_-(t)-P_+(t)}{P_-(t)+P_+(t)}
+\mathcal{A}_{f=J/\psi K_S}(t,\lambda) =\frac{P_-(t,\lambda)-P_+(t,\lambda)}{P_-(t,\lambda)+P_+(t,\lambda)},
 \end{align}
-can be defined, and when we set $f$ to correspond to the golden mode, that is, $f = J/\psi K_S$, this observable represents CP violating asymmetry used to determine $\sin(2\phi_1)$ in \cite{Abe1}. To show this, we compute the probabilities in \ref{eq:CP} using \ref{eq:observable}, \ref{eq:density} and \ref{eq:trace}. Doing this, we find
+where we are now explicitly writing out the dependence of this asymmetry on decoherence parameter $\lambda$. Computing the probabilities in \ref{eq:CP} using \ref{eq:observable}, \ref{eq:density} and \ref{eq:trace}, we find
 \begin{align}
 \label{eq:probs}
-P_{J/\psi K_S\pm}(t) &= \frac{1}{2}e^{-\Gamma_d t}\Bigg( \Bigg.|A_f|^2(a_{ch}\pm e^{-\lambda t}a_c)+|\bar{A}_f|^2(a_{ch}\mp e^{-\lambda t}a_c) \nonumber\\  &-A_f^*\bar{A}_f(a_{sh}\mp ie^{-\lambda t}a_s) - A_f\bar{A}_f^*(a_{sh}\pm ie^{-\lambda t}a_s)\Bigg) \Bigg. ;\quad f=J/\psi K_S.
+P_{J/\psi K_S\pm}(t,\lambda) &= \frac{1}{2}e^{-\Gamma t}\Bigg( \Bigg.|A_f|^2(a_{ch}\pm e^{-\lambda t}a_c)+|\bar{A}_f|^2\left|\frac{q}{p}\right|^2(a_{ch}\mp e^{-\lambda t}a_c) \nonumber\\  &-A_f^*\bar{A}_f\frac{q}{p}(a_{sh}\mp ie^{-\lambda t}a_s) - A_f\bar{A}_f^*\left(\frac{q}{p}\right)^*(a_{sh}\pm ie^{-\lambda t}a_s)\Bigg) \Bigg.
 \end{align}
-Factoring out $|A_f|^2=A_fA_f^*$ from both the numerator and denominator of \ref{eq:CP} and defining $z\equiv A(\bar{B}^0\rightarrow J/\psi K_S)/A(B^0\rightarrow J/\psi K_S)$, we obtain
+Factoring out $|A_f|^2$ from both the numerator and denominator of \ref{eq:CP} and defining $z\equiv \frac{q}{p} A(\bar{B}^0\rightarrow J/\psi K_S)/A(B^0\rightarrow J/\psi K_S)$, we obtain
 \begin{align}
 \label{eq:cpviolation}
 \mathcal{A}_{J/\Psi K_S}(t,\lambda)&=\frac{2(|z|^2-1)a_c - 2iz a_s + 2iz^*a_s}{2(|z|^2+1)a_{ch} -2z a_{sh} -2z^*a_{sh}}e^{-\lambda t}\nonumber\\
 &=\frac{(|z|^2-1)a_c + 2\Im(z)a_s}{(|z|^2+1)a_{ch} -2\Re(z) a_{sh}}e^{-\lambda t}\nonumber\\
 &=\frac{(|z|^2-1)\cos(\Delta m_d t) + 2\Im(z)\sin(\Delta m_d t)}{(|z|^2+1)\cosh(\Delta \Gamma_d t/2) -2\Re(z) \sinh(\Delta\Gamma_d t/2)}e^{-\lambda t}.
 \end{align}
-where we used the fact that the decay amplitudes are, in general, complex numbers, so $\Re(z)=\frac{z+z^*}{2}$ and $\Im(z) = \frac{z-z^*}{2i}$. We see that \ref{eq:cpviolation} is indeed the well-known mixing and decay-induced CP asymmetry expression with $\Im(z)\approx \sin(2\phi_1)$ \cite{Abe1,Abe2}, however it includes an additional \textit{decoherence} term, $e^{-\lambda t}$, where we refer to $\lambda$ as the \textit{decoherence parameter}. We see that in the case of no decoherence ($\lambda = 0$), \ref{eq:cpviolation} is exactly the CP asymmetry expression described above.
+where we used the fact that the decay amplitudes are complex numbers, so $\Re(z)=\frac{z+z^*}{2}$ and $\Im(z) = \frac{z-z^*}{2i}$. If we set $|z|=1$, $\Delta \Gamma \approx 0$, and note that $\Im(z)\approx \sin(2\phi_1)$, we find
+\begin{align}
+\label{eq:sin2phi1}
+\mathcal{A}_{J/\Psi K_S}(t,\lambda) \approx \sin(\Delta m_d t)\sin(2\phi_1)e^{-\lambda t},
+\end{align} 
+which, in the limit of no decoherence ($\lambda = 0$), is the well-known mixing and decay-induced CP asymmetry expression used to measure $\sin(2\phi_1)$ in Refs. \cite{Abe1,Abe2}. Furthermore, the presence of $e^{-\lambda t}$ in \ref{eq:sin2phi1} suggests that the measurement of $\sin(2\phi_1)$ is blurred by decoherence.
 
-In the case where a $B^0$ decays into a state that is inaccessible from a $\bar{B}^0$ decay, it follows that $z=0$ \cite{Bevan}, which will lead us to an expression for the time dependent mixing asymmetry $\mathcal{A}_{\text{mix}}$. Indeed, if we consider \ref{eq:probs} and set the final state to $B^0$ (or $\bar{B}^0$), we can compute flavor mixing probabilities. For example, if we were to compute $P_{B^0\rightarrow \bar{B}^0}(t)$, we set $A_f = 0$ and $\bar{A}_f = 1$ in \ref{eq:probs}, leading us to
+\subsection{Observable in $B\bar{B}$ mixing}
+
+In the case where a $B^0$ decays into a state that is inaccessible from a $\bar{B}^0$ decay, it follows that $z=0$ \cite{Bevan}, which will lead us to an expression for the time dependent mixing asymmetry $\mathcal{A}_{\text{mix}}$. Indeed, if we consider \ref{eq:probs} and set the final state to $B^0$ (or $\bar{B}^0$), we can compute flavor mixing probabilities. For example, if we were to compute $P_{B^0\rightarrow \bar{B}^0}(t)$, we set $A_f = 0$ and $\bar{A}_f = 1$ in \ref{eq:probs}, we would find
 \begin{align}
 \label{eq:prob1}
-P_{B^0\rightarrow \bar{B}^0}(t) \sim \cosh(\Delta \Gamma_d t/2)-e^{-\lambda t}\cos(\Delta m_dt).
+P_{B^0\rightarrow \bar{B}^0}(t) \sim \cosh(\Delta \Gamma_d t/2)-e^{-\lambda t}\cos(\Delta m_dt),
 \end{align}
-Similarly, for the other mixing combinations, we would set $A_f = 0$ and $\bar{A}_f = 1$ for $P_{\bar{B}^0\rightarrow \bar{B}^0}(t)$, and we would set $A_f = 1$ and $\bar{A}_f = 0$ for $P_{\bar{B}^0\rightarrow B^0}(t)$ and $P_{B^0\rightarrow B^0}(t)$, giving
+where we set $\left|\frac{p}{q}\right|^2=1$ which is true in $B$ sector where $\Delta \Gamma \ll \Delta m$ \cite{Bevan}. For the other mixing combinations, we would set $A_f = 0$ and $\bar{A}_f = 1$ for $P_{\bar{B}^0\rightarrow \bar{B}^0}(t)$, and we would set $A_f = 1$ and $\bar{A}_f = 0$ for $P_{\bar{B}^0\rightarrow B^0}(t)$ and $P_{B^0\rightarrow B^0}(t)$, giving
 \begin{align}
 P_{\bar{B}^0\rightarrow \bar{B}^0}(t) \sim \cosh(\Delta \Gamma_d t/2)+e^{-\lambda t}\cos(\Delta m_dt) \\
 P_{B^0\rightarrow B^0}(t) \sim \cosh(\Delta \Gamma_d t/2)+e^{-\lambda t}\cos(\Delta m_dt)\\
@@ -234,7 +249,7 @@ P_{B^0\rightarrow B^0}(t) \sim \cosh(\Delta \Gamma_d t/2)+e^{-\lambda t}\cos(\De
 P_{\bar{B}^0\rightarrow B^0}(t) \sim \cosh(\Delta \Gamma_d t/2)-e^{-\lambda t}\cos(\Delta m_dt).
 \end{align}
 
-Now let's consider a $B\bar{B}$ produced from the hadronization of $e^+e^-\rightarrow \Upsilon(4S)\rightarrow b\bar{b}$, which is the mechanism for $B$ production at Belle. Since the $\Upsilon(4S)$ is spin 1, it follows from conservation of angular momentum that the resulting $B\bar{B}$ pair will be in a coherent $P$-wave state, which means that at a certain time $t_0$, nominally the decay time of the first $B^0$ in the $B\bar{B}$ pair, the flavor the decaying $B$ \textit{must} be the opposite of the flavor of the other $B$. This means the probability of observing opposite flavor $P_{B^0\bar{B}^0\rightarrow B^0\bar{B}^0}$ or same flavor pairs $P_{B^0\bar{B}^0\rightarrow B^0B^0 \text{ or } \bar{B}^0\bar{B}^0}$ is determined from the proper time difference between the decays of the two $B$'s, $\Delta t\equiv t_1-t_0$. With this knowledge at our disposal, we see from equations \ref{eq:prob1}--\ref{eq:prob2} that \textit{mixing} (creation of same flavor pair) is the result of second $B$ changing flavor and thus has a minus sign in its oscillation probability, whereas an unmixed (opposite flavor) pair has a plus sign in its oscillation probability. This means we can write
+Now let's consider a $B\bar{B}$ produced from the hadronization of $e^+e^-\rightarrow \Upsilon(4S)\rightarrow b\bar{b}$, which is the mechanism for $B$ production at Belle. Since the $\Upsilon(4S)$ is spin 1, it follows from conservation of angular momentum that the resulting $B\bar{B}$ pair will be in a coherent $P$-wave state, which means that at a certain time $t_0$, nominally the decay time of the first $B^0$ in the $B\bar{B}$ pair, the flavor the decaying $B$ \textit{must} be the opposite of the flavor of the other $B$. This means the probability of observing opposite flavor $P_{B^0\bar{B}^0\rightarrow B^0\bar{B}^0}$ or same flavor pairs $P_{B^0\bar{B}^0\rightarrow (B^0B^0 \text{ or } \bar{B}^0\bar{B}^0)}$ is determined from the proper time difference between the decays of the two $B$'s, $\Delta t\equiv t_1-t_0$. With this knowledge at our disposal, we see from equations \ref{eq:prob1}--\ref{eq:prob2} that \textit{mixing} (creation of same flavor pair) is the result of second $B$ changing flavor and thus has a minus sign in its oscillation probability, whereas an unmixed (opposite flavor) pair has a plus sign in its oscillation probability. This means we can write
 \begin{align}
 P_{B^{0}\bar{B}^0\rightarrow B^{0}\bar{B}^0}(\Delta t) \sim \cosh(\Delta \Gamma_d \Delta t/2)+e^{-\lambda \Delta t}\cos(\Delta m_d\Delta t) = P_+(\Delta t)\\
 P_{B^{0}\bar{B}^0\rightarrow B^{0}B^0\text{ or } \bar{B}^0\bar{B}^0}(\Delta t) \sim \cosh(\Delta \Gamma_d \Delta t/2)-e^{-\lambda \Delta t}\cos(\Delta m_d\Delta t) = P_-(\Delta t).
@@ -246,127 +261,17 @@ Finally, we now define the time dependent mixing asymmetry, $\mathcal{A}_\text{m
 Just like with \ref{eq:cpviolation}, we see that we now have an expression for the time-dependent asymmetry which also manifestly depends on decoherence parameter $\lambda$.
 
 Note: Make sure to cite \cite{Bertlmann} for the construction of the decoherence parameter in the Kaon system, \cite{Banerjee} for the explicit treatment of $B$ mesons as an open system, \cite{Benatti} and \cite{Dixit} and \cite{ALOK} for their explicit usage of Go's dataset to show how updates using Belle I data can still be helpful. And of course, cite Go \cite{Go}. Also, also, it looks like \cite{Naikoo} explicitly constructs $\rho(t)$ and $\mathcal{O}$ that I use in this chapter. \cite{Lindblad} and \cite{Gorini} when bringing up dynamical positive semigroup formalism. 
-\section{Bibliography Citations}
-Citing references to your bibliography is easy \cite{belle}
-\cite{kekb}. First you build a BibTeX file which contains the
-records for all of the works you wish to cite. This file ends with a ``{\tt
-.bib}'' extension. Then in your body you use the ``{\tt $\backslash$cite}''
-command with the label you gave to the record in question. The final steps are: 
-run LaTeX once, run BibTeX, and then run LaTeX twice more. You should now have
-a bibliography that includes those citations.
 
-\chapter{Conclusion}
+\chapter{KEKB and Belle}
+\section{Introduction}
 
-This is going to be the chapter where I check the length of the page to make
-sure the bottom margin works out all right.  I hope you don't mind long
-annoying and useless paragraphs because you are sure to get a lot of them here!
+\chapter{Event selection}
+\section{Introduction}
 
-\section{Widgets}
+\chapter{Systematic uncertainties}
+\section{Introduction}
 
-This is going to be the chapter where I check the length of the page
-to make sure the bottom margin works out all right.  I hope you don't
-mind long annoying and useless paragraphs because you are sure to get
-a lot of them here!
+\chapter{Results}
+\section{Introduction}
 
-\subsection{Sub-Widgets}
-
-This is going to be the chapter where I check the length of the page
-to make sure the bottom margin works out all right.  I hope you don't
-mind long annoying and useless paragraphs because you are sure to get
-a lot of them here!
-
-\subsubsection{Sub-Sub-Widgets}
-
-This is going to be the chapter where I check the length of the page
-to make sure the bottom margin works out all right.  I hope you don't
-mind long annoying and useless paragraphs because you are sure to get
-a lot of them here!
-
-\paragraph{Para-Widgets}
-
-This is going to be the chapter where I check the length of the page
-to make sure the bottom margin works out all right.  I hope you don't
-mind long annoying and useless paragraphs because you are sure to get
-a lot of them here!
-
-\subparagraph{Sub-Para-Widgets}
-
-This is going to be the chapter where I check the length of the page
-to make sure the bottom margin works out all right.  I hope you don't
-mind long annoying and useless paragraphs because you are sure to get
-a lot of them here!
-
-This is going to be the chapter where I check the length of the page
-to make sure the bottom margin works out all right.  I hope you don't
-mind long annoying and useless paragraphs because you are sure to get
-a lot of them here!
-
-This is going to be the chapter where I check the length of the page
-to make sure the bottom margin works out all right.  I hope you don't
-mind long annoying and useless paragraphs because you are sure to get
-a lot of them here!
-
-This is going to be the chapter where I check the length of the page
-to make sure the bottom margin works out all right.  I hope you don't
-mind long annoying and useless paragraphs because you are sure to get
-a lot of them here!
-
-This is going to be the chapter where I check the length of the page
-to make sure the bottom margin works out all right.  I hope you don't
-mind long annoying and useless paragraphs because you are sure to get
-a lot of them here!
-
-This is going to be the chapter where I check the length of the page
-to make sure the bottom margin works out all right.  I hope you don't
-mind long annoying and useless paragraphs because you are sure to get
-a lot of them here!
-
-This is going to be the chapter where I check the length of the page
-to make sure the bottom margin works out all right.  I hope you don't
-mind long annoying and useless paragraphs because you are sure to get
-a lot of them here!
-
-This is going to be the chapter where I check the length of the page
-to make sure the bottom margin works out all right.  I hope you don't
-mind long annoying and useless paragraphs because you are sure to get
-a lot of them here!
-
-This is going to be the chapter where I check the length of the page
-to make sure the bottom margin works out all right.  I hope you don't
-mind long annoying and useless paragraphs because you are sure to get
-a lot of them here!
-
-This is going to be the chapter where I check the length of the page
-to make sure the bottom margin works out all right.  I hope you don't
-mind long annoying and useless paragraphs because you are sure to get
-a lot of them here!
-
-This is going to be the chapter where I check the length of the page
-to make sure the bottom margin works out all right.  I hope you don't
-mind long annoying and useless paragraphs because you are sure to get
-a lot of them here!
-
-This is going to be the chapter where I check the length of the page
-to make sure the bottom margin works out all right.  I hope you don't
-mind long annoying and useless paragraphs because you are sure to get
-a lot of them here!
-
-This is going to be the chapter where I check the length of the page
-to make sure the bottom margin works out all right.  I hope you don't
-mind long annoying and useless paragraphs because you are sure to get
-a lot of them here!
-
-This is going to be the chapter where I check the length of the page
-to make sure the bottom margin works out all right.  I hope you don't
-mind long annoying and useless paragraphs because you are sure to get
-a lot of them here!
-
-This is going to be the chapter where I check the length of the page
-to make sure the bottom margin works out all right.  I hope you don't
-mind long annoying and useless paragraphs because you are sure to get
-a lot of them here!
-
-This is going to be the chapter where I check the length of the page
-to make sure the bottom margin works out all right.  I hope you don't
-mind long annoying and useless paragraphs because you are sure to get
-a lot of them here!
+\chapter{Discussion and outlook}
