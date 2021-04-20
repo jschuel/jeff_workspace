@@ -198,7 +198,7 @@ class analysis:
             #dy = truth[key]['truthNeutronVtx_x_belle_frame']-truth[key]['chipx']
             #dx = truth[key]['truthNeutronVtx_z_belle_frame']-truth[key]['chipz']
             #theta_truth = np.arctan(dy/dx)
-            #(counts_truth, bins_truth) = np.histogram(np.abs(np.cos(theta_truth)), bins=201, range = (0,1))
+            #(counts_truth, bins_truth) = np.histogram(np.abs(np.cos(theta_truth)), bins=201, range = (0,1))ax.hlines
             #factor_truth = 1/(30*len(theta_truth))
             #plt.hist(bins_truth[:-1], bins_truth, weights=factor_truth*counts_truth, label = 'truth', histtype = 'step')
             (counts_MC, bins_MC) = np.histogram(np.abs(np.cos(MC_Lumi[key]['fit_theta'])), bins=21, range = (0,1))
@@ -470,12 +470,12 @@ class analysis:
         ax.arrow(-1700, -140, 600, 22, fc='blue', ec='blue', head_width=15, head_length=75, lw=2, zorder=1e9)
         ax.text(-1550, -170, r'HER e$^{-}$', size = 28, color = 'blue')
         ax.arrow(1050, 81, 600, 22, fc='blue', ec='blue', head_width=15, head_length=75, lw=2, zorder=1e9)
-        ax.text(1250, 111, r'HER e$^{-}$', size = 28, color = 'blue')
+        ax.text(1250, 106, r'HER e$^{-}$', size = 28, color = 'blue')
         ax.arrow(1750, -90, -600, 2, fc='red', ec='red', head_width=15, head_length=75, lw=2, zorder=1e9)
         ax.text(1250, -130, r'LER e$^{+}$', size = 28, color = 'red')
         ax.arrow(-1100, 105, -600, 38, fc='red', ec='red', head_width=15, head_length=75, lw=2, zorder=1e9)
-        ax.text(-1550, 145, r'LER e$^{+}$', size = 28, color = 'red')
-        ax.hlines(0,-1800,2000,linestyle='-.',lw=3,color = 'k')
+        ax.text(-1550, 160, r'LER e$^{+}$', size = 28, color = 'red')
+        ax.hlines(0,-1800,2000,linestyle='-.',lw=1,color = 'k')
         #ax.add_patch(Rectangle((-900,18), 150, 40, facecolor = 'lime', alpha = 0.7, edgecolor = 'black', zorder=1e6+6)) #hotspot
         #ax.add_patch(Rectangle((1350,40), 300, 40, facecolor = 'lime', alpha = 0.7, edgecolor = 'black', zorder=1e6+7)) #hotspot
 
@@ -489,7 +489,7 @@ class analysis:
         #Line2D([0], [0], color='magenta', label='Single Beam', alpha = 1.0),
         #Line2D([0], [0], color = 'cyan', label='Luminosity', alpha = 1.0)]
     
-        #plt.legend(handles=handle, bbox_to_anchor=(0.844, 1.02), framealpha=1)
+        plt.legend(handles=handle, bbox_to_anchor=(0.844, 1.02), framealpha=1)
         #plt.legend(handles=handle, bbox_to_anchor=(0.84, .74), framealpha=1)
         #plt.savefig("/home/jeff/Pictures/MC_tracks_newest.png")
         plt.savefig("/home/jeff/Pictures/just_tpcs.png",dpi=400)

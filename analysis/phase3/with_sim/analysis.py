@@ -518,7 +518,7 @@ class analysis:
     def plot_all_luminosity(self, study_period = "Cont_inj", bins = 15):
         if study_period.lower() == "decay":
             bins = 6
-        plt.figure(figsize = (13,8))
+        plt.figure(figsize = (14,7.5))
         plt.rc('legend', fontsize=12)
         plt.rc('xtick', labelsize=16)
         plt.rc('ytick', labelsize=16)
@@ -544,9 +544,13 @@ class analysis:
                 #plt.fill_between([0],[0],[0], lw = 0, label = r'Corrected slope=%s$\pm$%s'%(float('%.2g' % fits_corrected[tpc+'_slope']), float('%.2g' % fits_corrected[tpc+'_slope_err'])), color = 'white')
             plt.xlim(0,2)
             plt.xlabel(r'Luminosity [$10^{34}$cm$^{-2}$s$^{-1}$]')
-            plt.ylabel(r'R$_L$ [Hz]')
-            plt.ylim(-1.5,3.5)
-            plt.yticks([-1,0,1,2,3])
+            if i < 4:
+                plt.ylim(-1.5,3.5)
+                plt.yticks([-1,0,1,2,3])
+                plt.ylabel(r'R$_L$ [Hz]')
+            else:
+                plt.ylim(-0.15,0.35)
+                plt.ylabel(r'R$_L$ [Hz]',labelpad = 0.1)
             plt.legend(loc = 'best')
             plt.title(pos[i-1])
             plt.grid()
@@ -557,6 +561,7 @@ class analysis:
             plt.subplots_adjust(bottom=0.090)
             plt.subplots_adjust(left=0.065)
             plt.subplots_adjust(right=0.935)
+        plt.tight_layout()
         plt.savefig('lumi_fits_newest.png')
         plt.show()
 
@@ -735,5 +740,5 @@ class analysis:
         data_MC_ratio = data_MC_ratio[['LER_bg_base',  'LER_bg_base_err', 'LER_bg_dynamic', 'LER_bg_dynamic_err', 'LER_T', 'LER_T_err', 'HER_bg_base', 'HER_bg_base_err', 'HER_bg_dynamic', 'HER_bg_dynamic_err', 'HER_T', 'HER_T_err', 'Lumi', 'Lumi_err']]
         return df, MC, data_MC_ratio
 #E_cut = {'palila': 9.0, 'iiwi': 8.8, 'tako': 4.6, 'nene': 5.6, 'elepaio': 6.4, 'humu': 6.4}
-E_cut = {'palila': 8.8, 'iiwi': 8.8, 'tako': 5.0, 'nene': 5.6, 'elepaio': 6.0, 'humu': 6.2}
-#a = analysis(E_cut = E_cut, E_cut_err = 0)
+E_cut = {'palila': 8.8, 'iiwi': 8.8, 'tako': 5.0, 'nene': 5.6, 'elepaio': 6.0, 'humu': 6.6}
+a = analysis(E_cut = E_cut, E_cut_err = 0)
