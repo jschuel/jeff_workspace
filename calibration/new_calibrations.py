@@ -20,7 +20,8 @@ class tpc_calibration:
         self.updated_recoils, self.updated_alphas = self.determine_new_angles_and_lengths()
         self.calibrated_alphas, self.scale_factor, self.scale_factor_err = self.calibrate_alphas()
         self.calibrated_recoils = self.calibrate_recoils()
-        self.write_to_root_file()
+        self.plot_alpha_distributions(calibrated = True, gain = True)
+        #self.write_to_root_file()
         #pass
         
     def get_tpc_list(self, tpc_list = ['iiwi', 'humu', 'nene', 'tako', 'palila', 'elepaio']):
@@ -221,7 +222,7 @@ class tpc_calibration:
                 alphas[tpc][ekey] = alphas[tpc]['track_charge']*34.4525/alphas[tpc][ekey]*1e-3
                 print(tpc, alphas[tpc][ekey].mean())
                 #print(tpc, alphas[tpc][ekey].unique(), alphas[tpc][ekey+'_err'].unique())
-                #print(tpc, alphas[tpc][ekey].mean(), scale_factor_err[tpc]*alphas[tpc][ekey].mean())
+                print(tpc, alphas[tpc][ekey].mean(), scale_factor_err[tpc]*alphas[tpc][ekey].mean())
                 plt.bar(locations[i], alphas[tpc][ekey].mean(), yerr = scale_factor_err[tpc]*alphas[tpc][ekey].mean(), linewidth = 2, edgecolor = matplotlib.colors.colorConverter.to_rgba(colors[i], alpha=1), color = matplotlib.colors.colorConverter.to_rgba(colors[i], alpha=0.2))
                 plt.xlabel('TPC Location')
                 plt.ylabel(r'$G_{eff}$')

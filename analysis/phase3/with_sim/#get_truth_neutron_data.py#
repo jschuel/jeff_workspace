@@ -129,8 +129,8 @@ class extract:
         df_Lumi.index = [i for i in range(0,len(df_Lumi))]
         img = plt.imread("/home/jeff/Pictures/farbeamline_nocolor.png")
         fig, ax = plt.subplots(1,1,figsize = (25,10))
-        ax.set_xlabel('z [cm]')
-        ax.set_ylabel('x [cm]')
+        ax.set_xlabel(r'$z_\mathrm{TPC}$ [cm]')
+        ax.set_ylabel(r'$x_\mathrm{TPC}$ [cm]')
         ax.set_ylim(-300,300)
         ax.set_xlim(-2800,2800)
         ax.imshow(np.flipud(img), origin = 'lower', extent = [-3333,3142, -438,414], aspect = 'auto')

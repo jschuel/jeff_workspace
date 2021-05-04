@@ -46,7 +46,7 @@ class analysis:
             data[tpc]['ts'] = data[tpc]['timestamp_start'].astype('int')
         return data
     
-    def get_raw_study_data(self, input_file= "/home/jeff/data/phase3/spring_2020/05-09-20/combined_ntuples/05-09_whole_study_even_newerest.root", E_cut = {'palila': 9.0, 'iiwi': 8.8, 'tako': 4.6, 'nene': 5.6, 'elepaio': 6.4, 'humu': 6.4}, E_cut_err = 0):
+    def get_raw_study_data(self, input_file= "/home/jeff/data/phase3/spring_2020/05-09-20/combined_ntuples/05-09_whole_study_even_newerest.root", E_cut = {'palila': 8.8, 'iiwi': 8.8, 'tako': 5.0, 'nene': 5.6, 'elepaio': 6.0, 'humu': 6.6}, E_cut_err = 0):
         #study_data = ur.open(input_file)[ur.open(input_file).keys()[0]].pandas.df(flatten=False)
         study_data = rp.read_root(input_file)
         tpc_data = self.raw_tpc_data
@@ -91,7 +91,7 @@ class analysis:
                 MC[tpc].index = [i for i in range(0,len(MC[tpc]))]
         return MC
     
-    def get_MC_rates(self, E_cut = {'palila': 9.0, 'iiwi': 8.8, 'tako': 4.6, 'nene': 5.5, 'elepaio': 6.4, 'humu': 6.4}, E_cut_err = 0, fei4_restrict = True, recoils_only = True, I_HER = 1000, I_LER = 1200, sy_LER=37, sy_HER=36, nb_LER=1576, nb_HER=1576, lumi=25): #Scale to luminosity of interest. Units: 1e34cm-2s-1
+    def get_MC_rates(self, E_cut = {'palila': 8.8, 'iiwi': 8.8, 'tako': 5.0, 'nene': 5.6, 'elepaio': 6.0, 'humu': 6.6}, E_cut_err = 0, fei4_restrict = True, recoils_only = True, I_HER = 1000, I_LER = 1200, sy_LER=37, sy_HER=36, nb_LER=1576, nb_HER=1576, lumi=25): #Scale to luminosity of interest. Units: 1e34cm-2s-1
         tpcs = ['elepaio', 'tako', 'palila', 'iiwi', 'nene', 'humu']
         bgtype = ['Coulomb_HER_base', 'Coulomb_LER_base', 'Coulomb_HER_dynamic', 'Coulomb_LER_dynamic', 'Brems_HER_base', 'Brems_LER_base', 'Brems_HER_dynamic', 'Brems_LER_dynamic', 'Touschek_HER_all', 'Touschek_LER_all', 'RBB_Lumi', 'twoPhoton_Lumi']
         tree = 'tree_fe4_after_threshold'
@@ -163,8 +163,8 @@ class analysis:
         df['HER_bg_base'] = (df['Brems_HER_base'] + df['Coulomb_HER_base'])/1000*I_HER
         df['LER_bg_dynamic'] = (df['Brems_LER_dynamic'] + df['Coulomb_LER_dynamic'])/1200**2*I_LER**2
         df['HER_bg_dynamic'] = (df['Brems_HER_dynamic'] + df['Coulomb_HER_dynamic'])/1000**2*I_HER**2
-        df['LER_T'] = df['Touschek_LER_all']/(1200/(37*1576))*(I_LER/(sy_LER*nb_LER))
-        df['HER_T'] = df['Touschek_HER_all']/(1000/(36*1576))*(I_HER/(sy_HER*nb_HER))
+        df['LER_T'] = df['Touschek_LER_all']/(1200**2/(37*1576))*(I_LER**2/(sy_LER*nb_LER))
+        df['HER_T'] = df['Touschek_HER_all']/(1000**2/(36*1576))*(I_HER**2/(sy_HER*nb_HER))
         df['Lumi'] = df['RBB_Lumi'] + df['twoPhoton_Lumi']
         df = df[['LER_bg_base', 'LER_bg_dynamic', 'LER_T', 'HER_bg_base', 'HER_bg_dynamic', 'HER_T', 'Lumi']]
         df_err.index = tpcs
@@ -172,21 +172,21 @@ class analysis:
         df_err['HER_bg_base'] = (df_err['Brems_HER_base'] + df_err['Coulomb_HER_base'])/1000*I_HER
         df_err['LER_bg_dynamic'] = (df_err['Brems_LER_dynamic'] + df_err['Coulomb_LER_dynamic'])/1200**2*I_LER**2
         df_err['HER_bg_dynamic'] = (df_err['Brems_HER_dynamic'] + df_err['Coulomb_HER_dynamic'])/1000**2*I_HER**2
-        df_err['LER_T'] = df_err['Touschek_LER_all']/(1200/(37*1576))*(I_LER/(sy_LER*nb_LER))
-        df_err['HER_T'] = df_err['Touschek_HER_all']/(1000/(36*1576))*(I_HER/(sy_HER*nb_HER))
+        df_err['LER_T'] = df_err['Touschek_LER_all']/(1200**2/(37*1576))*(I_LER**2/(sy_LER*nb_LER))
+        df_err['HER_T'] = df_err['Touschek_HER_all']/(1000**2/(36*1576))*(I_HER**2/(sy_HER*nb_HER))
         df_err['Lumi'] = np.sqrt(df_err['RBB_Lumi']**2 + df_err['twoPhoton_Lumi']**2)
         df_err = df_err[['LER_bg_base', 'LER_bg_dynamic', 'LER_T', 'HER_bg_base', 'HER_bg_dynamic', 'HER_T', 'Lumi']]
         df_err.columns = ['LER_bg_base_err', 'LER_bg_dynamic_err', 'LER_T_err', 'HER_bg_base_err', 'HER_bg_dynamic_err', 'HER_T_err', 'Lumi_err']
         df_combined = pd.concat([df,df_err], axis=1)
         return df_combined
 
-    def select_study(self, study_type, study_period, E_cut = {'palila': 9.0, 'iiwi': 8.8, 'tako': 4.6, 'nene': 5.6, 'elepaio': 6.4, 'humu': 6.4}, E_cut_err = 0): #LER, HER, Lumi, Cont_inj, Decay
+    def select_study(self, study_type, study_period, E_cut = {'palila': 8.8, 'iiwi': 8.8, 'tako': 5.0, 'nene': 5.6, 'elepaio': 6.0, 'humu': 6.6}, E_cut_err = 0): #LER, HER, Lumi, Cont_inj, Decay
         #raw_data = self.study_data
         raw_data = self.get_raw_study_data(E_cut = E_cut, E_cut_err = E_cut_err)
         study_data = raw_data.loc[(raw_data['%s_study_flag'%(study_type)]==1) & (raw_data['%s_flag'%(study_period)] == 1)]
         return study_data
 
-    def get_tpc_data_during_study_period(self, study_type, study_period, E_cut = {'palila': 9.0, 'iiwi': 8.8, 'tako': 4.6, 'nene': 5.6, 'elepaio': 6.4, 'humu': 6.4}, E_cut_err = 0):
+    def get_tpc_data_during_study_period(self, study_type, study_period, E_cut = {'palila': 8.8, 'iiwi': 8.8, 'tako': 5.0, 'nene': 5.6, 'elepaio': 6.0, 'humu': 6.6}, E_cut_err = 0):
         study_data = self.select_study(study_type, study_period, E_cut=E_cut, E_cut_err=E_cut_err)
         tpc_data = self.raw_tpc_data
         #tpc_data = self.get_tpc_data(E_cut = E_cut)
@@ -196,7 +196,7 @@ class analysis:
             tpc_study_data[tpc] = tpc_data[tpc].loc[tpc_data[tpc]['ts'].isin(study_data['ts'])]
         return tpc_study_data
 
-    def partition_data_into_subsets(self, study_type, study_period, bins = 6, E_cut = {'palila': 9.0, 'iiwi': 8.8, 'tako': 4.6, 'nene': 5.6, 'elepaio': 6.4, 'humu': 6.4}, E_cut_err = 0):
+    def partition_data_into_subsets(self, study_type, study_period, bins = 6, E_cut = {'palila': 8.8, 'iiwi': 8.8, 'tako': 5.0, 'nene': 5.6, 'elepaio': 6.0, 'humu': 6.6}, E_cut_err = 0):
         study_data = self.select_study(study_type, study_period, E_cut=E_cut, E_cut_err = E_cut_err)
         study_data = study_data.reset_index(drop=True)
         partition_indices = [study_data.index.to_list()[0]] + study_data.loc[np.abs(study_data['ts'].diff())>10].index.to_list() + [study_data.index.to_list()[len(study_data)-1]]
@@ -209,7 +209,7 @@ class analysis:
             dfs[key] = np.array_split(study_data.iloc[data_subsets[key]], bins)
         return dfs
 
-    def compute_means_and_errs(self, study_type, study_period,bins = 6,E_cut={'palila': 9.0, 'iiwi': 8.8, 'tako': 4.6, 'nene': 5.8, 'elepaio': 6.6, 'humu': 6.6}, E_cut_err = 0):
+    def compute_means_and_errs(self, study_type, study_period,bins = 6,E_cut = {'palila': 8.8, 'iiwi': 8.8, 'tako': 5.0, 'nene': 5.6, 'elepaio': 6.0, 'humu': 6.6}, E_cut_err = 0):
         partitioned_data = self.partition_data_into_subsets(study_type, study_period, bins = bins, E_cut=E_cut, E_cut_err = E_cut_err)
         means = pd.DataFrame()
         errs = pd.DataFrame()
@@ -223,7 +223,7 @@ class analysis:
         means = means.drop(columns = ['LER_study_flag_err', 'HER_study_flag_err', 'Lumi_study_flag_err', 'Cont_inj_flag_err', 'Decay_flag_err', 'Nb_HER_err', 'Nb_LER_err'])
         return means
 
-    def get_fit_parameters(self, study_type, study_period, bins = 6, E_cut={'palila': 9.0, 'iiwi': 8.8, 'tako': 4.6, 'nene': 5.6, 'elepaio': 6.4, 'humu': 6.4}, E_cut_err = 0): #Gives parameters B0, B1, and T defined by Rate/I = B0 + B1*I + T*I/(sy*Nb)
+    def get_fit_parameters(self, study_type, study_period, bins = 6, E_cut = {'palila': 8.8, 'iiwi': 8.8, 'tako': 5.0, 'nene': 5.6, 'elepaio': 6.0, 'humu': 6.6}, E_cut_err = 0): #Gives parameters B0, B1, and T defined by Rate/I = B0 + B1*I + T*I/(sy*Nb)
         averaged_data = self.compute_means_and_errs(study_type, study_period,bins = bins, E_cut=E_cut, E_cut_err = E_cut_err)
         tpcs = ['iiwi', 'humu', 'nene', 'tako', 'elepaio', 'palila']
         fit = {}
@@ -287,7 +287,7 @@ class analysis:
             '''
         return fit
 
-    def measure_and_fit_lumi_bgs(self, study_period,bins = 15, E_cut = {'palila': 9.0, 'iiwi': 8.8, 'tako': 4.6, 'nene': 5.6, 'elepaio': 6.4, 'humu': 6.4}, E_cut_err = 0):
+    def measure_and_fit_lumi_bgs(self, study_period,bins = 15, E_cut = {'palila': 8.8, 'iiwi': 8.8, 'tako': 5.0, 'nene': 5.6, 'elepaio': 6.0, 'humu': 6.6}, E_cut_err = 0):
         if study_period.lower() == "decay":
             bins = 6
         lumi_data_avg = self.compute_means_and_errs("Lumi", study_period,bins = bins, E_cut = E_cut, E_cut_err = E_cut_err)
@@ -565,7 +565,7 @@ class analysis:
         plt.savefig('lumi_fits_newest.png')
         plt.show()
 
-    def plot_bg_summary(self, study_period, E_cut={'palila': 9.0, 'iiwi': 8.8, 'tako': 4.6, 'nene': 5.6, 'elepaio': 6.4, 'humu': 6.4}, E_cut_err = 0, bins = 6, MC = False, I_HER = 1000, I_LER = 1200, sy_LER=37, sy_HER=36, nb_LER=1576, nb_HER=1576, L=25):
+    def plot_bg_summary(self, study_period, E_cut = {'palila': 8.8, 'iiwi': 8.8, 'tako': 5.0, 'nene': 5.6, 'elepaio': 6.0, 'humu': 6.6}, E_cut_err = 0, bins = 6, MC = False, I_HER = 1000, I_LER = 1200, sy_LER=37, sy_HER=36, nb_LER=1576, nb_HER=1576, L=25):
         #tpcs = ['iiwi', 'nene', 'humu', 'palila', 'tako', 'elepaio']
         plt.rc('legend', fontsize=13)
         plt.rc('xtick', labelsize=20)
@@ -650,10 +650,10 @@ class analysis:
         plt.show()
         return df
 
-    def compute_data_MC_ratios(self, study_period, E_cut = {'palila': 9.0, 'iiwi': 8.8, 'tako': 4.6, 'nene': 5.6, 'elepaio': 6.4, 'humu': 6.4}, E_cut_err = 0, bins = 6, I_HER = 1000, I_LER = 1200, sy_LER=37, sy_HER=36, nb_LER=1576, nb_HER=1576, L=25):
+    def compute_data_MC_ratios(self, study_period, E_cut = {'palila': 8.8, 'iiwi': 8.8, 'tako': 5.0, 'nene': 5.6, 'elepaio': 6.0, 'humu': 6.6}, E_cut_err = 0, bins = 6, I_HER = 1000, I_LER = 1200, sy_LER=37, sy_HER=36, nb_LER=1576, nb_HER=1576, L=25):
 
-        #MC = self.get_MC_rates(E_cut = E_cut, I_HER = I_HER, I_LER = I_LER, sy_LER=sy_LER, sy_HER=sy_HER, nb_LER=nb_LER, nb_HER=nb_HER, lumi=L)
-        MC = self.MC_rates
+        MC = self.get_MC_rates(E_cut = E_cut, I_HER = I_HER, I_LER = I_LER, sy_LER=sy_LER, sy_HER=sy_HER, nb_LER=nb_LER, nb_HER=nb_HER, lumi=L)
+        #MC = self.MC_rates
         tpcs = ['elepaio', 'tako', 'palila', 'iiwi', 'nene', 'humu']
         LER_fit_params = self.get_fit_parameters("LER", study_period, bins, E_cut=E_cut, E_cut_err = E_cut_err)
         HER_fit_params = self.get_fit_parameters("HER", study_period, bins, E_cut=E_cut, E_cut_err = E_cut_err)
@@ -739,6 +739,6 @@ class analysis:
         data_MC_ratio = pd.concat([data_MC,data_MC_err],axis = 1)
         data_MC_ratio = data_MC_ratio[['LER_bg_base',  'LER_bg_base_err', 'LER_bg_dynamic', 'LER_bg_dynamic_err', 'LER_T', 'LER_T_err', 'HER_bg_base', 'HER_bg_base_err', 'HER_bg_dynamic', 'HER_bg_dynamic_err', 'HER_T', 'HER_T_err', 'Lumi', 'Lumi_err']]
         return df, MC, data_MC_ratio
-#E_cut = {'palila': 9.0, 'iiwi': 8.8, 'tako': 4.6, 'nene': 5.6, 'elepaio': 6.4, 'humu': 6.4}
+
 E_cut = {'palila': 8.8, 'iiwi': 8.8, 'tako': 5.0, 'nene': 5.6, 'elepaio': 6.0, 'humu': 6.6}
 a = analysis(E_cut = E_cut, E_cut_err = 0)
