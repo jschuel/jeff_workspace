@@ -243,13 +243,14 @@ class analysis:
             x2err = array.array('d', averaged_data['heuristic_x_err'])
             y_root = array.array('d', y)
             y_root_err = array.array('d', yerr)
-            f2 = ROOT.TF2("f2","[0] + [1]*x + [2]*y + [3]/x", 0, X['I_'+study_type].max(), 0, X['heuristic_x'].max())
+            #f2 = ROOT.TF2("f2","[0] + [1]*x + [2]*y", X['I_'+study_type].min(), X['I_'+study_type].max(), X['heuristic_x'].min(), X['heuristic_x'].max())
+            f2 = ROOT.TF2("f2","[0] + [1]*x + [2]*y", X['I_'+study_type].min(), X['I_'+study_type].max(), X['heuristic_x'].min(), X['heuristic_x'].max())
+            #f2.SetParLimits(0,0,0)
+            #f2.SetParLimits(1,0,10)
+            #f2.SetParLimits(2,0,10)
             #f2.SetParLimits(0,0,1e-5)
             #f2.SetParLimits(1,0,1e-7)
-            #f2.SetParLimits(2,0,1)
-            f2.SetParLimits(0,0,1e-5)
-            f2.SetParLimits(1,0,1e-7)
-            f2.SetParLimits(2,0,1e-1)
+            #f2.SetParLimits(2,0,1e-1)
             
             gr = ROOT.TGraph2DErrors(len(x1), x1, x2, y_root, x1err, x2err, y_root_err)
             gr.Fit(f2, 'SREM')
@@ -545,11 +546,11 @@ class analysis:
             plt.xlim(0,2)
             plt.xlabel(r'Luminosity [$10^{34}$cm$^{-2}$s$^{-1}$]')
             if i < 4:
-                plt.ylim(-1.5,3.5)
-                plt.yticks([-1,0,1,2,3])
+                #plt.ylim(-1.5,3.5)
+                #plt.yticks([-1,0,1,2,3])
                 plt.ylabel(r'R$_L$ [Hz]')
             else:
-                plt.ylim(-0.15,0.35)
+                #plt.ylim(-0.15,0.35)
                 plt.ylabel(r'R$_L$ [Hz]',labelpad = 0.1)
             plt.legend(loc = 'best')
             plt.title(pos[i-1])
@@ -740,5 +741,6 @@ class analysis:
         data_MC_ratio = data_MC_ratio[['LER_bg_base',  'LER_bg_base_err', 'LER_bg_dynamic', 'LER_bg_dynamic_err', 'LER_T', 'LER_T_err', 'HER_bg_base', 'HER_bg_base_err', 'HER_bg_dynamic', 'HER_bg_dynamic_err', 'HER_T', 'HER_T_err', 'Lumi', 'Lumi_err']]
         return df, MC, data_MC_ratio
 
-E_cut = {'palila': 8.8, 'iiwi': 8.8, 'tako': 5.0, 'nene': 5.6, 'elepaio': 6.0, 'humu': 6.6}
+#E_cut = {'palila': 8.8, 'iiwi': 8.8, 'tako': 5.0, 'nene': 5.6, 'elepaio': 6.0, 'humu': 6.6}
+E_cut = {'palila': 8, 'iiwi': 8.8, 'tako': 6, 'nene': 5.5, 'elepaio': 6, 'humu': 6.6}
 a = analysis(E_cut = E_cut, E_cut_err = 0)
