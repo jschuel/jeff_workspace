@@ -21,7 +21,7 @@ plt.rc('axes', labelsize=16)
 plt.rc('axes', titlesize=16)
 
 class analysis:
-    def __init__(self, E_cut = {'palila': 8, 'iiwi': 8.8, 'tako': 6, 'nene': 5.5, 'elepaio': 6, 'humu': 6.6}, skb_file= "/home/jeff/data/phase3/spring_2020/05-09-20/combined_ntuples/05-09_whole_study_even_newerest.root", tpc_path =  '/home/jeff/data/phase3/spring_2020/05-09-20/tpc_root_files/', recoils_only = True, fei4_restrict = True, data_machine_params = {'I_HER' : 510, 'I_LER' : 510, 'P_LER': 3e-8, 'P_HER': 1.4e-8, 'sy_LER' : 60, 'sy_HER' : 35, 'nb_LER' : 783, 'nb_HER' : 783, 'lumi' : 1.1}, MC_machine_params = {'I_HER' : 1000, 'I_LER' : 1200, 'sy_LER' : 37, 'sy_HER' : 36, 'nb_LER' : 1576, 'nb_HER' : 1576, 'lumi' : 25}, bin_width = 120, fit_package = 'scipy'): # for fit use 'scipy' or 'root'
+    def __init__(self, E_cut = {'palila': 8, 'iiwi': 8.8, 'tako': 6, 'nene': 5.5, 'elepaio': 6, 'humu': 6.6}, skb_file= "/home/jeff/data/phase3/spring_2020/05-09-20/combined_ntuples/05-09_whole_study_2021_update.root", tpc_path =  '/home/jeff/data/phase3/spring_2020/05-09-20/tpc_root_files/', recoils_only = True, fei4_restrict = True, data_machine_params = {'I_HER' : 510, 'I_LER' : 510, 'P_LER': 3e-8, 'P_HER': 1.4e-8, 'sy_LER' : 60, 'sy_HER' : 35, 'nb_LER' : 783, 'nb_HER' : 783, 'lumi' : 1.1}, MC_machine_params = {'I_HER' : 1000, 'I_LER' : 1200, 'sy_LER' : 37, 'sy_HER' : 36, 'nb_LER' : 1576, 'nb_HER' : 1576, 'lumi' : 25}, bin_width = 120, fit_package = 'scipy'): # for fit use 'scipy' or 'root'   Old skb_file: 05-09_whole_study_even_newerest.root
         self.E_cut = E_cut
         self.tpcs = {'z = -14m': 'elepaio', 'z = -8.0m': 'tako', 'z = -5.6m': 'palila', 'z = +6.6m': 'iiwi', 'z = +14m': 'nene', 'z = +16m': 'humu'}
         self.skb_file = skb_file
@@ -92,6 +92,8 @@ class analysis:
             P_HER = []
             Sy_LER = []
             Sy_HER = []
+            Sx_LER = []
+            Sx_HER = []
             Nb_LER = []
             Nb_HER = []
             Lumi = []
@@ -100,7 +102,7 @@ class analysis:
             Lumi_flag = []
             cinj_flag = []
             decay_flag = []
-            for Il, Ih, Pl, Ph, Syl, Syh, Nbl, Nbh, lumi, rate, fler, fher, flum, fci, fd in zip(tmp['I_LER'], tmp['I_HER'], tmp['P_LER'], tmp['P_HER'], tmp['Sy_LER'], tmp['Sy_HER'], tmp['Nb_LER'], tmp['Nb_HER'], tmp['ECL_lumi'], tmp['%s_neutrons'%(tpc)], tmp['LER_study_flag'], tmp['HER_study_flag'], tmp['Lumi_study_flag'],tmp['Cont_inj_flag'], tmp['Decay_flag']):
+            for Il, Ih, Pl, Ph, Syl, Syh, Sxl, Sxh, Nbl, Nbh, lumi, rate, fler, fher, flum, fci, fd in zip(tmp['I_LER'], tmp['I_HER'], tmp['P_LER'], tmp['P_HER'], tmp['Sy_LER'], tmp['Sy_HER'], tmp['Sx_LER'], tmp['Sx_HER'], tmp['Nb_LER'], tmp['Nb_HER'], tmp['ECL_lumi'], tmp['%s_neutrons'%(tpc)], tmp['LER_study_flag'], tmp['HER_study_flag'], tmp['Lumi_study_flag'],tmp['Cont_inj_flag'], tmp['Decay_flag']):
                 if rate > 1:
                     for i in range(0,rate):
                         I_LER.append(Il)
@@ -109,6 +111,8 @@ class analysis:
                         P_HER.append(Ph)
                         Sy_LER.append(Syl)
                         Sy_HER.append(Syh)
+                        Sx_LER.append(Sxl)
+                        Sx_HER.append(Sxh)
                         Nb_LER.append(Nbl)
                         Nb_HER.append(Nbh)
                         Lumi.append(lumi)
@@ -124,6 +128,8 @@ class analysis:
                     P_HER.append(Ph)
                     Sy_LER.append(Syl)
                     Sy_HER.append(Syh)
+                    Sx_LER.append(Sxl)
+                    Sx_HER.append(Sxh)
                     Nb_LER.append(Nbl)
                     Nb_HER.append(Nbh)
                     Lumi.append(lumi)
@@ -138,6 +144,8 @@ class analysis:
             tpc_reduced[tpc]['P_HER'] = P_HER
             tpc_reduced[tpc]['Sy_LER'] = Sy_LER
             tpc_reduced[tpc]['Sy_HER'] = Sy_HER
+            tpc_reduced[tpc]['Sx_LER'] = Sx_LER
+            tpc_reduced[tpc]['Sx_HER'] = Sx_HER
             tpc_reduced[tpc]['Nb_LER'] = Nb_LER
             tpc_reduced[tpc]['Nb_HER'] = Nb_HER
             tpc_reduced[tpc]['Lumi'] = Lumi
@@ -174,7 +182,7 @@ class analysis:
         for tpc in self.tpcs.values():
             avgs[tpc] = data[tpc].groupby(pd.cut(data[tpc]['ts'], bins = np.linspace(data[tpc]['ts'].min(),data[tpc]['ts'].max(),int((data[tpc]['ts'].max()-data[tpc]['ts'].min())/nsecs)))).mean() #bin into bins of width nsecs
             errs[tpc] = data[tpc].groupby(pd.cut(data[tpc]['ts'], bins = np.linspace(data[tpc]['ts'].min(),data[tpc]['ts'].max(),int((data[tpc]['ts'].max()-data[tpc]['ts'].min())/nsecs)))).std() #bin into bins of width nsecs
-            for col in ['ts', 'I_LER', 'I_HER', 'P_LER', 'P_HER', 'Sy_LER', 'Sy_HER', 'Nb_LER', 'Nb_HER', 'Lumi']:
+            for col in ['ts', 'I_LER', 'I_HER', 'P_LER', 'P_HER', 'Sy_LER', 'Sy_HER', 'Sx_LER', 'Sx_HER', 'Nb_LER', 'Nb_HER', 'Lumi']:
                 avgs[tpc][col+'_err'] = errs[tpc][col]
             avgs[tpc]['rate'] = data[tpc].groupby(pd.cut(data[tpc]['ts'], bins = np.linspace(data[tpc]['ts'].min(),data[tpc]['ts'].max(),int((data[tpc]['ts'].max()-data[tpc]['ts'].min())/nsecs))))['count'].sum()/nsecs
             avgs[tpc]['rate_err'] = np.sqrt(data[tpc].groupby(pd.cut(data[tpc]['ts'], bins = np.linspace(data[tpc]['ts'].min(),data[tpc]['ts'].max(),int((data[tpc]['ts'].max()-data[tpc]['ts'].min())/nsecs))))['count'].sum())/nsecs
@@ -201,7 +209,7 @@ class analysis:
                 print(yerror)
                 if len(ydata)>3:
                     try:
-                        params, pcov = optimize.curve_fit(func, fit_data, ydata, sigma=yerror, absolute_sigma = True, bounds = ([1e2,-1e-3,0], [1e6,1e-3,1]),maxfev=100000)
+                        params, pcov = optimize.curve_fit(func, fit_data, ydata, sigma=yerror, absolute_sigma = True, bounds = ([0,0,0], [1e5,1e-2,10]),maxfev=100000)
                         B0 = params[0]
                         B1 = params[1]
                         T = params[2]
@@ -226,9 +234,9 @@ class analysis:
         else:
             def fit(tpc,y,yerr,x1,x1err,x2,x2err):
                 f = ROOT.TF2("f2","[0]*x - [1] + [2]*y")
-                f.SetParLimits(0, 1e2,1e6)
-                f.SetParLimits(1,-1e-3,1e-3)
-                f.SetParLimits(2,0,1)
+                f.SetParLimits(0, 0, 1e5)
+                f.SetParLimits(1,0,1e-2)
+                f.SetParLimits(2,0,10)
                 gr = ROOT.TGraph2DErrors(len(x1), x1, x2, y, x1err, x2err, yerr)
                 gr.Fit(f, 'SEM')
                 B0 = f.GetParameter(0)
@@ -342,9 +350,9 @@ class analysis:
                 reduced_data[tpc] = data[tpc]#.loc[(data[tpc][period+'_flag'] == 1)]
                 if period == 'Lumi':
                     reduced_data[tpc]['BG_pred'] = fits[tpc+'_HER_B0']*reduced_data[tpc]['I_HER']*reduced_data[tpc]['P_HER'] + fits[tpc+'_LER_B0']*reduced_data[tpc]['I_LER']*reduced_data[tpc]['P_LER'] - fits[tpc+'_HER_B1']*reduced_data[tpc]['I_HER'] - fits[tpc+'_LER_B1']*reduced_data[tpc]['I_LER'] 
-                    reduced_data[tpc]['T_pred'] = fits[tpc+'_HER_T']*reduced_data[tpc]['I_HER']**2/(reduced_data[tpc]['Sy_HER']*reduced_data[tpc]['Nb_HER']) + fits[tpc+'_LER_B1']*reduced_data[tpc]['I_LER']**2/(reduced_data[tpc]['Sy_LER']*reduced_data[tpc]['Nb_LER'])
+                    reduced_data[tpc]['T_pred'] = 1.2*fits[tpc+'_HER_T']*reduced_data[tpc]['I_HER']**2/(reduced_data[tpc]['Sy_HER']*reduced_data[tpc]['Nb_HER']) + 0.79*fits[tpc+'_LER_T']*reduced_data[tpc]['I_LER']**2/(reduced_data[tpc]['Sy_LER']*reduced_data[tpc]['Nb_LER'])
                     reduced_data[tpc]['BG_pred_err'] = np.sqrt((reduced_data[tpc]['I_HER']*reduced_data[tpc]['P_HER']*fits[tpc+'_HER_B0_err'])**2 + (reduced_data[tpc]['I_HER']*fits[tpc+'_HER_B1_err'])**2 + (fits[tpc+'_HER_B0']*reduced_data[tpc]['I_HER']*reduced_data[tpc]['P_HER_err'])**2 + ((fits[tpc+'_HER_B0']*reduced_data[tpc]['P_HER']-fits[tpc+'_HER_B1'])*reduced_data[tpc]['I_HER_err'])**2 + (reduced_data[tpc]['I_LER']*reduced_data[tpc]['P_LER']*fits[tpc+'_LER_B0_err'])**2 + (reduced_data[tpc]['I_LER']*fits[tpc+'_LER_B1_err'])**2 + (fits[tpc+'_LER_B0']*reduced_data[tpc]['I_LER']*reduced_data[tpc]['P_LER_err'])**2 + ((fits[tpc+'_LER_B0']*reduced_data[tpc]['P_LER']-fits[tpc+'_LER_B1'])*reduced_data[tpc]['I_LER_err'])**2)
-                    reduced_data[tpc]['T_pred_err'] = np.sqrt((reduced_data[tpc]['I_HER']**2/(reduced_data[tpc]['Sy_HER']*reduced_data[tpc]['Nb_HER'])*fits[tpc+'_HER_T_err'])**2 + (2*reduced_data[tpc]['I_HER']*fits[tpc+'_HER_T']/(reduced_data[tpc]['Sy_HER']*reduced_data[tpc]['Nb_HER'])*reduced_data[tpc]['I_HER_err'])**2 +(reduced_data[tpc]['I_HER']**2*fits[tpc+'_HER_T']/(reduced_data[tpc]['Sy_HER']**2*reduced_data[tpc]['Nb_HER'])*reduced_data[tpc]['Sy_HER_err'])**2 + (reduced_data[tpc]['I_LER']**2/(reduced_data[tpc]['Sy_LER']*reduced_data[tpc]['Nb_LER'])*fits[tpc+'_LER_T_err'])**2 + (2*reduced_data[tpc]['I_LER']*fits[tpc+'_LER_T']/(reduced_data[tpc]['Sy_LER']*reduced_data[tpc]['Nb_LER'])*reduced_data[tpc]['I_LER_err'])**2 +(reduced_data[tpc]['I_LER']**2*fits[tpc+'_LER_T']/(reduced_data[tpc]['Sy_LER']**2*reduced_data[tpc]['Nb_LER'])*reduced_data[tpc]['Sy_LER_err'])**2)
+                    reduced_data[tpc]['T_pred_err'] = np.sqrt((reduced_data[tpc]['I_HER']**2/(reduced_data[tpc]['Sy_HER']*reduced_data[tpc]['Nb_HER'])*1.2*fits[tpc+'_HER_T_err'])**2 + (2*reduced_data[tpc]['I_HER']*1.2*fits[tpc+'_HER_T']/(reduced_data[tpc]['Sy_HER']*reduced_data[tpc]['Nb_HER'])*reduced_data[tpc]['I_HER_err'])**2 +(reduced_data[tpc]['I_HER']**2*1.2*fits[tpc+'_HER_T']/(reduced_data[tpc]['Sy_HER']**2*reduced_data[tpc]['Nb_HER'])*reduced_data[tpc]['Sy_HER_err'])**2 + (reduced_data[tpc]['I_LER']**2/(reduced_data[tpc]['Sy_LER']*reduced_data[tpc]['Nb_LER'])*0.79*fits[tpc+'_LER_T_err'])**2 + (2*reduced_data[tpc]['I_LER']*0.79*fits[tpc+'_LER_T']/(reduced_data[tpc]['Sy_LER']*reduced_data[tpc]['Nb_LER'])*reduced_data[tpc]['I_LER_err'])**2 +(reduced_data[tpc]['I_LER']**2*0.79*fits[tpc+'_LER_T']/(reduced_data[tpc]['Sy_LER']**2*reduced_data[tpc]['Nb_LER'])*reduced_data[tpc]['Sy_LER_err'])**2)
                 else:
                     reduced_data[tpc]['BG_pred'] = fits[tpc+'_'+period+'_B0']*reduced_data[tpc]['I_'+period]*reduced_data[tpc]['P_'+period] - fits[tpc+'_'+period+'_B1']*reduced_data[tpc]['I_'+period]
                     reduced_data[tpc]['T_pred'] = fits[tpc+'_'+period+'_T']*reduced_data[tpc]['I_'+period]**2/(reduced_data[tpc]['Sy_'+period]*reduced_data[tpc]['Nb_'+period])
@@ -355,9 +363,9 @@ class analysis:
                 reduced_data[tpc] = data[tpc].loc[(data[tpc][period+'_flag'] == 1) & (data[tpc]['Decay_flag']==1)]
                 if period == 'Lumi':
                     reduced_data[tpc]['BG_pred'] = fits[tpc+'_HER_Decay_B0']*reduced_data[tpc]['I_HER']*reduced_data[tpc]['P_HER'] + fits[tpc+'_LER_Decay_B0']*reduced_data[tpc]['I_LER']*reduced_data[tpc]['P_LER'] - fits[tpc+'_HER_Decay_B1']*reduced_data[tpc]['I_HER'] - fits[tpc+'_LER_Decay_B1']*reduced_data[tpc]['I_LER']
-                    reduced_data[tpc]['T_pred'] = fits[tpc+'_HER_Decay_T']*reduced_data[tpc]['I_HER']**2/(reduced_data[tpc]['Sy_HER']*reduced_data[tpc]['Nb_HER']) + fits[tpc+'_LER_Decay_B1']*reduced_data[tpc]['I_LER']**2/(reduced_data[tpc]['Sy_LER']*reduced_data[tpc]['Nb_LER'])
+                    reduced_data[tpc]['T_pred'] = 1.2*fits[tpc+'_HER_Decay_T']*reduced_data[tpc]['I_HER']**2/(reduced_data[tpc]['Sy_HER']*reduced_data[tpc]['Nb_HER']) + 0.79*fits[tpc+'_LER_Decay_T']*reduced_data[tpc]['I_LER']**2/(reduced_data[tpc]['Sy_LER']*reduced_data[tpc]['Nb_LER'])
                     reduced_data[tpc]['BG_pred_err'] = np.sqrt((reduced_data[tpc]['I_HER']*reduced_data[tpc]['P_HER']*fits[tpc+'_HER_Decay_B0_err'])**2 + (reduced_data[tpc]['I_HER']*fits[tpc+'_HER_Decay_B1_err'])**2 + (fits[tpc+'_HER_Decay_B0']*reduced_data[tpc]['I_HER']*reduced_data[tpc]['P_HER_err'])**2 + ((fits[tpc+'_HER_Decay_B0']*reduced_data[tpc]['P_HER']-fits[tpc+'_HER_Decay_B1'])*reduced_data[tpc]['I_HER_err'])**2 + (reduced_data[tpc]['I_LER']*reduced_data[tpc]['P_LER']*fits[tpc+'_LER_Decay_B0_err'])**2 + (reduced_data[tpc]['I_LER']*fits[tpc+'_LER_Decay_B1_err'])**2 + (fits[tpc+'_LER_Decay_B0']*reduced_data[tpc]['I_LER']*reduced_data[tpc]['P_LER_err'])**2 + ((fits[tpc+'_LER_Decay_B0']*reduced_data[tpc]['P_LER']-fits[tpc+'_LER_Decay_B1'])*reduced_data[tpc]['I_LER_err'])**2)
-                    reduced_data[tpc]['T_pred_err'] = np.sqrt((reduced_data[tpc]['I_HER']**2/(reduced_data[tpc]['Sy_HER']*reduced_data[tpc]['Nb_HER'])*fits[tpc+'_HER_Decay_T_err'])**2 + (2*reduced_data[tpc]['I_HER']*fits[tpc+'_HER_Decay_T']/(reduced_data[tpc]['Sy_HER']*reduced_data[tpc]['Nb_HER'])*reduced_data[tpc]['I_HER_err'])**2 +(reduced_data[tpc]['I_HER']**2*fits[tpc+'_HER_Decay_T']/(reduced_data[tpc]['Sy_HER']**2*reduced_data[tpc]['Nb_HER'])*reduced_data[tpc]['Sy_HER_err'])**2 + (reduced_data[tpc]['I_LER']**2/(reduced_data[tpc]['Sy_LER']*reduced_data[tpc]['Nb_LER'])*fits[tpc+'_LER_Decay_T_err'])**2 + (2*reduced_data[tpc]['I_LER']*fits[tpc+'_LER_Decay_T']/(reduced_data[tpc]['Sy_LER']*reduced_data[tpc]['Nb_LER'])*reduced_data[tpc]['I_LER_err'])**2 +(reduced_data[tpc]['I_LER']**2*fits[tpc+'_LER_Decay_T']/(reduced_data[tpc]['Sy_LER']**2*reduced_data[tpc]['Nb_LER'])*reduced_data[tpc]['Sy_LER_err'])**2)
+                    reduced_data[tpc]['T_pred_err'] = np.sqrt((reduced_data[tpc]['I_HER']**2/(reduced_data[tpc]['Sy_HER']*reduced_data[tpc]['Nb_HER'])*1.2*fits[tpc+'_HER_Decay_T_err'])**2 + (2*reduced_data[tpc]['I_HER']*1.2*fits[tpc+'_HER_Decay_T']/(reduced_data[tpc]['Sy_HER']*reduced_data[tpc]['Nb_HER'])*reduced_data[tpc]['I_HER_err'])**2 +(reduced_data[tpc]['I_HER']**2*1.2*fits[tpc+'_HER_Decay_T']/(reduced_data[tpc]['Sy_HER']**2*reduced_data[tpc]['Nb_HER'])*reduced_data[tpc]['Sy_HER_err'])**2 + (reduced_data[tpc]['I_LER']**2/(reduced_data[tpc]['Sy_LER']*reduced_data[tpc]['Nb_LER'])*0.79*fits[tpc+'_LER_Decay_T_err'])**2 + (2*reduced_data[tpc]['I_LER']*0.79*fits[tpc+'_LER_Decay_T']/(reduced_data[tpc]['Sy_LER']*reduced_data[tpc]['Nb_LER'])*reduced_data[tpc]['I_LER_err'])**2 +(reduced_data[tpc]['I_LER']**2*0.79*fits[tpc+'_LER_Decay_T']/(reduced_data[tpc]['Sy_LER']**2*reduced_data[tpc]['Nb_LER'])*reduced_data[tpc]['Sy_LER_err'])**2)
                 else:
                     reduced_data[tpc]['BG_pred'] = fits[tpc+'_'+period+'_Decay_B0']*reduced_data[tpc]['I_'+period]*reduced_data[tpc]['P_'+period] - fits[tpc+'_'+period+'_Decay_B1']*reduced_data[tpc]['I_'+period]
                     reduced_data[tpc]['T_pred'] = fits[tpc+'_'+period+'_Decay_T']*reduced_data[tpc]['I_'+period]**2/(reduced_data[tpc]['Sy_'+period]*reduced_data[tpc]['Nb_'+period])
@@ -368,9 +376,9 @@ class analysis:
                 reduced_data[tpc] = data[tpc].loc[(data[tpc][period+'_flag'] == 1) & (data[tpc]['Cont_inj_flag']==1)]
                 if period == 'Lumi':
                     reduced_data[tpc]['BG_pred'] = fits[tpc+'_HER_Decay_B0']*reduced_data[tpc]['I_HER']*reduced_data[tpc]['P_HER'] + fits[tpc+'_LER_Decay_B0']*reduced_data[tpc]['I_LER']*reduced_data[tpc]['P_LER'] - fits[tpc+'_HER_Decay_B1']*reduced_data[tpc]['I_HER'] - fits[tpc+'_LER_Decay_B1']*reduced_data[tpc]['I_LER']
-                    reduced_data[tpc]['T_pred'] = fits[tpc+'_HER_Decay_T']*reduced_data[tpc]['I_HER']**2/(reduced_data[tpc]['Sy_HER']*reduced_data[tpc]['Nb_HER']) + fits[tpc+'_LER_Decay_B1']*reduced_data[tpc]['I_LER']**2/(reduced_data[tpc]['Sy_LER']*reduced_data[tpc]['Nb_LER'])
+                    reduced_data[tpc]['T_pred'] = 1.2*fits[tpc+'_HER_Decay_T']*reduced_data[tpc]['I_HER']**2/(reduced_data[tpc]['Sy_HER']*reduced_data[tpc]['Nb_HER']) + 0.79*fits[tpc+'_LER_Decay_T']*reduced_data[tpc]['I_LER']**2/(reduced_data[tpc]['Sy_LER']*reduced_data[tpc]['Nb_LER'])
                     reduced_data[tpc]['BG_pred_err'] = np.sqrt((reduced_data[tpc]['I_HER']*reduced_data[tpc]['P_HER']*fits[tpc+'_HER_Decay_B0_err'])**2 + (reduced_data[tpc]['I_HER']*fits[tpc+'_HER_Decay_B1_err'])**2 + (fits[tpc+'_HER_Decay_B0']*reduced_data[tpc]['I_HER']*reduced_data[tpc]['P_HER_err'])**2 + ((fits[tpc+'_HER_Decay_B0']*reduced_data[tpc]['P_HER']-fits[tpc+'_HER_Decay_B1'])*reduced_data[tpc]['I_HER_err'])**2 + (reduced_data[tpc]['I_LER']*reduced_data[tpc]['P_LER']*fits[tpc+'_LER_Decay_B0_err'])**2 + (reduced_data[tpc]['I_LER']*fits[tpc+'_LER_Decay_B1_err'])**2 + (fits[tpc+'_LER_Decay_B0']*reduced_data[tpc]['I_LER']*reduced_data[tpc]['P_LER_err'])**2 + ((fits[tpc+'_LER_Decay_B0']*reduced_data[tpc]['P_LER']-fits[tpc+'_LER_Decay_B1'])*reduced_data[tpc]['I_LER_err'])**2)
-                    reduced_data[tpc]['T_pred_err'] = np.sqrt((reduced_data[tpc]['I_HER']**2/(reduced_data[tpc]['Sy_HER']*reduced_data[tpc]['Nb_HER'])*fits[tpc+'_HER_Decay_T_err'])**2 + (2*reduced_data[tpc]['I_HER']*fits[tpc+'_HER_Decay_T']/(reduced_data[tpc]['Sy_HER']*reduced_data[tpc]['Nb_HER'])*reduced_data[tpc]['I_HER_err'])**2 +(reduced_data[tpc]['I_HER']**2*fits[tpc+'_HER_Decay_T']/(reduced_data[tpc]['Sy_HER']**2*reduced_data[tpc]['Nb_HER'])*reduced_data[tpc]['Sy_HER_err'])**2 + (reduced_data[tpc]['I_LER']**2/(reduced_data[tpc]['Sy_LER']*reduced_data[tpc]['Nb_LER'])*fits[tpc+'_LER_Decay_T_err'])**2 + (2*reduced_data[tpc]['I_LER']*fits[tpc+'_LER_Decay_T']/(reduced_data[tpc]['Sy_LER']*reduced_data[tpc]['Nb_LER'])*reduced_data[tpc]['I_LER_err'])**2 +(reduced_data[tpc]['I_LER']**2*fits[tpc+'_LER_Decay_T']/(reduced_data[tpc]['Sy_LER']**2*reduced_data[tpc]['Nb_LER'])*reduced_data[tpc]['Sy_LER_err'])**2)
+                    reduced_data[tpc]['T_pred_err'] = np.sqrt((reduced_data[tpc]['I_HER']**2/(reduced_data[tpc]['Sy_HER']*reduced_data[tpc]['Nb_HER'])*1.2*fits[tpc+'_HER_Decay_T_err'])**2 + (2*reduced_data[tpc]['I_HER']*1.2*fits[tpc+'_HER_Decay_T']/(reduced_data[tpc]['Sy_HER']*reduced_data[tpc]['Nb_HER'])*reduced_data[tpc]['I_HER_err'])**2 +(reduced_data[tpc]['I_HER']**2*1.2*fits[tpc+'_HER_Decay_T']/(reduced_data[tpc]['Sy_HER']**2*reduced_data[tpc]['Nb_HER'])*reduced_data[tpc]['Sy_HER_err'])**2 + (reduced_data[tpc]['I_LER']**2/(reduced_data[tpc]['Sy_LER']*reduced_data[tpc]['Nb_LER'])*0.79*fits[tpc+'_LER_Decay_T_err'])**2 + (2*reduced_data[tpc]['I_LER']*0.79*fits[tpc+'_LER_Decay_T']/(reduced_data[tpc]['Sy_LER']*reduced_data[tpc]['Nb_LER'])*reduced_data[tpc]['I_LER_err'])**2 +(reduced_data[tpc]['I_LER']**2*0.79*fits[tpc+'_LER_Decay_T']/(reduced_data[tpc]['Sy_LER']**2*reduced_data[tpc]['Nb_LER'])*reduced_data[tpc]['Sy_LER_err'])**2)
                 else:
                     reduced_data[tpc]['BG_pred'] = fits[tpc+'_'+period+'_Decay_B0']*reduced_data[tpc]['I_'+period]*reduced_data[tpc]['P_'+period] - fits[tpc+'_'+period+'_Decay_B1']*reduced_data[tpc]['I_'+period]
                     reduced_data[tpc]['T_pred'] = fits[tpc+'_'+period+'_Decay_T']*reduced_data[tpc]['I_'+period]**2/(reduced_data[tpc]['Sy_'+period]*reduced_data[tpc]['Nb_'+period])
@@ -618,4 +626,4 @@ class analysis:
         df_combined = pd.concat([df,df_err], axis=1)
         return df_combined    
 
-a = analysis(bin_width=60,fit_package='scipy')
+a = analysis(bin_width=60,fit_package='root')
